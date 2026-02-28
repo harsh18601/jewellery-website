@@ -20,6 +20,7 @@ export async function GET() {
         return NextResponse.json({
             wishlist: user.wishlist || [],
             cart: user.cart || [],
+            addresses: user.addresses || [],
         });
     } catch (error) {
         console.error("Sync fetch error:", error);
