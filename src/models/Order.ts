@@ -1,0 +1,47 @@
+import mongoose, { Schema, Document } from 'mongoose';
+
+export interface IOrder extends Document {
+    userId: mongoose.Types.ObjectId;
+    products: {
+        productId: mongoose.Types.ObjectId;
+        quantity: number;
+        price: number;
+    }[];
+    totalPrice: number;
+    paymentStatus: 'Pending' | 'Paid' | 'Failed';
+    orderStatus: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+    createdAt: Date;
+}
+
+const OrderSchema: Schema = new Schema({
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    products: [{
+        productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+        quantity: { type: Number, required: true },
+        price: { type: Number, required: true },
+    }],
+    totalPrice: { type: Number, required: true },
+    paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Failed'], default: 'Pending' },
+    orderStatus: { type: String, enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Processing' },
+    createdAt: { type: Date, default: Date.now },
+});
+
+export const Order = mongoose.models.Order || mongoose.model<IOrder>('Order', OrderSchema);
+
+export interface IReview extends Document {
+    productId: mongoose.Types.ObjectId;
+    userId: mongoose.Types.ObjectId;
+    rating: number;
+    comment: string;
+    createdAt: Date;
+}
+
+const ReviewSchema: Schema = new Schema({
+    productId: { type: Schema.Types.ObjectId, ref: 'Product', required: true },
+    userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
+    rating: { type: Number, required: true, min: 1, max: 5 },
+    comment: { type: String, required: true },
+    createdAt: { type: Date, default: Date.now },
+});
+
+export const Review = mongoose.models.Review || mongoose.model<IReview>('Review', ReviewSchema);

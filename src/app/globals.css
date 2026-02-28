@@ -1,0 +1,115 @@
+@import "tailwindcss";
+@plugin "@tailwindcss/typography";
+
+@theme {
+  --color-background: hsl(40 30% 98%);
+  --color-foreground: hsl(0 0% 10%);
+  --color-card: hsl(40 30% 98%);
+  --color-card-foreground: hsl(0 0% 10%);
+  --color-popover: hsl(40 30% 98%);
+  --color-popover-foreground: hsl(0 0% 10%);
+  --color-primary: hsl(43 50% 50%);
+  --color-primary-foreground: hsl(40 30% 98%);
+  --color-secondary: hsl(0 0% 15%);
+  --color-secondary-foreground: hsl(40 30% 98%);
+  --color-muted: hsl(40 10% 90%);
+  --color-muted-foreground: hsl(0 0% 40%);
+  --color-accent: hsl(43 50% 50%);
+  --color-accent-foreground: hsl(40 30% 98%);
+  --color-destructive: hsl(0 84% 60%);
+  --color-destructive-foreground: hsl(40 30% 98%);
+  --color-border: hsl(43 20% 85%);
+  --color-input: hsl(43 20% 85%);
+  --color-ring: hsl(43 50% 50%);
+
+  --radius: 0.5rem;
+
+  --font-serif: var(--font-playfair), serif;
+  --font-inter: var(--font-inter), sans-serif;
+
+  --animate-gradient: gradient 8s linear infinite;
+
+  @keyframes gradient {
+    from {
+      background-position: 0% center;
+    }
+
+    to {
+      background-position: -200% center;
+    }
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-serif;
+  }
+}
+
+@layer components {
+  .gold-text {
+    @apply bg-gradient-to-r from-[#D4AF37] via-[#F9E272] to-[#D4AF37] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient;
+  }
+
+  /* Luxury Link Animation */
+  .luxury-link {
+    @apply relative transition-colors duration-300;
+  }
+
+  .luxury-link::after {
+    content: '';
+    @apply absolute bottom-0 left-0 w-0 h-[1px] bg-primary transition-all duration-300;
+  }
+
+  .luxury-link:hover::after {
+    @apply w-full;
+  }
+
+  .luxury-link:hover {
+    @apply text-primary;
+  }
+
+  /* Luxury Card Lift */
+  .luxury-card {
+    @apply transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2;
+  }
+}
+
+.prose-luxury {
+  @apply prose prose-neutral max-w-none;
+  --tw-prose-body: var(--color-foreground);
+  --tw-prose-headings: var(--color-secondary);
+  --tw-prose-links: var(--color-primary);
+  --tw-prose-bold: var(--color-secondary);
+
+  h1,
+  h2,
+  h3 {
+    @apply uppercase tracking-[0.3em] font-bold mt-20 mb-10;
+  }
+
+  p {
+    @apply mb-10 leading-[1.8] text-[0.95rem];
+  }
+
+  ul,
+  ol {
+    @apply my-10 space-y-6;
+  }
+
+  li {
+    @apply pl-0;
+  }
+
+  strong {
+    @apply text-secondary font-bold;
+  }
+}
+
+.luxury-gradient {
+  background: linear-gradient(135deg, #d4af37 0%, #f9e29d 50%, #d4af37 100%);
+}
