@@ -4,12 +4,18 @@ import React from 'react'
 import { motion } from 'framer-motion'
 import { Package, MapPin, Heart, Clock } from 'lucide-react'
 import Link from 'next/link'
+import { useSession } from 'next-auth/react'
 
 const ProfileDashboard = () => {
+    const { data: session } = useSession()
+
     return (
         <div className="space-y-8">
             <section className="bg-muted/10 p-10 border border-primary/10">
-                <h2 className="text-xl font-bold uppercase tracking-widest mb-8 gold-text">Dashboard Overview</h2>
+                <div className="mb-8">
+                    <h2 className="text-xl font-bold uppercase tracking-widest gold-text">Welcome Back, {session?.user?.name || 'Member'}</h2>
+                    <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mt-2">Your personalized experience awaits.</p>
+                </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
                         { label: 'Total Orders', value: '02', icon: Package, href: '/profile/orders' },

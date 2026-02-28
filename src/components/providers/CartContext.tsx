@@ -1,6 +1,7 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import { useSession } from 'next-auth/react'
 
 interface CartItem {
     id: string;
@@ -23,10 +24,76 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-    const [cartItems, setCartItems] = useState<CartItem[]>([
-        // Initial placeholder item as requested to show "1"
-        { id: '1', title: 'Eternal Solitaire Ring', price: 125000, category: 'Lab-Grown', image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=400', quantity: 1 }
-    ]);
+    const { data: session } = useSession()
+    const [cartItems, setCartItems] = useState<CartItem[]>([]);
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
+
+    // Initial load from localStorage
+    useEffect(() => {
+        const saved = localStorage.getItem('cart');
+        if (saved) {
+            try {
+                setCartItems(JSON.parse(saved));
+            } catch (e) {
+                console.error("Failed to parse cart", e);
+            }
+        } else {
+            // Default placeholder if empty
+            setCartItems([
+                { id: '1', title: 'Eternal Solitaire Ring', price: 125000, category: 'Lab-Grown', image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=400', quantity: 1 }
+            ])
+        }
+        setIsInitialLoad(false)
+    }, []);
+
+    // Load from server when session is available
+    useEffect(() => {
+        if (session && !isInitialLoad) {
+            const fetchCart = async () => {
+                try {
+                    const res = await fetch('/api/user/sync')
+                    if (res.ok) {
+                        const data = await res.json()
+                        if (data.cart && data.cart.length > 0) {
+                            setCartItems(data.cart)
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch cart from server", e)
+                }
+            }
+            fetchCart()
+        }
+    }, [session, isInitialLoad])
+
+    // Save to localStorage and sync to server
+    useEffect(() => {
+        if (isInitialLoad) return;
+
+        localStorage.setItem('cart', JSON.stringify(cartItems));
+
+        if (session) {
+            const syncToServer = async () => {
+                try {
+                    // Fetch existing sync to not overwrite wishlist
+                    const currentSyncRes = await fetch('/api/user/sync')
+                    const currentSyncData = await currentSyncRes.json()
+
+                    await fetch('/api/user/sync', {
+                        method: 'POST',
+                        body: JSON.stringify({
+                            wishlist: currentSyncData.wishlist || [],
+                            cart: cartItems
+                        }),
+                    })
+                } catch (e) {
+                    console.error("Failed to sync cart to server", e)
+                }
+            }
+            const timer = setTimeout(syncToServer, 1000)
+            return () => clearTimeout(timer)
+        }
+    }, [cartItems, session, isInitialLoad]);
 
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 

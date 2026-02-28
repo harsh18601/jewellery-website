@@ -6,10 +6,12 @@ import { ShoppingBag, User, Search, Menu, Heart } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useCart } from '@/components/providers/CartContext'
 import { useWishlist } from '@/components/providers/WishlistContext'
+import { useSession, signOut } from 'next-auth/react'
 import SearchOverlay from './SearchOverlay'
 
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
+    const { data: session } = useSession()
 
     const { cartCount } = useCart()
     const { wishlistCount } = useWishlist()
@@ -51,9 +53,23 @@ const Navbar = () => {
                                     </span>
                                 )}
                             </Link>
-                            <Link href="/profile" className="p-2 hover:text-primary transition-colors cursor-pointer">
-                                <User className="h-5 w-5" />
-                            </Link>
+
+                            {session ? (
+                                <Link href="/profile" className="p-2 hover:text-primary transition-colors flex items-center space-x-2 group cursor-pointer">
+                                    <User className="h-5 w-5" />
+                                    <span className="hidden lg:inline text-[10px] uppercase tracking-widest font-bold group-hover:text-primary transition-colors">
+                                        {session.user?.name?.split(' ')[0]}
+                                    </span>
+                                </Link>
+                            ) : (
+                                <Link href="/auth/signin" className="p-2 hover:text-primary transition-colors flex items-center space-x-2 group cursor-pointer">
+                                    <User className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
+                                    <span className="hidden lg:inline text-[10px] uppercase tracking-widest font-bold group-hover:text-primary transition-colors">
+                                        Sign In
+                                    </span>
+                                </Link>
+                            )}
+
                             <Link href="/cart" className="p-2 hover:text-primary transition-colors relative cursor-pointer">
                                 <ShoppingBag className="h-5 w-5" />
                                 <span className="absolute top-0 right-0 h-4 w-4 bg-primary text-background text-[10px] flex items-center justify-center rounded-full">{cartCount}</span>

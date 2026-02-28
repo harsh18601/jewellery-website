@@ -1,6 +1,7 @@
 "use client"
 
 import React, { createContext, useContext, useState, useEffect } from 'react'
+import { useSession } from 'next-auth/react'
 
 interface WishlistItem {
     id: string;
@@ -21,8 +22,11 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export const WishlistProvider = ({ children }: { children: React.ReactNode }) => {
+    const { data: session } = useSession()
     const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
+    const [isInitialLoad, setIsInitialLoad] = useState(true)
 
+    // Initial load from localStorage
     useEffect(() => {
         const saved = localStorage.getItem('wishlist');
         if (saved) {
@@ -32,11 +36,52 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
                 console.error("Failed to parse wishlist", e);
             }
         }
+        setIsInitialLoad(false)
     }, []);
 
+    // Load from server when session is available
     useEffect(() => {
+        if (session && !isInitialLoad) {
+            const fetchWishlist = async () => {
+                try {
+                    const res = await fetch('/api/user/sync')
+                    if (res.ok) {
+                        const data = await res.json()
+                        if (data.wishlist && data.wishlist.length > 0) {
+                            // Merge or use server data (using server data for persistence)
+                            setWishlistItems(data.wishlist)
+                        }
+                    }
+                } catch (e) {
+                    console.error("Failed to fetch wishlist from server", e)
+                }
+            }
+            fetchWishlist()
+        }
+    }, [session, isInitialLoad])
+
+    // Save to localStorage and sync to server
+    useEffect(() => {
+        if (isInitialLoad) return;
+
         localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
-    }, [wishlistItems]);
+
+        if (session) {
+            const syncToServer = async () => {
+                try {
+                    await fetch('/api/user/sync', {
+                        method: 'POST',
+                        body: JSON.stringify({ wishlist: wishlistItems }), // We'll handle partial updates in Cart separately maybe
+                    })
+                } catch (e) {
+                    console.error("Failed to sync wishlist to server", e)
+                }
+            }
+            // Debounce or sync immediately? For this scale, sync is okay
+            const timer = setTimeout(syncToServer, 1000)
+            return () => clearTimeout(timer)
+        }
+    }, [wishlistItems, session, isInitialLoad]);
 
     const addToWishlist = (item: WishlistItem) => {
         setWishlistItems(prev => {

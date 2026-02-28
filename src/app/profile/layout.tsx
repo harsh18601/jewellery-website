@@ -5,10 +5,11 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { motion } from 'framer-motion'
 import { User, Package, MapPin, Settings, LogOut } from 'lucide-react'
-import { signOut } from 'next-auth/react'
+import { signOut, useSession } from 'next-auth/react'
 
 const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname()
+    const { data: session } = useSession()
 
     const navItems = [
         { icon: Package, text: 'My Orders', href: '/profile/orders' },
@@ -26,8 +27,12 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
                             <User className="h-8 w-8 text-primary" />
                         </div>
                         <div>
-                            <h1 className="font-bold uppercase tracking-tight">Harsh Gupta</h1>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">Premium Member</p>
+                            <h1 className="font-bold uppercase tracking-tight">
+                                {session?.user?.name || "Boutique Member"}
+                            </h1>
+                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                                {session?.user?.email}
+                            </p>
                         </div>
                     </div>
 
@@ -39,8 +44,8 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
                                     key={i}
                                     href={item.href}
                                     className={`flex items-center space-x-3 p-4 text-xs uppercase tracking-widest font-bold transition-all ${isActive
-                                            ? 'bg-primary text-background'
-                                            : 'hover:bg-secondary hover:text-background'
+                                        ? 'bg-primary text-background'
+                                        : 'hover:bg-secondary hover:text-background'
                                         }`}
                                 >
                                     <item.icon className="h-4 w-4" />
