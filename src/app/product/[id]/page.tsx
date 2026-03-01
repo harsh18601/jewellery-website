@@ -10,12 +10,14 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
     try {
         // Try fetching from Contentful first
-        const entry = await contentfulClient.getEntry(id)
-        if (entry) {
-            product = {
-                id: entry.sys.id,
-                ...entry.fields,
-                images: (entry.fields.images as any[])?.map((img: any) => img.fields?.file?.url ? `https:${img.fields.file.url}` : '') || []
+        if (contentfulClient) {
+            const entry = await contentfulClient.getEntry(id)
+            if (entry) {
+                product = {
+                    id: entry.sys.id,
+                    ...entry.fields,
+                    images: (entry.fields.images as any[])?.map((img: any) => img.fields?.file?.url ? `https:${img.fields.file.url}` : '') || []
+                }
             }
         }
     } catch (error) {
