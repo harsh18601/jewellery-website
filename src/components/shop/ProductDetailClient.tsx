@@ -31,6 +31,11 @@ const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
     }
 
     const images = product.images?.length > 0 ? product.images : ['https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=1000']
+    const formattedPrice = new Intl.NumberFormat('en-IN', {
+        style: 'currency',
+        currency: 'INR',
+        maximumFractionDigits: 0,
+    }).format(Number(product.price || 0))
 
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-16">
@@ -77,10 +82,10 @@ const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
                             <h1 className="text-4xl font-bold tracking-tight uppercase">{product.title}</h1>
                         </div>
                         <div className="flex space-x-2">
-                            <button className="p-2 border border-secondary/10 hover:bg-secondary/5 transition-colors rounded-full">
+                            <button className="p-2 border border-border hover:bg-secondary/40 transition-colors rounded-full">
                                 <Heart className="h-5 w-5" />
                             </button>
-                            <button className="p-2 border border-secondary/10 hover:bg-secondary/5 transition-colors rounded-full">
+                            <button className="p-2 border border-border hover:bg-secondary/40 transition-colors rounded-full">
                                 <Share2 className="h-5 w-5" />
                             </button>
                         </div>
@@ -92,14 +97,14 @@ const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
                                 <Star key={i} className={`h-4 w-4 ${i <= 4 ? 'fill-current' : ''}`} />
                             ))}
                         </div>
-                        <span className="text-xs text-muted-foreground font-serif italic border-l border-secondary/10 pl-4">48 REVIEWS</span>
+                        <span className="text-xs text-muted-foreground font-serif italic border-l border-border pl-4">48 REVIEWS</span>
                     </div>
 
-                    <p className="text-3xl font-bold text-secondary">₹{product.price.toLocaleString()}</p>
+                    <p className="text-4xl font-bold text-primary tracking-tight">{formattedPrice}</p>
                 </div>
 
-                <div className="text-muted-foreground font-serif">
-                    <RichTextRenderer content={product.description} />
+                <div className="text-foreground/90">
+                    <RichTextRenderer content={product.description} isDark={true} />
                     {!product.description && (
                         <p className="leading-relaxed">Detailed description available in Contentful.</p>
                     )}
@@ -107,22 +112,22 @@ const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
 
                 <div className="space-y-6 pt-4">
                     <div className="flex items-center space-x-6">
-                        <div className="flex items-center border border-secondary/10">
+                        <div className="flex items-center border border-border">
                             <button
                                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                                className="px-4 py-2 hover:bg-secondary/5 transition-colors"
+                                className="px-4 py-2 hover:bg-secondary/40 transition-colors"
                             >-</button>
                             <span className="px-4 font-bold min-w-[3rem] text-center">{quantity}</span>
                             <button
                                 onClick={() => setQuantity(quantity + 1)}
-                                className="px-4 py-2 hover:bg-secondary/5 transition-colors"
+                                className="px-4 py-2 hover:bg-secondary/40 transition-colors"
                             >+</button>
                         </div>
 
                         <button
                             onClick={handleAddToCart}
                             disabled={isAdding}
-                            className={`flex-1 py-4 bg-primary text-background uppercase tracking-widest text-xs font-bold transition-all relative overflow-hidden ${isAdding ? 'bg-green-600' : 'hover:bg-primary/90'}`}
+                            className={`flex-1 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-bold transition-all relative overflow-hidden ${isAdding ? 'bg-green-600' : 'hover:bg-primary/90'}`}
                         >
                             <span className="relative z-10 flex items-center justify-center">
                                 {isAdding ? 'Added to Bag' : (
@@ -136,7 +141,7 @@ const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4 pt-8 border-t border-secondary/5">
+                <div className="grid grid-cols-2 gap-4 pt-8 border-t border-border/60">
                     <div className="flex items-center space-x-3">
                         <ShieldCheck className="h-5 w-5 text-primary" />
                         <span className="text-[10px] uppercase tracking-widest font-bold">Insured Delivery</span>
@@ -156,3 +161,4 @@ const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
 }
 
 export default ProductDetailClient
+

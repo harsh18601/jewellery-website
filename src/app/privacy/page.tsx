@@ -28,14 +28,13 @@ const PrivacyPage = async () => {
                         <p>The personal information that you are asked to provide, and the reasons why you are asked to provide it, will be made clear to you at the point we ask you to provide your personal information.</p>
 
                         <h2>2. How We Use Your Information</h2>
-                        <p>We use the information we collect in various ways, including to:
-                            <ul>
-                                <li>Provide, operate, and maintain our website</li>
-                                <li>Improve, personalize, and expand our website</li>
-                                <li>Understand and analyze how you use our website</li>
-                                <li>Develop new products, services, features, and functionality</li>
-                            </ul>
-                        </p>
+                        <p>We use the information we collect in various ways, including to:</p>
+                        <ul>
+                            <li>Provide, operate, and maintain our website</li>
+                            <li>Improve, personalize, and expand our website</li>
+                            <li>Understand and analyze how you use our website</li>
+                            <li>Develop new products, services, features, and functionality</li>
+                        </ul>
 
                         <h2>3. Log Files</h2>
                         <p>Radha Govind follows a standard procedure of using log files. These files log visitors when they visit websites. All hosting companies do this and a part of hosting services' analytics.</p>

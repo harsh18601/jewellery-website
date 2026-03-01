@@ -3,22 +3,24 @@
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
 import { ShoppingBag, Trash2, ArrowRight } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-
 import { useCart } from '@/components/providers/CartContext'
 import { useSession } from 'next-auth/react'
 import { createOrder } from '@/actions/orderActions'
 
 const CartPage = () => {
     const { data: session } = useSession()
+    const router = useRouter()
     const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
     const { cartItems, removeFromCart, updateQuantity } = useCart()
+
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
     const total = subtotal * 1.03
 
     const handleCheckout = async () => {
         if (!session) {
-            alert('Please sign in to complete your purchase.')
+            router.push('/auth/signin?callbackUrl=/cart')
             return
         }
 
@@ -27,7 +29,7 @@ const CartPage = () => {
         setIsCheckoutLoading(true)
         try {
             const orderData = {
-                userId: (session.user as any).id || session.user?.email, // Using email as fallback if ID not in session
+                userId: (session.user as any).id || session.user?.email,
                 products: cartItems.map(item => ({
                     productId: item.id,
                     quantity: item.quantity,
@@ -41,7 +43,7 @@ const CartPage = () => {
             const result = await createOrder(orderData)
             if (result.success) {
                 alert(`Order placed successfully! Order ID: ${result.orderId}`)
-                // In a real app, we would clear the cart here and redirect
+                // In a real app, you would clear the cart and redirect to a success page
             } else {
                 alert('Failed to place order. Please try again.')
             }
@@ -112,7 +114,10 @@ const CartPage = () => {
                         <div className="text-center py-24 bg-muted/5 border border-dashed border-primary/20">
                             <ShoppingBag className="h-12 w-12 text-primary/20 mx-auto mb-4" />
                             <p className="font-serif italic text-muted-foreground mb-8">Your shopping bag is as empty as a clear gemstone.</p>
-                            <Link href="/shop" className="px-10 py-4 bg-primary text-background uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all">
+                            <Link
+                                href="/shop"
+                                className="inline-block px-10 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 hover:scale-105 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 transform"
+                            >
                                 Shop Our Collection
                             </Link>
                         </div>
@@ -145,10 +150,10 @@ const CartPage = () => {
                     <button
                         onClick={handleCheckout}
                         disabled={isCheckoutLoading || cartItems.length === 0}
-                        className="w-full py-5 bg-secondary text-background uppercase tracking-widest text-xs font-bold hover:bg-primary transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-full py-5 bg-secondary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary hover:text-primary-foreground hover:scale-[1.02] hover:shadow-xl transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed group/checkout"
                     >
                         {isCheckoutLoading ? 'Processing...' : (
-                            <>Proceed to Checkout <ArrowRight className="ml-2 h-4 w-4" /></>
+                            <span className="flex items-center">Proceed to Checkout <ArrowRight className="ml-2 h-4 w-4 group-hover/checkout:translate-x-1 transition-transform duration-300" /></span>
                         )}
                     </button>
 
@@ -162,3 +167,4 @@ const CartPage = () => {
 }
 
 export default CartPage
+

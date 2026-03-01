@@ -40,7 +40,7 @@ const WishlistPage = () => {
                         <p className="font-serif italic text-muted-foreground mb-12 max-w-md mx-auto">
                             Add the pieces that speak to you, and we'll keep them safe until you're ready to make them yours.
                         </p>
-                        <Link href="/shop" className="px-10 py-4 bg-primary text-background uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all inline-block">
+                        <Link href="/shop" className="px-10 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all inline-block">
                             Explore Collection
                         </Link>
                     </div>
@@ -51,3 +51,4 @@ const WishlistPage = () => {
 }
 
 export default WishlistPage
+

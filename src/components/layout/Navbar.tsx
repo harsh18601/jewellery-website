@@ -51,7 +51,7 @@ const Navbar = () => {
                                 <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20 group-hover:border-primary transition-all duration-300 shadow-sm shadow-primary/5">
                                     <Diamond className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
                                 </div>
-                                <div className="flex flex-col">
+                                <div className="flex flex-col items-center">
                                     <span className="text-xl font-bold tracking-tighter gold-text uppercase leading-none">Shree Radha Govind</span>
                                     <span className="text-[8px] tracking-[0.3em] uppercase text-muted-foreground font-bold leading-none mt-1">Jewellers</span>
                                 </div>
@@ -68,7 +68,7 @@ const Navbar = () => {
                             <Link href="/profile/wishlist" className="p-2 hover:text-primary transition-colors relative cursor-pointer">
                                 <Heart className="h-5 w-5" />
                                 {wishlistCount > 0 && (
-                                    <span className="absolute top-0 right-0 h-4 w-4 bg-primary text-background text-[10px] flex items-center justify-center rounded-full">
+                                    <span className="absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full">
                                         {wishlistCount}
                                     </span>
                                 )}
@@ -93,7 +93,7 @@ const Navbar = () => {
                             <Link href="/cart" className="p-2 hover:text-primary transition-colors relative cursor-pointer">
                                 <ShoppingBag className="h-5 w-5" />
                                 {cartCount > 0 ? (
-                                    <span className="absolute top-0 right-0 h-4 w-4 bg-primary text-background text-[10px] flex items-center justify-center rounded-full">
+                                    <span className="absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full">
                                         {cartCount}
                                     </span>
                                 ) : null}
@@ -164,7 +164,7 @@ const Navbar = () => {
                                     <Link
                                         href="/auth/signin"
                                         onClick={() => setIsMobileMenuOpen(false)}
-                                        className="block w-full py-4 bg-primary text-background text-center text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
+                                        className="block w-full py-4 bg-primary text-foreground text-center text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
                                     >
                                         Sign In
                                     </Link>
@@ -187,3 +187,4 @@ const Navbar = () => {
 }
 
 export default Navbar
+

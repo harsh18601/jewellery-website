@@ -44,8 +44,8 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
                                     key={i}
                                     href={item.href}
                                     className={`flex items-center space-x-3 p-4 text-xs uppercase tracking-widest font-bold transition-all ${isActive
-                                        ? 'bg-primary text-background'
-                                        : 'hover:bg-secondary hover:text-background'
+                                        ? 'bg-primary text-foreground'
+                                        : 'hover:bg-secondary hover:text-foreground'
                                         }`}
                                 >
                                     <item.icon className="h-4 w-4" />
@@ -73,3 +73,4 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
 }
 
 export default ProfileLayout
+

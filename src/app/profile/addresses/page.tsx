@@ -5,9 +5,7 @@ import { motion } from 'framer-motion'
 import { MapPin, Plus } from 'lucide-react'
 
 const AddressesPage = () => {
-    const [addresses, setAddresses] = React.useState([
-        { id: 1, name: 'Harsh Gupta', street: '123 Pink City Square', city: 'Jaipur', state: 'Rajasthan', zip: '302001', phone: '+91 98765 43210', isDefault: true }
-    ])
+    const [addresses, setAddresses] = React.useState<any[]>([])
     const [isEditing, setIsEditing] = React.useState(false)
     const [currentAddress, setCurrentAddress] = React.useState<any>(null)
 
@@ -45,7 +43,7 @@ const AddressesPage = () => {
                 {!isEditing && (
                     <button
                         onClick={() => { setCurrentAddress(null); setIsEditing(true); }}
-                        className="flex items-center space-x-2 text-[10px] uppercase tracking-widest font-bold bg-primary text-background px-4 py-2 hover:bg-primary/90 transition-all cursor-pointer"
+                        className="flex items-center space-x-2 text-[10px] uppercase tracking-widest font-bold bg-primary text-foreground px-4 py-2 hover:bg-primary/90 transition-all cursor-pointer"
                     >
                         <Plus className="h-3 w-3" />
                         <span>Add New</span>
@@ -87,8 +85,8 @@ const AddressesPage = () => {
                         </div>
                     </div>
                     <div className="md:col-span-2 pt-4 flex space-x-4">
-                        <button type="submit" className="bg-primary text-background px-8 py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-primary/90 transition-all cursor-pointer">Save Address</button>
-                        <button type="button" onClick={() => setIsEditing(false)} className="border border-primary/20 px-8 py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-secondary hover:text-background transition-all cursor-pointer">Cancel</button>
+                        <button type="submit" className="bg-primary text-foreground px-8 py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-primary/90 transition-all cursor-pointer">Save Address</button>
+                        <button type="button" onClick={() => setIsEditing(false)} className="border border-primary/20 px-8 py-3 text-[10px] uppercase font-bold tracking-widest hover:bg-secondary hover:text-foreground transition-all cursor-pointer">Cancel</button>
                     </div>
                 </motion.form>
             ) : (
@@ -135,3 +133,4 @@ const AddressesPage = () => {
 }
 
 export default AddressesPage
+

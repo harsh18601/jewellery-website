@@ -84,7 +84,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                 <div className="mt-24 pt-12 border-t border-white/10 flex flex-col items-center space-y-8">
                     <div className="text-center">
                         <p className="text-primary uppercase tracking-[0.3em] text-[10px] font-bold mb-4">Interested in bespoke pieces?</p>
-                        <Link href="/custom" className="px-10 py-4 bg-primary text-background uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all inline-block">
+                        <Link href="/custom" className="px-10 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all inline-block">
                             Consult with Our Artisans
                         </Link>
                     </div>

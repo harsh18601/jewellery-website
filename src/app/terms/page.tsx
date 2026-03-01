@@ -31,14 +31,13 @@ const TermsPage = async () => {
                         <p>Unless otherwise stated, Shree Radha Govind Jewellers and/or its licensors own the intellectual property rights for all material on Radha Govind. All intellectual property rights are reserved.</p>
 
                         <h2>3. User Responsibilities</h2>
-                        <p>You must not:
-                            <ul>
-                                <li>Republish material from Radha Govind</li>
-                                <li>Sell, rent or sub-license material from Radha Govind</li>
-                                <li>Reproduce, duplicate or copy material from Radha Govind</li>
-                                <li>Redistribute content from Radha Govind</li>
-                            </ul>
-                        </p>
+                        <p>You must not:</p>
+                        <ul>
+                            <li>Republish material from Radha Govind</li>
+                            <li>Sell, rent or sub-license material from Radha Govind</li>
+                            <li>Reproduce, duplicate or copy material from Radha Govind</li>
+                            <li>Redistribute content from Radha Govind</li>
+                        </ul>
 
                         <h2>4. Custom Orders</h2>
                         <p>All bespoke and custom orders require a non-refundable deposit. Final delivery timelines are estimates and may vary based on the complexity of the design.</p>

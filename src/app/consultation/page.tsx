@@ -30,9 +30,9 @@ const ConsultationPage = () => {
                         className="relative h-[600px] hidden lg:block overflow-hidden"
                     >
                         <img
-                            src="https://images.unsplash.com/photo-1573408339371-c063b784999f?auto=format&fit=crop&q=80&w=1000"
+                            src="/images/consultation-bespoke.png"
                             alt="Consultation"
-                            className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-1000"
+                            className="w-full h-full object-cover transition-all duration-1000"
                         />
                         <div className="absolute inset-0 bg-secondary/20" />
                         <div className="absolute bottom-12 left-12 right-12 bg-background/90 backdrop-blur-md p-8 border-l-4 border-primary">
@@ -133,14 +133,16 @@ const ConsultationPage = () => {
                                         </div>
                                     </div>
 
-                                    <button
+                                    <motion.button
+                                        whileHover={{ scale: 1.02, backgroundColor: "var(--primary)" }}
+                                        whileTap={{ scale: 0.98 }}
                                         disabled={loading}
                                         type="submit"
-                                        className="w-full py-5 bg-secondary text-background uppercase tracking-widest text-xs font-bold hover:bg-primary transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                                        className="w-full py-5 bg-secondary text-foreground uppercase tracking-widest text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-3"
                                     >
                                         {loading ? "Scheduling..." : "Request Appointment"}
                                         {!loading && <Sparkles className="h-4 w-4" />}
-                                    </button>
+                                    </motion.button>
                                 </motion.form>
                             ) : (
                                 <motion.div
@@ -156,7 +158,7 @@ const ConsultationPage = () => {
                                     <p className="text-sm text-muted-foreground font-serif italic mb-8">
                                         "A member of our concierge team will reach out to you within 24 hours to confirm your private session."
                                     </p>
-                                    <Link href="/profile" className="inline-block px-10 py-4 border border-secondary text-secondary uppercase tracking-widest text-[10px] font-bold hover:bg-secondary hover:text-background transition-all">
+                                    <Link href="/profile" className="inline-block px-10 py-4 border border-secondary text-secondary uppercase tracking-widest text-[10px] font-bold hover:bg-secondary hover:text-foreground transition-all">
                                         Return to Dashboard
                                     </Link>
                                 </motion.div>
@@ -170,3 +172,4 @@ const ConsultationPage = () => {
 }
 
 export default ConsultationPage
+

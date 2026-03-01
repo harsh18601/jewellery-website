@@ -2,30 +2,30 @@
 @plugin "@tailwindcss/typography";
 
 @theme {
-  --color-background: hsl(40 30% 98%);
-  --color-foreground: hsl(0 0% 10%);
-  --color-card: hsl(40 30% 98%);
-  --color-card-foreground: hsl(0 0% 10%);
-  --color-popover: hsl(40 30% 98%);
-  --color-popover-foreground: hsl(0 0% 10%);
-  --color-primary: hsl(43 50% 50%);
-  --color-primary-foreground: hsl(40 30% 98%);
-  --color-secondary: hsl(0 0% 15%);
-  --color-secondary-foreground: hsl(40 30% 98%);
-  --color-muted: hsl(40 10% 90%);
-  --color-muted-foreground: hsl(0 0% 40%);
-  --color-accent: hsl(43 50% 50%);
-  --color-accent-foreground: hsl(40 30% 98%);
-  --color-destructive: hsl(0 84% 60%);
-  --color-destructive-foreground: hsl(40 30% 98%);
-  --color-border: hsl(43 20% 85%);
-  --color-input: hsl(43 20% 85%);
-  --color-ring: hsl(43 50% 50%);
+  --color-background: hsl(220 18% 9%);
+  --color-foreground: hsl(40 25% 94%);
+  --color-card: hsl(220 16% 12%);
+  --color-card-foreground: hsl(40 20% 92%);
+  --color-popover: hsl(220 16% 12%);
+  --color-popover-foreground: hsl(40 20% 92%);
+  --color-primary: hsl(43 58% 46%);
+  --color-primary-foreground: hsl(220 18% 9%);
+  --color-secondary: hsl(220 14% 14%);
+  --color-secondary-foreground: hsl(40 20% 92%);
+  --color-muted: hsl(220 12% 20%);
+  --color-muted-foreground: hsl(40 10% 68%);
+  --color-accent: hsl(43 58% 46%);
+  --color-accent-foreground: hsl(220 18% 9%);
+  --color-destructive: hsl(0 72% 52%);
+  --color-destructive-foreground: hsl(40 25% 94%);
+  --color-border: hsl(220 12% 24%);
+  --color-input: hsl(220 12% 24%);
+  --color-ring: hsl(43 58% 46%);
 
   --radius: 0.5rem;
 
-  --font-serif: var(--font-playfair), serif;
-  --font-inter: var(--font-inter), sans-serif;
+  --font-serif: var(--font-cormorant), serif;
+  --font-inter: var(--font-manrope), sans-serif;
 
   --animate-gradient: gradient 8s linear infinite;
 
@@ -46,7 +46,16 @@
   }
 
   body {
-    @apply bg-background text-foreground font-serif;
+    @apply bg-background text-foreground font-inter;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-serif;
   }
 }
 
@@ -82,9 +91,9 @@
 .prose-luxury {
   @apply prose prose-neutral max-w-none;
   --tw-prose-body: var(--color-foreground);
-  --tw-prose-headings: var(--color-secondary);
+  --tw-prose-headings: var(--color-foreground);
   --tw-prose-links: var(--color-primary);
-  --tw-prose-bold: var(--color-secondary);
+  --tw-prose-bold: var(--color-foreground);
 
   h1,
   h2,
@@ -106,7 +115,7 @@
   }
 
   strong {
-    @apply text-secondary font-bold;
+    @apply text-foreground font-bold;
   }
 }
 

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter, Playfair_Display } from "next/font/google";
+import { Cormorant_Garamond, Manrope } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
@@ -8,8 +8,8 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import { CartProvider } from "@/components/providers/CartContext";
 import { WishlistProvider } from "@/components/providers/WishlistContext";
 
-const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
-const playfair = Playfair_Display({ subsets: ["latin"], variable: "--font-playfair" });
+const inter = Manrope({ subsets: ["latin"], variable: "--font-manrope" });
+const playfair = Cormorant_Garamond({ subsets: ["latin"], variable: "--font-cormorant", weight: ["400", "500", "600", "700"] });
 
 export const metadata: Metadata = {
   title: "Shree Radha Govind Jewellers | Premium Jewellery",
@@ -23,7 +23,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${inter.variable} ${playfair.variable} font-serif bg-background text-foreground antialiased`}>
+      <body className={`${inter.variable} ${playfair.variable} font-inter bg-background text-foreground antialiased`}>
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>

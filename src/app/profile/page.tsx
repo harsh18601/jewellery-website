@@ -91,8 +91,8 @@ const ProfileDashboard = () => {
                 </div>
 
                 <div className="bg-secondary p-10 border border-primary/10 flex flex-col justify-center items-center text-center space-y-4">
-                    <h3 className="text-sm font-bold uppercase tracking-widest text-background">Personal Stylist</h3>
-                    <p className="text-[10px] text-background/60 uppercase tracking-widest">Expert guidance for your next masterpiece.</p>
+                    <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Personal Stylist</h3>
+                    <p className="text-[10px] text-foreground/60 uppercase tracking-widest">Expert guidance for your next masterpiece.</p>
                     <Link href="/consultation" className="text-xs uppercase tracking-widest font-bold text-primary border-b border-primary pb-1 hover:text-primary-foreground transition-all flex items-center">
                         Book Consultation
                     </Link>
@@ -103,4 +103,5 @@ const ProfileDashboard = () => {
 }
 
 export default ProfileDashboard
+
 

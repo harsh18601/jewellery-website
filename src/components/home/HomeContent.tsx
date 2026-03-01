@@ -77,7 +77,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-5xl md:text-7xl font-bold text-background leading-tight"
+                        className="text-5xl md:text-7xl font-bold text-foreground leading-tight"
                     >
                         {hero.title} <br />
                         <span className="gold-text italic">{hero.subtitle}</span>
@@ -86,7 +86,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-background/70 text-lg md:text-xl font-light"
+                        className="text-foreground/70 text-lg md:text-xl font-light"
                     >
                         {hero.description}
                     </motion.p>
@@ -96,10 +96,10 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                         transition={{ duration: 0.8, delay: 0.6 }}
                         className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6"
                     >
-                        <Link href={hero.ctaLink || "/shop"} className="px-10 py-4 bg-primary text-background uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all">
+                        <Link href={hero.ctaLink || "/shop"} className="px-10 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all">
                             {hero.ctaText || "Explore Collection"}
                         </Link>
-                        <Link href="/custom" className="px-10 py-4 border border-background text-background uppercase tracking-widest text-xs font-bold hover:bg-background hover:text-secondary transition-all">
+                        <Link href="/custom" className="px-10 py-4 border border-foreground text-foreground uppercase tracking-widest text-xs font-bold hover:bg-foreground hover:text-background transition-all">
                             Design Your Ring
                         </Link>
                     </motion.div>
@@ -130,7 +130,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 to-transparent" />
                             <div className="absolute bottom-10 left-10">
-                                <h4 className="text-2xl font-bold text-background mb-2">{cat.title}</h4>
+                                <h4 className="text-2xl font-bold text-foreground mb-2">{cat.title}</h4>
                                 <span className="text-primary text-xs uppercase tracking-widest font-bold border-b border-primary pb-1">Shop Now</span>
                             </div>
                         </Link>
@@ -154,7 +154,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                         <motion.h3
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            className="text-4xl md:text-5xl font-bold text-background uppercase tracking-tighter"
+                            className="text-4xl md:text-5xl font-bold text-foreground uppercase tracking-tighter"
                         >
                             Our <span className="gold-text italic">Heritage</span>
                         </motion.h3>
@@ -182,10 +182,10 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                                             <Icon className="h-5 w-5 text-primary" />
                                         </div>
                                     </div>
-                                    <h4 className="text-xl font-bold text-background uppercase tracking-tight group-hover:gold-text transition-colors">
+                                    <h4 className="text-xl font-bold text-foreground uppercase tracking-tight group-hover:gold-text transition-colors">
                                         {feature.title}
                                     </h4>
-                                    <p className="text-sm text-background/60 leading-relaxed font-serif italic">
+                                    <p className="text-sm text-foreground/60 leading-relaxed font-serif italic">
                                         {feature.description}
                                     </p>
                                 </motion.div>

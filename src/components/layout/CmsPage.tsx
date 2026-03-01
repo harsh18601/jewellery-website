@@ -37,7 +37,7 @@ const CmsPage = ({ data, fallback }: CmsPageProps) => {
                     <motion.h1
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="text-5xl md:text-7xl font-bold text-background uppercase tracking-tighter"
+                        className="text-5xl md:text-7xl font-bold text-foreground uppercase tracking-tighter"
                     >
                         {title}
                     </motion.h1>
@@ -46,7 +46,7 @@ const CmsPage = ({ data, fallback }: CmsPageProps) => {
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
                             transition={{ delay: 0.2 }}
-                            className="text-background/70 text-lg uppercase tracking-widest font-light"
+                            className="text-foreground/70 text-lg uppercase tracking-widest font-light"
                         >
                             {subtitle}
                         </motion.p>
@@ -57,7 +57,7 @@ const CmsPage = ({ data, fallback }: CmsPageProps) => {
             {/* Content Section */}
             <section className="max-w-4xl mx-auto px-4 py-24">
                 <div className="text-muted-foreground font-serif">
-                    <RichTextRenderer content={content} />
+                    <RichTextRenderer content={content} isDark={true} />
                     {!content && fallback?.content && (
                         <p className="whitespace-pre-line leading-relaxed">{fallback.content}</p>
                     )}
@@ -68,3 +68,4 @@ const CmsPage = ({ data, fallback }: CmsPageProps) => {
 }
 
 export default CmsPage
+

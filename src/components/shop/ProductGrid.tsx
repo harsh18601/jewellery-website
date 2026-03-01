@@ -72,7 +72,7 @@ const ProductGrid = ({ products }: { products: any[] }) => {
                                     />
                                 </button>
 
-                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] py-3 bg-secondary text-background text-[10px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-center">
+                                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] py-3 bg-secondary text-foreground text-[10px] uppercase font-bold tracking-widest opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300 text-center">
                                     Pick Your Brilliance
                                 </div>
                             </div>
@@ -97,3 +97,4 @@ const ProductGrid = ({ products }: { products: any[] }) => {
 }
 
 export default ProductGrid
+

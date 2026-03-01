@@ -52,7 +52,7 @@ const RingBuilder = () => {
             <div className="flex justify-center mb-12">
                 {[1, 2, 3, 4, 5].map(i => (
                     <div key={i} className="flex items-center">
-                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${step >= i ? 'bg-primary border-primary text-background' : 'border-muted text-muted-foreground'}`}>
+                        <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${step >= i ? 'bg-primary border-primary text-foreground' : 'border-muted text-muted-foreground'}`}>
                             {step > i ? <Check className="h-5 w-5" /> : i}
                         </div>
                         {i < 5 && <div className={`w-12 h-0.5 ${step > i ? 'bg-primary' : 'bg-muted'}`} />}
@@ -176,7 +176,7 @@ const RingBuilder = () => {
                             </div>
                             <div className="flex justify-between items-center pt-8">
                                 <button type="button" onClick={prevStep} className="text-xs uppercase tracking-widest font-bold text-muted-foreground hover:text-primary">Back</button>
-                                <button type="submit" className="px-10 py-4 bg-primary text-background uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all flex items-center">
+                                <button type="submit" className="px-10 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all flex items-center">
                                     Request Quotation <ArrowRight className="ml-2 h-4 w-4" />
                                 </button>
                             </div>
@@ -215,3 +215,4 @@ const RingBuilder = () => {
 }
 
 export default RingBuilder
+

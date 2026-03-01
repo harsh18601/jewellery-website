@@ -61,7 +61,7 @@ const SettingsPage = () => {
                         <button
                             type="button"
                             onClick={() => setShowPasswordModal(true)}
-                            className="text-[10px] uppercase tracking-widest font-bold border border-secondary px-6 py-3 hover:bg-secondary hover:text-background transition-all cursor-pointer"
+                            className="text-[10px] uppercase tracking-widest font-bold border border-secondary px-6 py-3 hover:bg-secondary hover:text-foreground transition-all cursor-pointer"
                         >Change Password</button>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Last changed 3 months ago</p>
                     </div>
@@ -82,7 +82,7 @@ const SettingsPage = () => {
                     <button
                         type="submit"
                         disabled={isSaving}
-                        className="flex items-center space-x-2 bg-primary text-background px-8 py-4 text-xs uppercase tracking-widest font-bold hover:bg-primary/90 transition-all cursor-pointer disabled:opacity-50"
+                        className="flex items-center space-x-2 bg-primary text-foreground px-8 py-4 text-xs uppercase tracking-widest font-bold hover:bg-primary/90 transition-all cursor-pointer disabled:opacity-50"
                     >
                         <Save className="h-4 w-4" />
                         <span>{isSaving ? 'Saving...' : 'Save Changes'}</span>
@@ -123,8 +123,8 @@ const SettingsPage = () => {
                                     <input type="password" required className="w-full bg-muted/10 border border-primary/10 p-4 text-xs outline-none focus:border-primary" />
                                 </div>
                                 <div className="flex space-x-4 pt-4">
-                                    <button type="submit" className="flex-grow bg-primary text-background px-8 py-4 text-xs uppercase tracking-widest font-bold hover:bg-primary/90 transition-all cursor-pointer">Update</button>
-                                    <button type="button" onClick={() => setShowPasswordModal(false)} className="flex-grow border border-primary/20 text-foreground px-8 py-4 text-xs uppercase tracking-widest font-bold hover:bg-secondary hover:text-background transition-all cursor-pointer">Cancel</button>
+                                    <button type="submit" className="flex-grow bg-primary text-foreground px-8 py-4 text-xs uppercase tracking-widest font-bold hover:bg-primary/90 transition-all cursor-pointer">Update</button>
+                                    <button type="button" onClick={() => setShowPasswordModal(false)} className="flex-grow border border-primary/20 text-foreground px-8 py-4 text-xs uppercase tracking-widest font-bold hover:bg-secondary hover:text-foreground transition-all cursor-pointer">Cancel</button>
                                 </div>
                             </form>
                         </motion.div>
@@ -136,3 +136,4 @@ const SettingsPage = () => {
 }
 
 export default SettingsPage
+

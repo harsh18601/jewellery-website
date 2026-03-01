@@ -14,6 +14,6 @@ export default withAuth(
 export const config = {
     matcher: [
         "/profile/:path*",
-        "/consultation/:path*", // Protect consultation as well
+        "/consultation/:path*",
     ]
 }
