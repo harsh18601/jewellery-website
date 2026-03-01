@@ -1,13 +1,13 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, Suspense } from 'react'
 import { signIn } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Mail, Lock, LogIn, Loader2, CheckCircle2 } from 'lucide-react'
 
-const SignInPage = () => {
+const SignInPageContent = () => {
     const router = useRouter()
     const searchParams = useSearchParams()
     const [isLoading, setIsLoading] = useState(false)
@@ -154,6 +154,18 @@ const SignInPage = () => {
                 </motion.div>
             </div>
         </div>
+    )
+}
+
+const SignInPage = () => {
+    return (
+        <Suspense fallback={
+            <div className="min-h-screen bg-background flex flex-col justify-center items-center py-12 px-4 sm:px-6 lg:px-8">
+                <Loader2 className="h-8 w-8 animate-spin text-primary" />
+            </div>
+        }>
+            <SignInPageContent />
+        </Suspense>
     )
 }
 
