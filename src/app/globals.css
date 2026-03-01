@@ -70,7 +70,7 @@
   h4,
   h5,
   h6 {
-    @apply font-serif;
+    @apply font-serif text-center sm:text-left;
   }
 }
 

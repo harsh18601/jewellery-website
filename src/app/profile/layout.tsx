@@ -10,6 +10,7 @@ import { signOut, useSession } from 'next-auth/react'
 const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname()
     const { data: session } = useSession()
+    const hideSidebarOnMobile = pathname === '/profile/wishlist'
 
     const navItems = [
         { icon: Package, text: 'My Orders', href: '/profile/orders' },
@@ -21,7 +22,7 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="max-w-7xl mx-auto px-4 py-24 min-h-screen">
             <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
                 {/* Sidebar */}
-                <aside className="space-y-8">
+                <aside className={`space-y-8 ${hideSidebarOnMobile ? 'hidden md:block' : ''}`}>
                     <div className="flex items-center space-x-4 pb-8 border-b border-primary/10">
                         <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
                             <User className="h-8 w-8 text-primary" />

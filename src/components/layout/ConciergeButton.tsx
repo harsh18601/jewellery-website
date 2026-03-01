@@ -8,14 +8,14 @@ const ConciergeButton = () => {
     const [isOpen, setIsOpen] = useState(false)
 
     return (
-        <div className="fixed bottom-24 right-6 sm:bottom-8 sm:right-8 z-[100]">
+        <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[100]">
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="absolute bottom-20 right-0 w-72 bg-background border border-primary/20 shadow-2xl overflow-hidden"
+                        className="absolute bottom-16 sm:bottom-20 right-0 w-[min(18rem,calc(100vw-2rem))] sm:w-72 bg-background border border-primary/20 shadow-2xl overflow-hidden"
                     >
                         <div className="bg-secondary p-6 text-center space-y-2">
                             <Sparkles className="h-5 w-5 text-primary mx-auto mb-2" />
@@ -68,13 +68,13 @@ const ConciergeButton = () => {
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
                 onClick={() => setIsOpen(!isOpen)}
-                className="bg-primary text-foreground p-4 rounded-full shadow-2xl flex items-center justify-center hover:bg-primary/90 transition-all group"
+                className="bg-primary text-foreground p-3 sm:p-4 rounded-full shadow-2xl flex items-center justify-center hover:bg-primary/90 transition-all group"
             >
                 {isOpen ? (
-                    <X className="h-6 w-6" />
+                    <X className="h-5 w-5 sm:h-6 sm:w-6" />
                 ) : (
                     <div className="flex items-center gap-2">
-                        <MessageCircle className="h-6 w-6" />
+                        <MessageCircle className="h-5 w-5 sm:h-6 sm:w-6" />
                         <span className="max-w-0 overflow-hidden group-hover:max-w-xs transition-all duration-500 whitespace-nowrap text-[10px] uppercase tracking-widest font-bold">
                             Concierge
                         </span>

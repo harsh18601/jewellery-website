@@ -49,8 +49,8 @@ const ConsultationPage = () => {
 
     return (
         <div className="min-h-screen bg-background">
-            <div className="max-w-7xl mx-auto px-4 py-24">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-center">
+            <div className="max-w-7xl mx-auto px-4 py-12 sm:py-16 lg:py-24">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
                     {/* Visual Side */}
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
@@ -76,13 +76,13 @@ const ConsultationPage = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="space-y-12"
+                        className="space-y-8 sm:space-y-12"
                     >
                         <div className="space-y-4">
                             <Link href="/profile" className="inline-flex items-center text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary transition-colors mb-4">
                                 <ArrowLeft className="h-3 w-3 mr-2" /> Back to Profile
                             </Link>
-                            <h1 className="text-4xl font-bold uppercase tracking-tighter">Book a <span className="gold-text">Consultation</span></h1>
+                            <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tighter leading-tight">Book a <span className="gold-text">Consultation</span></h1>
                             <p className="text-sm text-muted-foreground font-serif leading-relaxed">
                                 Schedule a 1-on-1 session with our Jaipur-based master stylists. Whether you're designing an engagement ring or exploring our collections, we're here to help.
                             </p>
@@ -147,7 +147,7 @@ const ConsultationPage = () => {
                                                                 setPreferredService(option)
                                                                 setOpenDropdown(null)
                                                             }}
-                                                            className={`w-full px-4 py-3 text-left text-sm transition-colors ${preferredService === option ? 'bg-primary/15 text-primary' : 'text-foreground hover:bg-primary/10'}`}
+                                                            className={`w-full px-4 py-3 text-left text-sm transition-colors break-words ${preferredService === option ? 'bg-primary/15 text-primary' : 'text-foreground hover:bg-primary/10'}`}
                                                         >
                                                             {option}
                                                         </button>
@@ -192,7 +192,7 @@ const ConsultationPage = () => {
                                                                     setPreferredTime(option)
                                                                     setOpenDropdown(null)
                                                                 }}
-                                                                className={`w-full px-4 py-3 text-left text-sm transition-colors ${preferredTime === option ? 'bg-primary/15 text-primary' : 'text-foreground hover:bg-primary/10'}`}
+                                                                className={`w-full px-4 py-3 text-left text-sm transition-colors break-words ${preferredTime === option ? 'bg-primary/15 text-primary' : 'text-foreground hover:bg-primary/10'}`}
                                                             >
                                                                 {option}
                                                             </button>
@@ -220,7 +220,7 @@ const ConsultationPage = () => {
                                     key="success"
                                     initial={{ opacity: 0, scale: 0.95 }}
                                     animate={{ opacity: 1, scale: 1 }}
-                                    className="bg-muted/5 border border-primary/20 p-12 text-center space-y-6"
+                                    className="bg-muted/5 border border-primary/20 p-6 sm:p-12 text-center space-y-6"
                                 >
                                     <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mx-auto mb-4">
                                         <CheckCircle2 className="h-10 w-10 text-primary" />
@@ -229,7 +229,7 @@ const ConsultationPage = () => {
                                     <p className="text-sm text-muted-foreground font-serif italic mb-8">
                                         "A member of our concierge team will reach out to you within 24 hours to confirm your private session."
                                     </p>
-                                    <Link href="/profile" className="inline-block px-10 py-4 border border-primary/50 bg-primary/10 text-primary uppercase tracking-widest text-[10px] font-bold hover:bg-primary hover:text-primary-foreground transition-all">
+                                    <Link href="/profile" className="inline-block w-full sm:w-auto px-10 py-4 border border-primary/50 bg-primary/10 text-primary uppercase tracking-widest text-[10px] font-bold hover:bg-primary hover:text-primary-foreground transition-all">
                                         Return to Dashboard
                                     </Link>
                                 </motion.div>
