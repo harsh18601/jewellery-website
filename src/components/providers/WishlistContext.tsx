@@ -71,7 +71,7 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
                 try {
                     await fetch('/api/user/sync', {
                         method: 'POST',
-                        body: JSON.stringify({ wishlist: wishlistItems }), // We'll handle partial updates in Cart separately maybe
+                        body: JSON.stringify({ wishlist: wishlistItems }),
                     })
                 } catch (e) {
                     console.error("Failed to sync wishlist to server", e)

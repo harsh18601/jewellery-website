@@ -75,14 +75,9 @@ export const CartProvider = ({ children }: { children: React.ReactNode }) => {
         if (session) {
             const syncToServer = async () => {
                 try {
-                    // Fetch existing sync to not overwrite wishlist
-                    const currentSyncRes = await fetch('/api/user/sync')
-                    const currentSyncData = await currentSyncRes.json()
-
                     await fetch('/api/user/sync', {
                         method: 'POST',
                         body: JSON.stringify({
-                            wishlist: currentSyncData.wishlist || [],
                             cart: cartItems
                         }),
                     })

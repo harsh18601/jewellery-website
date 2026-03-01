@@ -6,10 +6,52 @@ import { ShoppingBag, Trash2, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 
 import { useCart } from '@/components/providers/CartContext'
+import { useSession } from 'next-auth/react'
+import { createOrder } from '@/actions/orderActions'
 
 const CartPage = () => {
+    const { data: session } = useSession()
+    const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
     const { cartItems, removeFromCart, updateQuantity } = useCart()
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
+    const total = subtotal * 1.03
+
+    const handleCheckout = async () => {
+        if (!session) {
+            alert('Please sign in to complete your purchase.')
+            return
+        }
+
+        if (cartItems.length === 0) return
+
+        setIsCheckoutLoading(true)
+        try {
+            const orderData = {
+                userId: (session.user as any).id || session.user?.email, // Using email as fallback if ID not in session
+                products: cartItems.map(item => ({
+                    productId: item.id,
+                    quantity: item.quantity,
+                    price: item.price
+                })),
+                totalPrice: total,
+                paymentStatus: 'Pending',
+                orderStatus: 'Processing'
+            }
+
+            const result = await createOrder(orderData)
+            if (result.success) {
+                alert(`Order placed successfully! Order ID: ${result.orderId}`)
+                // In a real app, we would clear the cart here and redirect
+            } else {
+                alert('Failed to place order. Please try again.')
+            }
+        } catch (error) {
+            console.error('Checkout error:', error)
+            alert('An unexpected error occurred.')
+        } finally {
+            setIsCheckoutLoading(false)
+        }
+    }
 
     return (
         <div className="max-w-7xl mx-auto px-4 py-24 min-h-screen">
@@ -96,12 +138,18 @@ const CartPage = () => {
                         </div>
                         <div className="border-t border-primary/20 pt-4 flex justify-between text-base">
                             <span>Total</span>
-                            <span>₹{(subtotal * 1.03).toLocaleString()}</span>
+                            <span>₹{total.toLocaleString()}</span>
                         </div>
                     </div>
 
-                    <button className="w-full py-5 bg-secondary text-background uppercase tracking-widest text-xs font-bold hover:bg-primary transition-all flex items-center justify-center">
-                        Proceed to Checkout <ArrowRight className="ml-2 h-4 w-4" />
+                    <button
+                        onClick={handleCheckout}
+                        disabled={isCheckoutLoading || cartItems.length === 0}
+                        className="w-full py-5 bg-secondary text-background uppercase tracking-widest text-xs font-bold hover:bg-primary transition-all flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                        {isCheckoutLoading ? 'Processing...' : (
+                            <>Proceed to Checkout <ArrowRight className="ml-2 h-4 w-4" /></>
+                        )}
                     </button>
 
                     <div className="text-[10px] text-muted-foreground text-center font-serif italic py-4">

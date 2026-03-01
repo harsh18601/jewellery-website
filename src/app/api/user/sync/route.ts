@@ -37,15 +37,14 @@ export async function POST(req: Request) {
 
         const { wishlist, cart } = await req.json();
 
+        const updateData: any = {};
+        if (wishlist !== undefined) updateData.wishlist = wishlist;
+        if (cart !== undefined) updateData.cart = cart;
+
         await dbConnect();
         const user = await User.findOneAndUpdate(
             { email: session.user.email },
-            {
-                $set: {
-                    wishlist: wishlist || [],
-                    cart: cart || []
-                }
-            },
+            { $set: updateData },
             { returnDocument: 'after' }
         );
 
