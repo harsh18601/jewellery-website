@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { ShoppingBag, User, Search, Menu, Heart } from 'lucide-react'
+import { ShoppingBag, User, Search, Menu, Heart, Diamond } from 'lucide-react'
 import { motion } from 'framer-motion'
 import { useCart } from '@/components/providers/CartContext'
 import { useWishlist } from '@/components/providers/WishlistContext'
@@ -22,7 +22,7 @@ const Navbar = () => {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between items-center h-20">
                         <div className="flex items-center">
-                            <button className="p-2 sm:hidden">
+                            <button className="p-2 sm:hidden hover:bg-primary/10 transition-colors rounded-full cursor-pointer">
                                 <Menu className="h-6 w-6 text-primary" />
                             </button>
                             <div className="hidden sm:flex space-x-8 text-sm uppercase tracking-widest font-medium">
@@ -33,8 +33,14 @@ const Navbar = () => {
                         </div>
 
                         <div className="flex-shrink-0 flex items-center">
-                            <Link href="/" className="text-2xl font-bold tracking-tighter gold-text uppercase">
-                                Radha Govind
+                            <Link href="/" className="flex items-center gap-3 group">
+                                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20 group-hover:border-primary transition-all duration-300 shadow-sm shadow-primary/5">
+                                    <Diamond className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
+                                </div>
+                                <div className="flex flex-col">
+                                    <span className="text-xl font-bold tracking-tighter gold-text uppercase leading-none">Shree Radha Govind</span>
+                                    <span className="text-[8px] tracking-[0.3em] uppercase text-muted-foreground font-bold leading-none mt-1">Jewellers</span>
+                                </div>
                             </Link>
                         </div>
 

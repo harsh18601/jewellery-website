@@ -55,9 +55,9 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
                         })}
                         <button
                             onClick={() => signOut({ callbackUrl: '/' })}
-                            className="flex items-center space-x-3 p-4 text-xs uppercase tracking-widest font-bold hover:bg-destructive hover:text-background transition-all w-full text-left"
+                            className="flex items-center space-x-3 p-4 text-xs uppercase tracking-widest font-bold border border-transparent hover:border-destructive/30 hover:bg-destructive/5 hover:text-destructive transition-all duration-300 w-full text-left group cursor-pointer"
                         >
-                            <LogOut className="h-4 w-4" />
+                            <LogOut className="h-4 w-4 text-muted-foreground group-hover:text-destructive transition-colors" />
                             <span>Sign Out</span>
                         </button>
                     </nav>

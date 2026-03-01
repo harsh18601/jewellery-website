@@ -9,6 +9,9 @@ export default async function Home() {
   const heroEntries = await fetchEntries('hero')
   const categoryEntries = await fetchEntries('category')
   const heritageEntries = await fetchEntries('heritageFeature')
+  const blogEntries = await fetchEntries('blogPost')
+  const collectionEntries = await fetchEntries('collection')
+  const testimonialEntries = await fetchEntries('testimonial')
 
   const hero = heroEntries?.[0]?.fields as any || {
     title: "Pure Brilliance,",
@@ -24,11 +27,7 @@ export default async function Home() {
     title: cat.fields.name,
     image: cat.fields.image?.fields?.file?.url ? `https:${cat.fields.image.fields.file.url}` : 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=1000',
     link: cat.fields.slug ? `/shop?cat=${cat.fields.slug}` : '#'
-  })) || [
-      { title: 'Lab-Grown Diamonds', image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=1000', link: '/shop?cat=lab-grown' },
-      { title: 'Custom Jewellery', image: 'https://images.unsplash.com/photo-1573408339371-c063b784999f?auto=format&fit=crop&q=80&w=1000', link: '/custom' },
-      { title: 'Silver Collection', image: 'https://images.unsplash.com/photo-1535632066927-ab7c9ab60908?auto=format&fit=crop&q=80&w=1000', link: '/shop?cat=silver' }
-    ]
+  })) || []
 
   const heritageFeatures = heritageEntries?.map((entry: any) => {
     const imgField = entry.fields.featureImage || entry.fields.image;
@@ -41,5 +40,37 @@ export default async function Home() {
     }
   }).sort((a: any, b: any) => a.order - b.order)
 
-  return <HomeContent hero={hero} categories={categories} heritageFeatures={heritageFeatures} />
+  const blogs = blogEntries?.map((entry: any) => ({
+    title: entry.fields.title,
+    image: entry.fields.featuredImage?.fields?.file?.url ? `https:${entry.fields.featuredImage.fields.file.url}` : null,
+    date: entry.fields.date ? new Date(entry.fields.date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' }).toUpperCase() : null,
+    brand: entry.fields.brand || "RADHA GOVIND",
+    slug: entry.fields.slug
+  })) || []
+
+  const collections = collectionEntries?.map((entry: any) => ({
+    title: entry.fields.title,
+    subtitle: entry.fields.subtitle,
+    image: entry.fields.image?.fields?.file?.url ? `https:${entry.fields.image.fields.file.url}` : null,
+    color: entry.fields.color || "bg-black/60",
+    slug: entry.fields.slug
+  })) || []
+
+  const testimonials = testimonialEntries?.map((entry: any) => ({
+    name: entry.fields.name,
+    role: entry.fields.role,
+    content: entry.fields.content,
+    rating: entry.fields.rating || 5
+  })) || []
+
+  return (
+    <HomeContent
+      hero={hero}
+      categories={categories}
+      heritageFeatures={heritageFeatures}
+      blogs={blogs}
+      collections={collections}
+      testimonials={testimonials}
+    />
+  )
 }

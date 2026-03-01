@@ -46,7 +46,7 @@ export async function POST(req: Request) {
                     cart: cart || []
                 }
             },
-            { new: true }
+            { returnDocument: 'after' }
         );
 
         return NextResponse.json({ message: "Sync successful" });

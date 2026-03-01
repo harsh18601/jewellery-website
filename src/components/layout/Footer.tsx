@@ -19,12 +19,12 @@ const Footer = () => {
                 </div>
 
                 <div>
-                    <h4 className="text-sm font-semibold uppercase tracking-widest mb-6 text-primary">Collections</h4>
+                    <h4 className="text-sm font-semibold uppercase tracking-widest mb-6 text-primary">Explore</h4>
                     <ul className="space-y-4 text-sm text-background/60">
                         <li><Link href="/shop?cat=lab-grown" className="luxury-link">Lab-Grown Diamonds</Link></li>
                         <li><Link href="/shop?cat=silver" className="luxury-link">Silver Jewellery</Link></li>
-                        <li><Link href="/shop?cat=gemstones" className="luxury-link">Gemstones</Link></li>
-                        <li><Link href="/shop?cat=daily-wear" className="luxury-link">Daily Wear</Link></li>
+                        <li><Link href="/blog" className="luxury-link">Our Blog</Link></li>
+                        <li><Link href="/#testimonials" className="luxury-link">Testimonials</Link></li>
                     </ul>
                 </div>
 
@@ -35,6 +35,9 @@ const Footer = () => {
                         <li><Link href="/care" className="luxury-link">Jewellery Care</Link></li>
                         <li><Link href="/size-guide" className="luxury-link">Size Guide</Link></li>
                         <li><Link href="/faq" className="luxury-link">FAQs</Link></li>
+                        <li><Link href="/privacy" className="luxury-link">Privacy Policy</Link></li>
+                        <li><Link href="/terms" className="luxury-link">Terms & Conditions</Link></li>
+                        <li><Link href="/disclaimer" className="luxury-link">Disclaimer</Link></li>
                     </ul>
                 </div>
 

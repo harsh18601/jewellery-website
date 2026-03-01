@@ -5,13 +5,20 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles, ShieldCheck, Gem, Crown, Fingerprint } from 'lucide-react'
 
+import CollectionsSection from './CollectionsSection'
+import BlogSection from './BlogSection'
+import TestimonialsSection from './TestimonialsSection'
+
 interface HomeContentProps {
     hero: any;
     categories: any[];
     heritageFeatures?: any[];
+    blogs: any[];
+    collections: any[];
+    testimonials: any[];
 }
 
-const HomeContent = ({ hero, categories, heritageFeatures }: HomeContentProps) => {
+const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, testimonials }: HomeContentProps) => {
     const heroImage = hero.backgroundImage?.fields?.file?.url ? `https:${hero.backgroundImage.fields.file.url}` : "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=2070"
 
     const iconMap: { [key: string]: any } = {
@@ -98,6 +105,9 @@ const HomeContent = ({ hero, categories, heritageFeatures }: HomeContentProps) =
                     </motion.div>
                 </div>
             </section>
+
+            {/* Shop By Collections Section */}
+            <CollectionsSection collections={collections} />
 
             {/* Featured Categories */}
             <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -188,6 +198,14 @@ const HomeContent = ({ hero, categories, heritageFeatures }: HomeContentProps) =
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
                 <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
             </section>
+
+            {/* Testimonials Section */}
+            <div id="testimonials">
+                <TestimonialsSection testimonials={testimonials} />
+            </div>
+
+            {/* Blog Section */}
+            <BlogSection blogs={blogs} />
         </div>
     )
 }

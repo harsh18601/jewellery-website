@@ -50,7 +50,7 @@ const ProfileDashboard = () => {
                         <Link
                             key={i}
                             href={stat.href}
-                            className="bg-background border border-primary/5 p-8 flex flex-col items-center justify-center text-center space-y-4 hover:border-primary/20 transition-all group"
+                            className="bg-background border border-primary/5 p-8 flex flex-col items-center justify-center text-center space-y-4 hover:border-primary/40 hover:shadow-xl hover:shadow-primary/5 transition-all group"
                         >
                             <stat.icon className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
                             <div>
