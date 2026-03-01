@@ -57,7 +57,7 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
                             </p>
 
                             <div>
-                                <h4 className="font-bold uppercase tracking-widest text-xs text-secondary">{testimonial.name}</h4>
+                                <h4 className="font-bold uppercase tracking-widest text-xs text-foreground">{testimonial.name}</h4>
                                 <span className="text-[10px] text-primary uppercase tracking-widest font-bold">{testimonial.role}</span>
                             </div>
                         </motion.div>

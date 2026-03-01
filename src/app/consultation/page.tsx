@@ -1,13 +1,41 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Calendar, Clock, User, Mail, Sparkles, CheckCircle2, ArrowLeft } from 'lucide-react'
+import { Calendar, Clock, User, Mail, Sparkles, CheckCircle2, ArrowLeft, ChevronDown } from 'lucide-react'
 import Link from 'next/link'
+
+const serviceOptions = [
+    "Bespoke Ring Design",
+    "Bridal Styling",
+    "Lab-Grown Diamond Education",
+    "Repairs & Restoration",
+]
+
+const timeOptions = [
+    "10:00 AM - 12:00 PM",
+    "12:00 PM - 02:00 PM",
+    "02:00 PM - 04:00 PM",
+    "04:00 PM - 06:00 PM",
+]
 
 const ConsultationPage = () => {
     const [isSubmitted, setIsSubmitted] = useState(false)
     const [loading, setLoading] = useState(false)
+    const [preferredService, setPreferredService] = useState(serviceOptions[0])
+    const [preferredTime, setPreferredTime] = useState(timeOptions[0])
+    const [openDropdown, setOpenDropdown] = useState<null | 'service' | 'time'>(null)
+    const dropdownRef = useRef<HTMLDivElement>(null)
+
+    useEffect(() => {
+        const closeOnOutsideClick = (event: MouseEvent) => {
+            if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+                setOpenDropdown(null)
+            }
+        }
+        document.addEventListener('mousedown', closeOnOutsideClick)
+        return () => document.removeEventListener('mousedown', closeOnOutsideClick)
+    }, [])
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
@@ -30,7 +58,7 @@ const ConsultationPage = () => {
                         className="relative h-[600px] hidden lg:block overflow-hidden"
                     >
                         <img
-                            src="/images/consultation-bespoke.png"
+                            src="/assets/consultation.png"
                             alt="Consultation"
                             className="w-full h-full object-cover transition-all duration-1000"
                         />
@@ -68,6 +96,7 @@ const ConsultationPage = () => {
                                     animate={{ opacity: 1 }}
                                     exit={{ opacity: 0 }}
                                     onSubmit={handleSubmit}
+                                    ref={dropdownRef}
                                     className="space-y-6"
                                 >
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -99,12 +128,34 @@ const ConsultationPage = () => {
 
                                     <div className="space-y-2">
                                         <label className="text-[10px] uppercase tracking-widest font-bold text-primary">Preferred Service</label>
-                                        <select className="w-full bg-muted/5 border border-primary/10 px-4 py-4 text-sm focus:outline-none focus:border-primary transition-colors appearance-none">
-                                            <option>Bespoke Ring Design</option>
-                                            <option>Bridal Styling</option>
-                                            <option>Lab-Grown Diamond Education</option>
-                                            <option>Repairs & Restoration</option>
-                                        </select>
+                                        <div className="relative">
+                                            <button
+                                                type="button"
+                                                onClick={() => setOpenDropdown(openDropdown === 'service' ? null : 'service')}
+                                                className="w-full bg-muted/5 border border-primary/25 px-4 pr-12 py-4 text-sm text-left text-foreground focus:outline-none focus:border-primary transition-colors"
+                                            >
+                                                {preferredService}
+                                            </button>
+                                            <ChevronDown className={`pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary transition-transform ${openDropdown === 'service' ? 'rotate-180' : ''}`} />
+                                            {openDropdown === 'service' && (
+                                                <div className="absolute left-0 right-0 mt-1 border border-primary/30 bg-background shadow-xl z-20">
+                                                    {serviceOptions.map((option) => (
+                                                        <button
+                                                            key={option}
+                                                            type="button"
+                                                            onClick={() => {
+                                                                setPreferredService(option)
+                                                                setOpenDropdown(null)
+                                                            }}
+                                                            className={`w-full px-4 py-3 text-left text-sm transition-colors ${preferredService === option ? 'bg-primary/15 text-primary' : 'text-foreground hover:bg-primary/10'}`}
+                                                        >
+                                                            {option}
+                                                        </button>
+                                                    ))}
+                                                </div>
+                                            )}
+                                        </div>
+                                        <input type="hidden" name="preferredService" value={preferredService} />
                                     </div>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -115,7 +166,7 @@ const ConsultationPage = () => {
                                                 <input
                                                     required
                                                     type="date"
-                                                    className="w-full bg-muted/5 border border-primary/10 px-12 py-4 text-sm focus:outline-none focus:border-primary transition-colors"
+                                                    className="consultation-date-input w-full bg-muted/5 border border-primary/10 px-12 py-4 text-sm focus:outline-none focus:border-primary transition-colors"
                                                 />
                                             </div>
                                         </div>
@@ -123,22 +174,42 @@ const ConsultationPage = () => {
                                             <label className="text-[10px] uppercase tracking-widest font-bold text-primary">Preferred Time</label>
                                             <div className="relative">
                                                 <Clock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                                <select className="w-full bg-muted/5 border border-primary/10 px-12 py-4 text-sm focus:outline-none focus:border-primary transition-colors appearance-none">
-                                                    <option>10:00 AM - 12:00 PM</option>
-                                                    <option>12:00 PM - 02:00 PM</option>
-                                                    <option>02:00 PM - 04:00 PM</option>
-                                                    <option>04:00 PM - 06:00 PM</option>
-                                                </select>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setOpenDropdown(openDropdown === 'time' ? null : 'time')}
+                                                    className="w-full bg-muted/5 border border-primary/25 pl-12 pr-12 py-4 text-sm text-left text-foreground focus:outline-none focus:border-primary transition-colors"
+                                                >
+                                                    {preferredTime}
+                                                </button>
+                                                <ChevronDown className={`pointer-events-none absolute right-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary transition-transform ${openDropdown === 'time' ? 'rotate-180' : ''}`} />
+                                                {openDropdown === 'time' && (
+                                                    <div className="absolute left-0 right-0 mt-1 border border-primary/30 bg-background shadow-xl z-20">
+                                                        {timeOptions.map((option) => (
+                                                            <button
+                                                                key={option}
+                                                                type="button"
+                                                                onClick={() => {
+                                                                    setPreferredTime(option)
+                                                                    setOpenDropdown(null)
+                                                                }}
+                                                                className={`w-full px-4 py-3 text-left text-sm transition-colors ${preferredTime === option ? 'bg-primary/15 text-primary' : 'text-foreground hover:bg-primary/10'}`}
+                                                            >
+                                                                {option}
+                                                            </button>
+                                                        ))}
+                                                    </div>
+                                                )}
                                             </div>
+                                            <input type="hidden" name="preferredTime" value={preferredTime} />
                                         </div>
                                     </div>
 
                                     <motion.button
-                                        whileHover={{ scale: 1.02, backgroundColor: "var(--primary)" }}
+                                        whileHover={{ scale: 1.02, backgroundColor: "hsl(43 58% 46% / 0.22)" }}
                                         whileTap={{ scale: 0.98 }}
                                         disabled={loading}
                                         type="submit"
-                                        className="w-full py-5 bg-secondary text-foreground uppercase tracking-widest text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-3"
+                                        className="w-full py-5 bg-primary/15 border border-primary/45 text-primary uppercase tracking-widest text-xs font-bold transition-all disabled:opacity-50 flex items-center justify-center gap-3 hover:bg-primary/20"
                                     >
                                         {loading ? "Scheduling..." : "Request Appointment"}
                                         {!loading && <Sparkles className="h-4 w-4" />}
@@ -158,7 +229,7 @@ const ConsultationPage = () => {
                                     <p className="text-sm text-muted-foreground font-serif italic mb-8">
                                         "A member of our concierge team will reach out to you within 24 hours to confirm your private session."
                                     </p>
-                                    <Link href="/profile" className="inline-block px-10 py-4 border border-secondary text-secondary uppercase tracking-widest text-[10px] font-bold hover:bg-secondary hover:text-foreground transition-all">
+                                    <Link href="/profile" className="inline-block px-10 py-4 border border-primary/50 bg-primary/10 text-primary uppercase tracking-widest text-[10px] font-bold hover:bg-primary hover:text-primary-foreground transition-all">
                                         Return to Dashboard
                                     </Link>
                                 </motion.div>

@@ -2,7 +2,7 @@
 
 import React, { useState, useRef, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import { Search, X, ArrowRight } from 'lucide-react'
+import { X, ArrowRight } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
 const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => void }) => {
@@ -24,11 +24,18 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault()
-        if (query.trim()) {
-            router.push(`/shop?search=${encodeURIComponent(query)}`)
+        const keyword = query.trim()
+        if (keyword) {
+            router.push(`/shop?search=${encodeURIComponent(keyword)}`)
             onClose()
             setQuery('')
         }
+    }
+
+    const searchByKeyword = (keyword: string) => {
+        router.push(`/shop?search=${encodeURIComponent(keyword)}`)
+        onClose()
+        setQuery('')
     }
 
     return (
@@ -65,7 +72,7 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean, onClose: () => vo
                         {['Solitaire', '18K Gold', 'Emerald', 'Bespoke'].map(tag => (
                             <button
                                 key={tag}
-                                onClick={() => { setQuery(tag); }}
+                                onClick={() => searchByKeyword(tag)}
                                 className="hover:text-primary transition-colors cursor-pointer"
                             >
                                 {tag}

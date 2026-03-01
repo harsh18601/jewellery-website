@@ -24,8 +24,8 @@
 
   --radius: 0.5rem;
 
-  --font-serif: var(--font-cormorant), serif;
-  --font-inter: var(--font-manrope), sans-serif;
+  --font-serif: var(--font-cinzel), serif;
+  --font-sans: var(--font-montserrat), sans-serif;
 
   --animate-gradient: gradient 8s linear infinite;
 
@@ -45,8 +45,23 @@
     @apply border-border;
   }
 
+  a[href],
+  button:not(:disabled),
+  [role="button"],
+  summary {
+    @apply cursor-pointer;
+  }
+
+  a[href] {
+    @apply transition-colors duration-300;
+  }
+
+  button:disabled {
+    @apply cursor-not-allowed;
+  }
+
   body {
-    @apply bg-background text-foreground font-inter;
+    @apply bg-background text-foreground font-sans;
   }
 
   h1,
@@ -84,7 +99,7 @@
 
   /* Luxury Card Lift */
   .luxury-card {
-    @apply transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2;
+    @apply cursor-pointer transition-all duration-500 hover:shadow-2xl hover:shadow-primary/5 hover:-translate-y-2 hover:border-primary/30;
   }
 }
 
@@ -121,4 +136,26 @@
 
 .luxury-gradient {
   background: linear-gradient(135deg, #d4af37 0%, #f9e29d 50%, #d4af37 100%);
+}
+
+.consultation-date-input::-webkit-calendar-picker-indicator {
+  cursor: pointer;
+  opacity: 0.95;
+  filter: invert(78%) sepia(41%) saturate(643%) hue-rotate(6deg) brightness(95%) contrast(88%);
+}
+
+.consultation-select option {
+  color: #f8fafc !important;
+  background-color: #0b1220 !important;
+}
+
+.consultation-select {
+  color-scheme: dark;
+}
+
+.consultation-select option:checked,
+.consultation-select option:hover,
+.consultation-select option:focus {
+  color: #ffffff !important;
+  background-color: #1d4e89 !important;
 }
