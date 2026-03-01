@@ -25,7 +25,7 @@ const ConsultationPage = () => {
     const [preferredService, setPreferredService] = useState(serviceOptions[0])
     const [preferredTime, setPreferredTime] = useState(timeOptions[0])
     const [openDropdown, setOpenDropdown] = useState<null | 'service' | 'time'>(null)
-    const dropdownRef = useRef<HTMLDivElement>(null)
+    const dropdownRef = useRef<HTMLFormElement>(null)
 
     useEffect(() => {
         const closeOnOutsideClick = (event: MouseEvent) => {
