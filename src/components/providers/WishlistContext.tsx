@@ -40,6 +40,10 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
     useEffect(() => {
         if (status === 'loading') return
         if (!session) {
+            setWishlistItems([])
+            if (typeof window !== 'undefined') {
+                localStorage.removeItem('wishlist')
+            }
             isHydratedRef.current = true
             return
         }

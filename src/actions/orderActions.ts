@@ -29,12 +29,22 @@ export async function submitCustomOrder(formData: FormData) {
         const size = formData.get("size") as string;
         const engraving = formData.get("engraving") as string;
         const carats = formData.get("carats") as string;
+        const requestedStatus = formData.get("quotationStatus") as string;
+        const quotationStatus = requestedStatus === "PendingAuth" ? "PendingAuth" : "Pending";
 
         // Handle Image Uploads
         const imageFiles = formData.getAll("referenceImages") as File[];
         const referenceImages: string[] = [];
+        const MAX_FILE_SIZE = 5 * 1024 * 1024;
+        const SUPPORTED_IMAGE_TYPES = new Set(["image/jpeg", "image/jpg", "image/png", "image/webp"]);
 
         if (imageFiles && imageFiles.length > 0 && imageFiles[0].size > 0) {
+            for (const file of imageFiles) {
+                if (!SUPPORTED_IMAGE_TYPES.has(file.type) || file.size > MAX_FILE_SIZE) {
+                    return { success: false, error: "Only JPG, JPEG, PNG, WEBP files up to 5MB are allowed." };
+                }
+            }
+
             const { v2: cloudinary } = await import('cloudinary');
             cloudinary.config({
                 cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
@@ -59,12 +69,12 @@ export async function submitCustomOrder(formData: FormData) {
             userDetails: { name, email, phone },
             selectedOptions: { stoneType, metal, size, engraving, carats },
             referenceImages,
-            quotationStatus: "Pending",
+            quotationStatus,
         });
 
         await customOrder.save();
         revalidatePath("/admin");
-        return { success: true };
+        return { success: true, orderId: customOrder._id.toString() };
     } catch (error) {
         console.error("Error submitting custom order:", error);
         return { success: false, error: "Failed to submit custom order" };

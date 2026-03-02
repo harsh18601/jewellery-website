@@ -4,6 +4,7 @@ export interface IUser extends Document {
     name: string;
     email: string;
     password?: string;
+    passwordUpdatedAt?: Date;
     role: 'admin' | 'customer';
     wishlist: any[];
     cart: any[];
@@ -21,6 +22,7 @@ const UserSchema: Schema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String },
+    passwordUpdatedAt: { type: Date },
     role: { type: String, enum: ['admin', 'customer'], default: 'customer' },
     wishlist: { type: [Object], default: [] },
     cart: { type: [Object], default: [] },

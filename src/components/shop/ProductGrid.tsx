@@ -5,6 +5,8 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { Star, Heart } from 'lucide-react'
 import { useWishlist } from '@/components/providers/WishlistContext'
+import { useRouter, usePathname, useSearchParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 const formatPrice = (value: unknown) => {
     const amount = Number(value)
@@ -21,6 +23,19 @@ const formatPrice = (value: unknown) => {
 
 const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage?: string }) => {
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
+    const { data: session } = useSession()
+    const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+    const wishlistAuthMessage = 'You must login or register to add items to your wishlist.'
+
+    const handleWishlistAuthRedirect = () => {
+        const query = searchParams.toString()
+        const callbackUrl = query ? `${pathname}?${query}` : pathname
+        router.push(
+            `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}&message=${encodeURIComponent(wishlistAuthMessage)}`
+        )
+    }
 
     if (products.length === 0) {
         return (
@@ -58,6 +73,10 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                     onClick={(e) => {
                                         e.preventDefault()
                                         e.stopPropagation()
+                                        if (!session) {
+                                            handleWishlistAuthRedirect()
+                                            return
+                                        }
                                         const item = {
                                             id: productId,
                                             title: product.title,
@@ -89,8 +108,8 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                         {product.title || 'Untitled Product'}
                                     </h3>
                                     <div className="flex items-center space-x-1 text-primary">
+                                        <span className="text-[10px] font-bold">{product.ratings || 0}</span>
                                         <Star className="h-3 w-3 fill-current" />
-                                        <span className="text-[10px] font-bold">4.9</span>
                                     </div>
                                 </div>
                                 <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em]">{product.category || 'Jewellery'}</p>

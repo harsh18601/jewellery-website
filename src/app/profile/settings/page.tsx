@@ -1,33 +1,124 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Save, User, Shield, Bell } from 'lucide-react'
 
 const SettingsPage = () => {
-    const [isSaving, setIsSaving] = React.useState(false)
-    const [showPasswordModal, setShowPasswordModal] = React.useState(false)
-    const [saveStatus, setSaveStatus] = React.useState('')
+    const [isSaving, setIsSaving] = useState(false)
+    const [showPasswordModal, setShowPasswordModal] = useState(false)
+    const [saveStatus, setSaveStatus] = useState('')
+    const [profile, setProfile] = useState({
+        name: '',
+        email: '',
+    })
+    const [passwordMeta, setPasswordMeta] = useState<{ passwordUpdatedAt?: string | null }>({})
+    const [passwordForm, setPasswordForm] = useState({
+        currentPassword: '',
+        newPassword: '',
+        confirmPassword: '',
+    })
+    const [passwordError, setPasswordError] = useState('')
 
-    const handleSave = (e: React.FormEvent) => {
+    useEffect(() => {
+        const loadProfile = async () => {
+            try {
+                const res = await fetch('/api/user/sync')
+                if (!res.ok) return
+                const data = await res.json()
+                setProfile({
+                    name: data.name || '',
+                    email: data.email || '',
+                })
+                setPasswordMeta({
+                    passwordUpdatedAt: data.passwordUpdatedAt || null,
+                })
+            } catch (e) {
+                console.error('Failed to load settings', e)
+            }
+        }
+
+        loadProfile()
+    }, [])
+
+    const passwordChangedLabel = useMemo(() => {
+        if (!passwordMeta.passwordUpdatedAt) return 'Password has not been changed yet'
+        const changedAt = new Date(passwordMeta.passwordUpdatedAt)
+        const now = new Date()
+        const diffMs = now.getTime() - changedAt.getTime()
+        const day = 24 * 60 * 60 * 1000
+        const days = Math.max(0, Math.floor(diffMs / day))
+        if (days < 1) return 'Password changed today'
+        if (days === 1) return 'Password changed 1 day ago'
+        if (days < 30) return `Password changed ${days} days ago`
+        const months = Math.floor(days / 30)
+        if (months === 1) return 'Password changed 1 month ago'
+        return `Password changed ${months} months ago`
+    }, [passwordMeta.passwordUpdatedAt])
+
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSaving(true)
-        setSaveStatus('Saving...')
-
-        // Simulate API call
-        setTimeout(() => {
+        setSaveStatus('')
+        try {
+            const res = await fetch('/api/user/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    name: profile.name,
+                    email: profile.email,
+                }),
+            })
+            const data = await res.json()
+            if (!res.ok) {
+                setSaveStatus(data.message || 'Failed to save changes.')
+            } else {
+                setSaveStatus('Changes saved successfully!')
+                setTimeout(() => setSaveStatus(''), 3000)
+            }
+        } catch {
+            setSaveStatus('Failed to save changes.')
+        } finally {
             setIsSaving(false)
-            setSaveStatus('Changes saved successfully!')
-            setTimeout(() => setSaveStatus(''), 3000)
-        }, 1500)
+        }
     }
 
-    const handlePasswordChange = (e: React.FormEvent) => {
+    const handlePasswordChange = async (e: React.FormEvent) => {
         e.preventDefault()
-        // Mock password change logic
-        setShowPasswordModal(false)
-        setSaveStatus('Password updated successfully!')
-        setTimeout(() => setSaveStatus(''), 3000)
+        setPasswordError('')
+
+        if (passwordForm.newPassword.length < 8) {
+            setPasswordError('New password must be at least 8 characters.')
+            return
+        }
+        if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+            setPasswordError('New password and confirmation do not match.')
+            return
+        }
+
+        try {
+            const res = await fetch('/api/user/change-password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    currentPassword: passwordForm.currentPassword,
+                    newPassword: passwordForm.newPassword,
+                }),
+            })
+            const data = await res.json()
+            if (!res.ok) {
+                setPasswordError(data.message || 'Failed to update password.')
+                return
+            }
+
+            setPasswordMeta({ passwordUpdatedAt: data.passwordUpdatedAt || new Date().toISOString() })
+            setPasswordForm({ currentPassword: '', newPassword: '', confirmPassword: '' })
+            setShowPasswordModal(false)
+            setSaveStatus('Password updated successfully!')
+            setTimeout(() => setSaveStatus(''), 3000)
+        } catch {
+            setPasswordError('Failed to update password.')
+        }
     }
 
     return (
@@ -43,11 +134,22 @@ const SettingsPage = () => {
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div className="space-y-2">
                             <label className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Full Name</label>
-                            <input name="name" className="w-full bg-background border border-primary/10 p-4 text-xs font-serif italic outline-none focus:border-primary transition-all" defaultValue="Harsh Gupta" />
+                            <input
+                                name="name"
+                                className="w-full bg-background border border-primary/10 p-4 text-xs font-serif italic outline-none focus:border-primary transition-all"
+                                value={profile.name}
+                                onChange={(e) => setProfile((prev) => ({ ...prev, name: e.target.value }))}
+                            />
                         </div>
                         <div className="space-y-2">
                             <label className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Email Address</label>
-                            <input name="email" dir="ltr" className="w-full bg-background border border-primary/10 p-4 text-xs font-serif italic outline-none focus:border-primary transition-all" defaultValue="harsh@example.com" />
+                            <input
+                                name="email"
+                                dir="ltr"
+                                className="w-full bg-background border border-primary/10 p-4 text-xs font-serif italic outline-none focus:border-primary transition-all"
+                                value={profile.email}
+                                onChange={(e) => setProfile((prev) => ({ ...prev, email: e.target.value }))}
+                            />
                         </div>
                     </div>
                 </div>
@@ -63,7 +165,7 @@ const SettingsPage = () => {
                             onClick={() => setShowPasswordModal(true)}
                             className="text-[10px] uppercase tracking-widest font-bold border border-secondary px-6 py-3 hover:bg-secondary hover:text-foreground transition-all cursor-pointer"
                         >Change Password</button>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">Last changed 3 months ago</p>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">{passwordChangedLabel}</p>
                     </div>
                 </div>
 
@@ -78,7 +180,7 @@ const SettingsPage = () => {
                     </div>
                 </div>
 
-                <div className="pt-8 border-t border-primary/10 flex items-center space-x-6">
+                <div className="pt-8 border-t border-primary/10 flex flex-col items-center gap-4">
                     <button
                         type="submit"
                         disabled={isSaving}
@@ -112,16 +214,35 @@ const SettingsPage = () => {
                             <form onSubmit={handlePasswordChange} className="space-y-6">
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase tracking-widest font-bold">Current Password</label>
-                                    <input type="password" required className="w-full bg-muted/10 border border-primary/10 p-4 text-xs outline-none focus:border-primary" />
+                                    <input
+                                        type="password"
+                                        required
+                                        value={passwordForm.currentPassword}
+                                        onChange={(e) => setPasswordForm((prev) => ({ ...prev, currentPassword: e.target.value }))}
+                                        className="w-full bg-muted/10 border border-primary/10 p-4 text-xs outline-none focus:border-primary"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase tracking-widest font-bold">New Password</label>
-                                    <input type="password" required className="w-full bg-muted/10 border border-primary/10 p-4 text-xs outline-none focus:border-primary" />
+                                    <input
+                                        type="password"
+                                        required
+                                        value={passwordForm.newPassword}
+                                        onChange={(e) => setPasswordForm((prev) => ({ ...prev, newPassword: e.target.value }))}
+                                        className="w-full bg-muted/10 border border-primary/10 p-4 text-xs outline-none focus:border-primary"
+                                    />
                                 </div>
                                 <div className="space-y-2">
                                     <label className="text-[10px] uppercase tracking-widest font-bold">Confirm New Password</label>
-                                    <input type="password" required className="w-full bg-muted/10 border border-primary/10 p-4 text-xs outline-none focus:border-primary" />
+                                    <input
+                                        type="password"
+                                        required
+                                        value={passwordForm.confirmPassword}
+                                        onChange={(e) => setPasswordForm((prev) => ({ ...prev, confirmPassword: e.target.value }))}
+                                        className="w-full bg-muted/10 border border-primary/10 p-4 text-xs outline-none focus:border-primary"
+                                    />
                                 </div>
+                                {passwordError && <p className="text-xs text-destructive">{passwordError}</p>}
                                 <div className="flex space-x-4 pt-4">
                                     <button type="submit" className="flex-grow bg-primary text-foreground px-8 py-4 text-xs uppercase tracking-widest font-bold hover:bg-primary/90 transition-all cursor-pointer">Update</button>
                                     <button type="button" onClick={() => setShowPasswordModal(false)} className="flex-grow border border-primary/20 text-foreground px-8 py-4 text-xs uppercase tracking-widest font-bold hover:bg-secondary hover:text-foreground transition-all cursor-pointer">Cancel</button>

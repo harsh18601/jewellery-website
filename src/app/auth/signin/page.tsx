@@ -52,6 +52,7 @@ const SignInPageContent = () => {
         : 'Sign in to access your exclusive boutique experience.'
     const callbackUrl = searchParams.get('callbackUrl') || '/profile'
     const registered = searchParams.get('registered') === 'true'
+    const infoMessage = searchParams.get('message') || ''
     const queryError = searchParams.get('error') ? 'Invalid email or password' : ''
     const displayError = error || queryError
 
@@ -84,6 +85,11 @@ const SignInPageContent = () => {
                         {registered && !displayError && (
                             <div className="bg-primary/10 border border-primary/20 text-primary text-[10px] p-4 rounded-sm flex items-center mb-6 uppercase tracking-widest font-bold">
                                 <CheckCircle2 className="h-4 w-4 mr-2" /> Account created! Please sign in.
+                            </div>
+                        )}
+                        {infoMessage && !displayError && (
+                            <div className="bg-primary/10 border border-primary/20 text-primary text-xs p-4 rounded-sm mb-6">
+                                {infoMessage}
                             </div>
                         )}
 

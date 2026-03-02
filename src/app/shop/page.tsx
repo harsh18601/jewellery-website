@@ -20,6 +20,19 @@ export default async function ShopPage({ searchParams }: { searchParams: { cat?:
         }
         return ''
     }
+    const normalizeCategory = (value: unknown): string =>
+        toSearchableText(value)
+            .replace(/&/g, 'and')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+
+    const categoryOptions = [
+        { label: 'Rings', value: 'rings' },
+        { label: 'Earrings', value: 'earrings' },
+        { label: 'Necklace', value: 'necklace' },
+        { label: 'Fine Jewellery', value: 'fine-jewellery' },
+        { label: 'Bracelets', value: 'bracelets' },
+    ]
 
     // Fetch from Contentful
     let products = await fetchEntries('product') as any[]
@@ -27,7 +40,6 @@ export default async function ShopPage({ searchParams }: { searchParams: { cat?:
     // Fallback to DB if Contentful is empty or errored
     if (!products || products.length === 0) {
         const query = {
-            ...(cat ? { category: cat } : {}),
             ...(search ? { searchTerm: search } : {})
         }
         products = await getProducts(query)
@@ -38,19 +50,20 @@ export default async function ShopPage({ searchParams }: { searchParams: { cat?:
             ...item.fields,
             images: item.fields.images?.map((img: any) => img.fields?.file?.url ? `https:${img.fields.file.url}` : '') || []
         }))
+    }
 
-        // Filter if needed
-        if (cat) {
-            products = products.filter(p => toSearchableText(p.category) === cat.toLowerCase())
-        }
-        if (normalizedSearch) {
-            products = products.filter(p =>
-                toSearchableText(p.title).includes(normalizedSearch) ||
-                toSearchableText(p.category).includes(normalizedSearch) ||
-                toSearchableText(p.description).includes(normalizedSearch) ||
-                toSearchableText(p.stoneType).includes(normalizedSearch)
-            )
-        }
+    // Filter if needed
+    if (cat) {
+        const normalizedCat = normalizeCategory(cat)
+        products = products.filter((p) => normalizeCategory(p.category) === normalizedCat)
+    }
+    if (normalizedSearch) {
+        products = products.filter(p =>
+            toSearchableText(p.title).includes(normalizedSearch) ||
+            toSearchableText(p.category).includes(normalizedSearch) ||
+            toSearchableText(p.description).includes(normalizedSearch) ||
+            toSearchableText(p.stoneType).includes(normalizedSearch)
+        )
     }
 
     const emptyMessage = normalizedSearch ? "No search result found" : "No products available."
@@ -67,9 +80,15 @@ export default async function ShopPage({ searchParams }: { searchParams: { cat?:
 
                     <div className="flex flex-wrap gap-6 mt-6 md:mt-0 text-xs uppercase tracking-widest font-bold">
                         <Link href="/shop" className={`cursor-pointer hover:text-primary transition-colors border-b-2 ${!cat ? 'border-primary' : 'border-transparent'}`}>All</Link>
-                        <Link href="/shop?cat=lab-grown" className={`cursor-pointer hover:text-primary transition-colors border-b-2 ${cat === 'lab-grown' ? 'border-primary' : 'border-transparent'}`}>Lab-Grown</Link>
-                        <Link href="/shop?cat=silver" className={`cursor-pointer hover:text-primary transition-colors border-b-2 ${cat === 'silver' ? 'border-primary' : 'border-transparent'}`}>Silver</Link>
-                        <Link href="/shop?cat=custom" className={`cursor-pointer hover:text-primary transition-colors border-b-2 ${cat === 'custom' ? 'border-primary' : 'border-transparent'}`}>Custom</Link>
+                        {categoryOptions.map((option) => (
+                            <Link
+                                key={option.value}
+                                href={`/shop?cat=${option.value}`}
+                                className={`cursor-pointer hover:text-primary transition-colors border-b-2 ${cat === option.value ? 'border-primary' : 'border-transparent'}`}
+                            >
+                                {option.label}
+                            </Link>
+                        ))}
                     </div>
                 </div>
             )}

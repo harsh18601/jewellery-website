@@ -20,8 +20,9 @@ export interface ContentfulProduct {
     category: EntryFieldTypes.Text;
     description: EntryFieldTypes.RichText;
     images: EntryFieldTypes.Array<EntryFieldTypes.AssetLink>;
-    sku: EntryFieldTypes.Text;
+    stoneType: EntryFieldTypes.Text;
     isFeatured: EntryFieldTypes.Boolean;
+    ratings: EntryFieldTypes.Number;
 }
 export interface ContentfulPage {
     title: string;

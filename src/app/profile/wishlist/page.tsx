@@ -35,7 +35,7 @@ const WishlistPage = () => {
                 ) : (
                     <div className="text-center py-20 sm:py-32 bg-muted/5 border border-dashed border-primary/20">
                         <Heart className="h-12 w-12 text-primary/20 mx-auto mb-6" />
-                        <h2 className="text-xl font-bold uppercase tracking-widest mb-4">Your Wishlist is Empty</h2>
+                        <h2 className="text-xl font-bold uppercase tracking-widest mb-4 text-center">Your Wishlist is Empty</h2>
                         <p className="font-serif italic text-muted-foreground mb-12 max-w-md mx-auto">
                             Add the pieces that speak to you, and we'll keep them safe until you're ready to make them yours.
                         </p>

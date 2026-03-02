@@ -14,7 +14,7 @@ export interface ICustomOrder extends Document {
         engraving?: string;
     };
     referenceImages: string[];
-    quotationStatus: 'Pending' | 'Sent' | 'Accepted' | 'Rejected';
+    quotationStatus: 'Pending' | 'PendingAuth' | 'Sent' | 'Accepted' | 'Rejected';
     createdAt: Date;
 }
 
@@ -32,7 +32,7 @@ const CustomOrderSchema: Schema = new Schema({
         engraving: { type: String },
     },
     referenceImages: { type: [String] },
-    quotationStatus: { type: String, enum: ['Pending', 'Sent', 'Accepted', 'Rejected'], default: 'Pending' },
+    quotationStatus: { type: String, enum: ['Pending', 'PendingAuth', 'Sent', 'Accepted', 'Rejected'], default: 'Pending' },
     createdAt: { type: Date, default: Date.now },
 });
 

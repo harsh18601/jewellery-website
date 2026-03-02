@@ -10,14 +10,19 @@ export async function GET() {
         if (!session || !session.user) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
+        const sessionUserId = (session.user as any).id;
+        const userQuery = sessionUserId ? { _id: sessionUserId } : { email: session.user.email };
 
         await dbConnect();
-        const user = await User.findOne({ email: session.user.email });
+        const user = await User.findOne(userQuery);
         if (!user) {
             return NextResponse.json({ message: "User not found" }, { status: 404 });
         }
 
         return NextResponse.json({
+            name: user.name,
+            email: user.email,
+            passwordUpdatedAt: user.passwordUpdatedAt || null,
             wishlist: user.wishlist || [],
             cart: user.cart || [],
             addresses: user.addresses || [],
@@ -34,16 +39,26 @@ export async function POST(req: Request) {
         if (!session || !session.user) {
             return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
         }
+        const sessionUserId = (session.user as any).id;
+        const userQuery = sessionUserId ? { _id: sessionUserId } : { email: session.user.email };
 
-        const { wishlist, cart } = await req.json();
+        let payload: Record<string, unknown> = {};
+        try {
+            payload = await req.json();
+        } catch {
+            payload = {};
+        }
+        const { wishlist, cart, name, email } = payload;
 
         const updateData: any = {};
+        if (typeof name === 'string' && name.trim()) updateData.name = name.trim();
+        if (typeof email === 'string' && email.trim()) updateData.email = email.trim().toLowerCase();
         if (wishlist !== undefined) updateData.wishlist = wishlist;
         if (cart !== undefined) updateData.cart = cart;
 
         await dbConnect();
         await User.findOneAndUpdate(
-            { email: session.user.email },
+            userQuery,
             { $set: updateData },
             { returnDocument: 'after' }
         );
