@@ -83,7 +83,7 @@ const CollectionsSection = ({ collections }: { collections: any[] }) => {
                                     alt={col.title}
                                     className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                                 />
-                                <div className={`absolute inset-0 ${col.color || 'bg-black/40'} backdrop-blur-[2px] group-hover:backdrop-blur-none transition-all duration-500`} />
+                                <div className={`absolute inset-0 ${col.color || 'bg-black/40'} transition-all duration-500`} />
 
                                 <div className="absolute inset-0 p-8 flex flex-col justify-center items-center text-center">
                                     <span className="text-xs uppercase tracking-[0.4em] font-bold text-white/60 mb-2 group-hover:text-white transition-colors">

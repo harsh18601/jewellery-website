@@ -10,6 +10,11 @@ const ProfileDashboard = () => {
     const { data: session } = useSession()
     const { wishlistCount } = useWishlist()
     const [addresses, setAddresses] = useState<any[]>([])
+    const [isMounted, setIsMounted] = useState(false)
+
+    useEffect(() => {
+        setIsMounted(true)
+    }, [])
 
     useEffect(() => {
         if (session) {
@@ -39,9 +44,9 @@ const ProfileDashboard = () => {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
                     {[
-                        { label: 'Total Orders', value: '00', icon: Package, href: '/profile/orders' },
-                        { label: 'Saved Items', value: wishlistCount.toString().padStart(2, '0'), icon: Heart, href: '/profile/wishlist' },
-                        { label: 'Active Requests', value: '00', icon: Clock, href: '/custom' }
+                        { label: 'Total Orders', value: '0', icon: Package, href: '/profile/orders' },
+                        { label: 'Saved Items', value: isMounted ? wishlistCount.toString() : '0', icon: Heart, href: '/profile/wishlist' },
+                        { label: 'Active Requests', value: '0', icon: Clock, href: '/custom' }
                     ].map((stat, i) => (
                         <Link
                             key={i}

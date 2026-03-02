@@ -12,6 +12,7 @@ import SearchOverlay from './SearchOverlay'
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+    const [isMounted, setIsMounted] = useState(false)
     const { data: session } = useSession()
 
     const { cartCount } = useCart()
@@ -24,6 +25,13 @@ const Navbar = () => {
         { name: 'Collections', href: '/#collections' },
         { name: 'Blog', href: '/blog' },
     ]
+
+    React.useEffect(() => {
+        setIsMounted(true)
+    }, [])
+
+    const safeWishlistCount = isMounted ? wishlistCount : 0
+    const safeCartCount = isMounted ? cartCount : 0
 
     return (
         <>
@@ -67,11 +75,12 @@ const Navbar = () => {
                             </button>
                             <Link href="/profile/wishlist" className="p-2 hover:text-primary transition-colors relative cursor-pointer">
                                 <Heart className="h-5 w-5" />
-                                {wishlistCount > 0 && (
-                                    <span className="absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full">
-                                        {wishlistCount}
-                                    </span>
-                                )}
+                                <span
+                                    suppressHydrationWarning
+                                    className={`absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full ${safeWishlistCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                                >
+                                    {safeWishlistCount}
+                                </span>
                             </Link>
 
                             {session ? (
@@ -92,11 +101,12 @@ const Navbar = () => {
 
                             <Link href="/cart" className="p-2 hover:text-primary transition-colors relative cursor-pointer">
                                 <ShoppingBag className="h-5 w-5" />
-                                {cartCount > 0 ? (
-                                    <span className="absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full">
-                                        {cartCount}
-                                    </span>
-                                ) : null}
+                                <span
+                                    suppressHydrationWarning
+                                    className={`absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full ${safeCartCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                                >
+                                    {safeCartCount}
+                                </span>
                             </Link>
                         </div>
                     </div>
