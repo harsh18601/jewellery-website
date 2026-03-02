@@ -6,7 +6,7 @@ import { MapPin, Plus } from 'lucide-react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 
-const AddressesPage = () => {
+const AddressesPageContent = () => {
     const [addresses, setAddresses] = React.useState<any[]>([])
     const [isEditing, setIsEditing] = React.useState(false)
     const [currentAddress, setCurrentAddress] = React.useState<any>(null)
@@ -225,6 +225,20 @@ const AddressesPage = () => {
                 )}
             </AnimatePresence>
         </section>
+    )
+}
+
+const AddressesPage = () => {
+    return (
+        <React.Suspense
+            fallback={
+                <section className="bg-muted/10 p-10 border border-primary/10 min-h-[60vh] relative flex items-center justify-center">
+                    <p className="text-sm text-muted-foreground font-serif italic">Loading addresses...</p>
+                </section>
+            }
+        >
+            <AddressesPageContent />
+        </React.Suspense>
     )
 }
 
