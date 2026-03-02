@@ -26,7 +26,7 @@ const CurrencyDropdown = ({ className = "" }: { className?: string }) => {
             <button
                 type="button"
                 onClick={() => setIsOpen((prev) => !prev)}
-                className="flex items-center gap-2 text-[10px] sm:text-xs uppercase tracking-widest font-bold hover:text-primary transition-colors"
+                className="flex items-center gap-2 text-base sm:text-xs lg:text-sm uppercase tracking-widest font-bold hover:text-primary transition-colors"
             >
                 <span suppressHydrationWarning>{selected.code} {selected.symbol}</span>
                 {isOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
@@ -42,7 +42,7 @@ const CurrencyDropdown = ({ className = "" }: { className?: string }) => {
                                 setCurrency(option.code)
                                 setIsOpen(false)
                             }}
-                            className={`w-full text-left px-4 py-3 text-sm transition-colors ${currency === option.code ? "text-primary font-semibold bg-primary/5" : "text-foreground/80 hover:bg-primary/5"}`}
+                            className={`w-full text-left px-4 py-3 text-base sm:text-sm transition-colors ${currency === option.code ? "text-primary font-semibold bg-primary/5" : "text-foreground/80 hover:bg-primary/5"}`}
                         >
                             {option.label}
                         </button>

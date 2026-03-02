@@ -1,13 +1,15 @@
 "use client"
 
 import React, { useState } from 'react'
-import { ShoppingBag, Trash2, ArrowRight } from 'lucide-react'
+import { ShoppingBag, Trash2, ArrowRight, X } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '@/components/providers/CartContext'
 import { useSession } from 'next-auth/react'
 import { createOrder } from '@/actions/orderActions'
 import { useCurrency } from '@/components/providers/CurrencyContext'
+import { AnimatePresence, motion } from 'framer-motion'
+import { useEffect } from 'react'
 
 const CartPage = () => {
     const { data: session } = useSession()
@@ -15,13 +17,58 @@ const CartPage = () => {
     const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
     const { cartItems, removeFromCart, updateQuantity } = useCart()
     const { formatPrice } = useCurrency()
+    const [hasAddress, setHasAddress] = useState(false)
+    const [isAddressLoading, setIsAddressLoading] = useState(false)
+    const [checkoutModal, setCheckoutModal] = useState({
+        open: false,
+        title: '',
+        message: '',
+        isSuccess: true,
+    })
 
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
     const total = subtotal * 1.03
 
+    useEffect(() => {
+        if (!session) {
+            setHasAddress(false)
+            return
+        }
+
+        const fetchAddresses = async () => {
+            setIsAddressLoading(true)
+            try {
+                const res = await fetch('/api/user/sync')
+                if (!res.ok) {
+                    setHasAddress(false)
+                    return
+                }
+                const data = await res.json()
+                setHasAddress(Array.isArray(data.addresses) && data.addresses.length > 0)
+            } catch {
+                setHasAddress(false)
+            } finally {
+                setIsAddressLoading(false)
+            }
+        }
+
+        fetchAddresses()
+    }, [session])
+
     const handleCheckout = async () => {
         if (!session) {
             router.push('/auth/signin?callbackUrl=/cart')
+            return
+        }
+
+        if (!hasAddress) {
+            setCheckoutModal({
+                open: true,
+                title: 'Add delivery address',
+                message: 'Please add your address before proceeding to checkout.',
+                isSuccess: false,
+            })
+            router.push('/profile/addresses?callbackUrl=/cart')
             return
         }
 
@@ -43,13 +90,28 @@ const CartPage = () => {
 
             const result = await createOrder(orderData)
             if (result.success) {
-                alert(`Order placed successfully! Order ID: ${result.orderId}`)
+                setCheckoutModal({
+                    open: true,
+                    title: 'Thanks for shopping with us',
+                    message: `Your order has been placed successfully. Order ID: ${result.orderId}`,
+                    isSuccess: true,
+                })
             } else {
-                alert('Failed to place order. Please try again.')
+                setCheckoutModal({
+                    open: true,
+                    title: 'Order could not be placed',
+                    message: 'Please try again.',
+                    isSuccess: false,
+                })
             }
         } catch (error) {
             console.error('Checkout error:', error)
-            alert('An unexpected error occurred.')
+            setCheckoutModal({
+                open: true,
+                title: 'Something went wrong',
+                message: 'An unexpected error occurred.',
+                isSuccess: false,
+            })
         } finally {
             setIsCheckoutLoading(false)
         }
@@ -156,7 +218,7 @@ const CartPage = () => {
 
                     <button
                         onClick={handleCheckout}
-                        disabled={isCheckoutLoading || cartItems.length === 0}
+                        disabled={isCheckoutLoading || isAddressLoading || cartItems.length === 0}
                         className="w-full py-5 bg-secondary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary hover:text-primary-foreground hover:scale-[1.02] hover:shadow-xl transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed group/checkout"
                     >
                         {isCheckoutLoading ? 'Processing...' : (
@@ -172,6 +234,46 @@ const CartPage = () => {
                     </div>
                 </aside>
             </div>
+
+            <AnimatePresence>
+                {checkoutModal.open && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[120] bg-black/70 flex items-center justify-center px-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="w-full max-w-lg bg-background border border-primary/20 p-8 space-y-5 text-center relative"
+                        >
+                            <button
+                                type="button"
+                                aria-label="Close"
+                                onClick={() => setCheckoutModal((prev) => ({ ...prev, open: false }))}
+                                className="absolute top-4 right-4 p-1.5 text-muted-foreground hover:text-primary transition-colors"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                            <h3 className={`text-2xl font-bold text-center ${checkoutModal.isSuccess ? 'text-primary' : 'text-destructive'}`}>
+                                {checkoutModal.title}
+                            </h3>
+                            <p className="text-sm text-muted-foreground">
+                                {checkoutModal.message}
+                            </p>
+                            <button
+                                type="button"
+                                onClick={() => setCheckoutModal((prev) => ({ ...prev, open: false }))}
+                                className="px-8 py-3 bg-primary text-foreground text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all"
+                            >
+                                OK
+                            </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </div>
     )
 }
