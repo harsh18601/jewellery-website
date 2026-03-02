@@ -15,7 +15,7 @@ const CartPage = () => {
     const { data: session } = useSession()
     const router = useRouter()
     const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
-    const { cartItems, removeFromCart, updateQuantity } = useCart()
+    const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart()
     const { formatPrice } = useCurrency()
     const [addresses, setAddresses] = useState<any[]>([])
     const [addressModalOpen, setAddressModalOpen] = useState(false)
@@ -79,12 +79,8 @@ const CartPage = () => {
 
             const result = await createOrder(orderData)
             if (result.success) {
-                setCheckoutModal({
-                    open: true,
-                    title: 'Thanks for shopping with us',
-                    message: `Your order has been placed successfully. Order ID: ${result.orderId}`,
-                    isSuccess: true,
-                })
+                clearCart()
+                router.push('/profile/orders')
             } else {
                 setCheckoutModal({
                     open: true,
