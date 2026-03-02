@@ -9,10 +9,14 @@ export interface IUser extends Document {
     wishlist: any[];
     cart: any[];
     addresses: {
+        id?: number;
+        name?: string;
         street: string;
         city: string;
         state: string;
         zip: string;
+        phone?: string;
+        isDefault?: boolean;
         country: string;
     }[];
     createdAt: Date;
@@ -27,10 +31,14 @@ const UserSchema: Schema = new Schema({
     wishlist: { type: [Object], default: [] },
     cart: { type: [Object], default: [] },
     addresses: [{
+        id: Number,
+        name: String,
         street: String,
         city: String,
         state: String,
         zip: String,
+        phone: String,
+        isDefault: Boolean,
         country: String,
     }],
     createdAt: { type: Date, default: Date.now },

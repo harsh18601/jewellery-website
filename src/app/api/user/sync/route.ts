@@ -48,13 +48,14 @@ export async function POST(req: Request) {
         } catch {
             payload = {};
         }
-        const { wishlist, cart, name, email } = payload;
+        const { wishlist, cart, name, email, addresses } = payload;
 
         const updateData: any = {};
         if (typeof name === 'string' && name.trim()) updateData.name = name.trim();
         if (typeof email === 'string' && email.trim()) updateData.email = email.trim().toLowerCase();
         if (wishlist !== undefined) updateData.wishlist = wishlist;
         if (cart !== undefined) updateData.cart = cart;
+        if (Array.isArray(addresses)) updateData.addresses = addresses;
 
         await dbConnect();
         await User.findOneAndUpdate(

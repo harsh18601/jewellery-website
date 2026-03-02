@@ -17,7 +17,9 @@ const CartPage = () => {
     const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
     const { cartItems, removeFromCart, updateQuantity } = useCart()
     const { formatPrice } = useCurrency()
-    const [hasAddress, setHasAddress] = useState(false)
+    const [addresses, setAddresses] = useState<any[]>([])
+    const [addressModalOpen, setAddressModalOpen] = useState(false)
+    const [selectedAddressKey, setSelectedAddressKey] = useState<string>('')
     const [isAddressLoading, setIsAddressLoading] = useState(false)
     const [checkoutModal, setCheckoutModal] = useState({
         open: false,
@@ -31,7 +33,7 @@ const CartPage = () => {
 
     useEffect(() => {
         if (!session) {
-            setHasAddress(false)
+            setAddresses([])
             return
         }
 
@@ -40,13 +42,14 @@ const CartPage = () => {
             try {
                 const res = await fetch('/api/user/sync')
                 if (!res.ok) {
-                    setHasAddress(false)
+                    setAddresses([])
                     return
                 }
                 const data = await res.json()
-                setHasAddress(Array.isArray(data.addresses) && data.addresses.length > 0)
+                const fetchedAddresses = Array.isArray(data.addresses) ? data.addresses : []
+                setAddresses(fetchedAddresses)
             } catch {
-                setHasAddress(false)
+                setAddresses([])
             } finally {
                 setIsAddressLoading(false)
             }
@@ -55,25 +58,10 @@ const CartPage = () => {
         fetchAddresses()
     }, [session])
 
-    const handleCheckout = async () => {
-        if (!session) {
-            router.push('/auth/signin?callbackUrl=/cart')
-            return
-        }
+    const getAddressKey = (address: any, index: number) =>
+        String(address.id || address._id || `${address.street || 'addr'}-${address.zip || ''}-${index}`)
 
-        if (!hasAddress) {
-            setCheckoutModal({
-                open: true,
-                title: 'Add delivery address',
-                message: 'Please add your address before proceeding to checkout.',
-                isSuccess: false,
-            })
-            router.push('/profile/addresses?callbackUrl=/cart')
-            return
-        }
-
-        if (cartItems.length === 0) return
-
+    const placeOrder = async (shippingAddress: any) => {
         setIsCheckoutLoading(true)
         try {
             const orderData = {
@@ -85,7 +73,8 @@ const CartPage = () => {
                 })),
                 totalPrice: total,
                 paymentStatus: 'Pending',
-                orderStatus: 'Processing'
+                orderStatus: 'Processing',
+                shippingAddress
             }
 
             const result = await createOrder(orderData)
@@ -115,6 +104,42 @@ const CartPage = () => {
         } finally {
             setIsCheckoutLoading(false)
         }
+    }
+
+    const handleCheckout = async () => {
+        if (!session) {
+            router.push('/auth/signin?callbackUrl=/cart')
+            return
+        }
+
+        if (cartItems.length === 0) return
+
+        let latestAddresses = addresses
+        try {
+            const res = await fetch('/api/user/sync')
+            if (res.ok) {
+                const data = await res.json()
+                latestAddresses = Array.isArray(data.addresses) ? data.addresses : []
+                setAddresses(latestAddresses)
+            }
+        } catch {
+            latestAddresses = addresses
+        }
+
+        if (!latestAddresses.length) {
+            router.push('/profile/addresses?callbackUrl=/cart')
+            return
+        }
+
+        if (latestAddresses.length > 1) {
+            const defaultIndex = latestAddresses.findIndex((addr: any) => Boolean(addr.isDefault))
+            const selectedIndex = defaultIndex >= 0 ? defaultIndex : 0
+            setSelectedAddressKey(getAddressKey(latestAddresses[selectedIndex], selectedIndex))
+            setAddressModalOpen(true)
+            return
+        }
+
+        await placeOrder(latestAddresses[0])
     }
 
     return (
@@ -270,6 +295,68 @@ const CartPage = () => {
                             >
                                 OK
                             </button>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {addressModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[120] bg-black/70 flex items-center justify-center px-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="w-full max-w-2xl bg-background border border-primary/20 p-8 space-y-6"
+                        >
+                            <h3 className="text-2xl font-bold text-center">Select Delivery Address</h3>
+                            <div className="space-y-3 max-h-[50vh] overflow-auto pr-1">
+                                {addresses.map((address, index) => {
+                                    const key = getAddressKey(address, index)
+                                    return (
+                                        <button
+                                            type="button"
+                                            key={key}
+                                            onClick={() => setSelectedAddressKey(key)}
+                                            className={`w-full text-left p-4 border transition-colors ${selectedAddressKey === key ? 'border-primary bg-primary/5' : 'border-primary/15 hover:border-primary/40'}`}
+                                        >
+                                            <p className="text-sm font-bold">{address.name || 'Address'}</p>
+                                            <p className="text-xs text-muted-foreground mt-1">
+                                                {address.street}, {address.city}, {address.state} {address.zip}
+                                            </p>
+                                            {address.phone && (
+                                                <p className="text-xs text-muted-foreground">Phone: {address.phone}</p>
+                                            )}
+                                        </button>
+                                    )
+                                })}
+                            </div>
+                            <div className="flex items-center justify-end gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setAddressModalOpen(false)}
+                                    className="px-6 py-3 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest hover:bg-primary/10 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={async () => {
+                                        const selectedIndex = addresses.findIndex((address, index) => getAddressKey(address, index) === selectedAddressKey)
+                                        const selectedAddress = selectedIndex >= 0 ? addresses[selectedIndex] : addresses[0]
+                                        setAddressModalOpen(false)
+                                        await placeOrder(selectedAddress)
+                                    }}
+                                    className="px-6 py-3 bg-primary text-foreground text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all"
+                                >
+                                    Continue Checkout
+                                </button>
+                            </div>
                         </motion.div>
                     </motion.div>
                 )}

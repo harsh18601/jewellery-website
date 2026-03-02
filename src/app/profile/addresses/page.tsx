@@ -1,19 +1,56 @@
 "use client"
 
 import React from 'react'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import { MapPin, Plus } from 'lucide-react'
+import { useRouter, useSearchParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
 
 const AddressesPage = () => {
     const [addresses, setAddresses] = React.useState<any[]>([])
     const [isEditing, setIsEditing] = React.useState(false)
     const [currentAddress, setCurrentAddress] = React.useState<any>(null)
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false)
+    const [pendingDeleteId, setPendingDeleteId] = React.useState<number | null>(null)
+    const { data: session } = useSession()
+    const searchParams = useSearchParams()
+    const router = useRouter()
+    const callbackUrl = searchParams.get('callbackUrl') || ''
 
-    const handleRemove = (id: number) => {
-        setAddresses(addresses.filter(a => a.id !== id))
+    React.useEffect(() => {
+        if (!session) return
+        const fetchAddresses = async () => {
+            try {
+                const res = await fetch('/api/user/sync')
+                if (!res.ok) return
+                const data = await res.json()
+                setAddresses(Array.isArray(data.addresses) ? data.addresses : [])
+            } catch (e) {
+                console.error('Failed to load addresses', e)
+            }
+        }
+        fetchAddresses()
+    }, [session])
+
+    const syncAddresses = async (nextAddresses: any[]) => {
+        try {
+            await fetch('/api/user/sync', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ addresses: nextAddresses }),
+            })
+        } catch (e) {
+            console.error('Failed to save addresses', e)
+        }
     }
 
-    const handleSave = (e: React.FormEvent) => {
+    const handleRemove = async (id: number) => {
+        const next = addresses.filter(a => a.id !== id)
+        setAddresses(next)
+        await syncAddresses(next)
+    }
+
+    const handleSave = async (e: React.FormEvent) => {
         e.preventDefault()
         const formData = new FormData(e.target as HTMLFormElement)
         const newAddr = {
@@ -24,16 +61,24 @@ const AddressesPage = () => {
             state: formData.get('state') as string,
             zip: formData.get('zip') as string,
             phone: formData.get('phone') as string,
-            isDefault: currentAddress?.isDefault || false
+            isDefault: currentAddress?.isDefault || addresses.length === 0,
+            country: 'India',
         }
 
+        let nextAddresses: any[] = []
         if (currentAddress) {
-            setAddresses(addresses.map(a => a.id === currentAddress.id ? newAddr : a))
+            nextAddresses = addresses.map(a => a.id === currentAddress.id ? newAddr : a)
         } else {
-            setAddresses([...addresses, newAddr])
+            nextAddresses = [...addresses, newAddr]
         }
+        setAddresses(nextAddresses)
+        await syncAddresses(nextAddresses)
         setIsEditing(false)
         setCurrentAddress(null)
+
+        if (callbackUrl) {
+            router.push(callbackUrl)
+        }
     }
 
     return (
@@ -92,7 +137,7 @@ const AddressesPage = () => {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     {addresses.map(addr => (
-                        <div key={addr.id} className="p-8 bg-background border border-primary/20 relative group">
+                        <div key={`${addr.id || addr._id || 'addr'}-${addr.street || ''}-${addr.zip || ''}`} className="p-8 bg-background border border-primary/20 relative group">
                             {addr.isDefault && <div className="absolute top-4 right-4 text-[10px] uppercase tracking-widest font-bold text-primary">Default</div>}
                             <h3 className="text-xs font-bold uppercase tracking-widest mb-4 flex items-center">
                                 <MapPin className="h-3 w-3 mr-2 text-primary" />
@@ -110,7 +155,10 @@ const AddressesPage = () => {
                                     className="text-[10px] uppercase tracking-widest font-bold border-b border-secondary pb-1 hover:text-primary hover:border-primary transition-colors cursor-pointer"
                                 >Edit</button>
                                 <button
-                                    onClick={() => handleRemove(addr.id)}
+                                    onClick={() => {
+                                        setPendingDeleteId(addr.id)
+                                        setIsDeleteModalOpen(true)
+                                    }}
                                     className="text-[10px] uppercase tracking-widest font-bold border-b border-secondary pb-1 hover:text-destructive hover:border-destructive transition-colors cursor-pointer"
                                 >Remove</button>
                             </div>
@@ -128,6 +176,54 @@ const AddressesPage = () => {
                     </div>
                 </div>
             )}
+
+            <AnimatePresence>
+                {isDeleteModalOpen && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[120] bg-black/70 flex items-center justify-center px-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="w-full max-w-md bg-background border border-primary/20 p-8 space-y-6 text-center"
+                        >
+                            <h3 className="text-xl font-bold text-center">Remove Address</h3>
+                            <p className="text-sm text-muted-foreground text-center">
+                                Are you sure you want to remove address
+                            </p>
+                            <div className="flex items-center justify-center gap-3">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsDeleteModalOpen(false)
+                                        setPendingDeleteId(null)
+                                    }}
+                                    className="px-6 py-3 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest hover:bg-primary/10 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={async () => {
+                                        if (pendingDeleteId !== null) {
+                                            await handleRemove(pendingDeleteId)
+                                        }
+                                        setIsDeleteModalOpen(false)
+                                        setPendingDeleteId(null)
+                                    }}
+                                    className="px-6 py-3 bg-destructive text-destructive-foreground text-xs font-bold uppercase tracking-widest hover:opacity-90 transition-all"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
         </section>
     )
 }

@@ -8,6 +8,17 @@ export interface IOrder extends Document {
         price: number;
     }[];
     totalPrice: number;
+    shippingAddress?: {
+        id?: number;
+        name?: string;
+        street?: string;
+        city?: string;
+        state?: string;
+        zip?: string;
+        phone?: string;
+        country?: string;
+        isDefault?: boolean;
+    };
     paymentStatus: 'Pending' | 'Paid' | 'Failed';
     orderStatus: 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
     createdAt: Date;
@@ -21,6 +32,17 @@ const OrderSchema: Schema = new Schema({
         price: { type: Number, required: true },
     }],
     totalPrice: { type: Number, required: true },
+    shippingAddress: {
+        id: Number,
+        name: String,
+        street: String,
+        city: String,
+        state: String,
+        zip: String,
+        phone: String,
+        country: String,
+        isDefault: Boolean,
+    },
     paymentStatus: { type: String, enum: ['Pending', 'Paid', 'Failed'], default: 'Pending' },
     orderStatus: { type: String, enum: ['Processing', 'Shipped', 'Delivered', 'Cancelled'], default: 'Processing' },
     createdAt: { type: Date, default: Date.now },
