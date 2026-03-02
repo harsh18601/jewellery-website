@@ -3,9 +3,12 @@
 import React, { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RichTextRenderer } from '@/lib/richTextRenderer'
-import { ShoppingBag, Heart, Share2, Star, ShieldCheck, Truck, RefreshCw, ArrowLeft } from 'lucide-react'
+import { ShoppingBag, Heart, Share2, ShieldCheck, Truck, RefreshCw, ArrowLeft } from 'lucide-react'
 import { useCart } from '@/components/providers/CartContext'
-import { useRouter } from 'next/navigation'
+import { useWishlist } from '@/components/providers/WishlistContext'
+import { usePathname, useRouter, useSearchParams } from 'next/navigation'
+import { useSession } from 'next-auth/react'
+import { useCurrency } from '@/components/providers/CurrencyContext'
 
 interface ProductDetailClientProps {
     product: any;
@@ -13,12 +16,20 @@ interface ProductDetailClientProps {
 
 const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
     const router = useRouter()
+    const pathname = usePathname()
+    const searchParams = useSearchParams()
+    const { data: session } = useSession()
     const { addToCart } = useCart()
+    const { formatPrice } = useCurrency()
+    const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
     const [selectedImage, setSelectedImage] = useState(0)
     const [quantity, setQuantity] = useState(1)
     const [isAdding, setIsAdding] = useState(false)
     const [isZoomed, setIsZoomed] = useState(false)
     const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 })
+    const [shareFeedback, setShareFeedback] = useState('')
+    const productId = product.id || product._id
+    const wishlistAuthMessage = 'You must login or register to add items to your wishlist.'
 
     const handleAddToCart = () => {
         setIsAdding(true)
@@ -35,11 +46,7 @@ const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
     }
 
     const images = product.images?.length > 0 ? product.images : ['https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=1000']
-    const formattedPrice = new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0,
-    }).format(Number(product.price || 0))
+    const formattedPrice = formatPrice(Number(product.price || 0))
 
     const getZoomPoint = (clientX: number, clientY: number, rect: DOMRect) => {
         const x = ((clientX - rect.left) / rect.width) * 100
@@ -74,6 +81,60 @@ const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
             return
         }
         router.push('/shop')
+    }
+
+    const handleWishlistAuthRedirect = () => {
+        const query = searchParams.toString()
+        const callbackUrl = query ? `${pathname}?${query}` : pathname
+        router.push(
+            `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}&message=${encodeURIComponent(wishlistAuthMessage)}`
+        )
+    }
+
+    const handleWishlistClick = () => {
+        const item = {
+            id: productId,
+            title: product.title,
+            price: product.price,
+            image: images[0] || '',
+            category: product.category || 'Jewellery',
+        }
+        if (!session) {
+            handleWishlistAuthRedirect()
+            return
+        }
+        if (isInWishlist(productId)) {
+            removeFromWishlist(productId)
+            return
+        }
+        addToWishlist(item)
+    }
+
+    const handleShareClick = async () => {
+        const url = typeof window !== 'undefined' ? window.location.href : ''
+        if (!url) return
+
+        const shareData = {
+            title: product.title || 'Product',
+            text: `Check out this jewellery piece: ${product.title || 'Product'}`,
+            url,
+        }
+
+        try {
+            if (navigator.share) {
+                await navigator.share(shareData)
+                setShareFeedback('Shared successfully')
+            } else if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(url)
+                setShareFeedback('Link copied')
+            } else {
+                setShareFeedback('Sharing not supported')
+            }
+        } catch {
+            setShareFeedback('Sharing cancelled')
+        } finally {
+            setTimeout(() => setShareFeedback(''), 2000)
+        }
     }
 
     return (
@@ -141,14 +202,25 @@ const ProductDetailClient = ({ product }: ProductDetailClientProps) => {
                                 <h1 className="text-4xl font-bold tracking-tight uppercase">{product.title}</h1>
                             </div>
                             <div className="flex space-x-2">
-                                <button className="p-2 border border-border hover:bg-secondary/40 transition-colors rounded-full">
-                                    <Heart className="h-5 w-5" />
+                                <button
+                                    type="button"
+                                    onClick={handleWishlistClick}
+                                    className="p-2 border border-border hover:bg-secondary/40 transition-colors rounded-full"
+                                >
+                                    <Heart className={`h-5 w-5 ${isInWishlist(productId) ? 'fill-primary text-primary' : ''}`} />
                                 </button>
-                                <button className="p-2 border border-border hover:bg-secondary/40 transition-colors rounded-full">
+                                <button
+                                    type="button"
+                                    onClick={handleShareClick}
+                                    className="p-2 border border-border hover:bg-secondary/40 transition-colors rounded-full"
+                                >
                                     <Share2 className="h-5 w-5" />
                                 </button>
                             </div>
                         </div>
+                        {shareFeedback && (
+                            <p className="text-[10px] uppercase tracking-widest text-primary font-bold">{shareFeedback}</p>
+                        )}
 
                         <p className="text-4xl font-bold text-primary tracking-tight">{formattedPrice}</p>
                     </div>

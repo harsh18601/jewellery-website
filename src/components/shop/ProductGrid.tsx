@@ -7,22 +7,11 @@ import { Star, Heart } from 'lucide-react'
 import { useWishlist } from '@/components/providers/WishlistContext'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
-
-const formatPrice = (value: unknown) => {
-    const amount = Number(value)
-    if (!Number.isFinite(amount)) {
-        return null
-    }
-
-    return new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0
-    }).format(amount)
-}
+import { useCurrency } from '@/components/providers/CurrencyContext'
 
 const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage?: string }) => {
     const { addToWishlist, removeFromWishlist, isInWishlist } = useWishlist()
+    const { formatPrice } = useCurrency()
     const { data: session } = useSession()
     const router = useRouter()
     const pathname = usePathname()
@@ -50,7 +39,8 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
             {products.map((product, i) => {
                 const productId = product._id || product.id || (product.sys && product.sys.id)
                 const imageUrl = product.images?.[0] || 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800'
-                const displayPrice = formatPrice(product.price)
+                const amount = Number(product.price)
+                const displayPrice = Number.isFinite(amount) ? formatPrice(amount) : null
 
                 return (
                     <motion.div

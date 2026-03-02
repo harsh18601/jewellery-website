@@ -1,8 +1,25 @@
-import React from 'react'
+"use client"
+
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { Instagram, Facebook, Twitter, Mail, Phone, MapPin } from 'lucide-react'
 
 const Footer = () => {
+    const [newsletterEmail, setNewsletterEmail] = useState('')
+    const [newsletterMessage, setNewsletterMessage] = useState('')
+
+    const handleSubscribe = (e: React.FormEvent) => {
+        e.preventDefault()
+        const email = newsletterEmail.trim()
+        const isValidEmail = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+        if (!isValidEmail) {
+            setNewsletterMessage('Please enter a valid email address.')
+            return
+        }
+        setNewsletterMessage('Thank you for subscribing to our newsletter.')
+        setNewsletterEmail('')
+    }
+
     return (
         <footer className="bg-secondary text-foreground pt-16 pb-8 border-t border-primary/20">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-4 gap-12">
@@ -57,6 +74,31 @@ const Footer = () => {
                             <span>info@radhagovind.com</span>
                         </li>
                     </ul>
+                </div>
+            </div>
+
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-14 pt-10 border-t border-primary/10">
+                <div className="space-y-4 max-w-lg">
+                    <h4 className="text-3xl tracking-tight">Newsletter</h4>
+                    <p className="text-foreground/70 font-serif italic">Sign up to our newsletter to receive exclusive offers.</p>
+                    <form onSubmit={handleSubscribe} className="space-y-4">
+                        <input
+                            type="email"
+                            value={newsletterEmail}
+                            onChange={(e) => setNewsletterEmail(e.target.value)}
+                            placeholder="E-mail"
+                            className="w-full h-12 px-4 bg-transparent border border-foreground/20 outline-none focus:border-primary transition-colors"
+                        />
+                        <button
+                            type="submit"
+                            className="h-12 px-8 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-colors"
+                        >
+                            Subscribe
+                        </button>
+                    </form>
+                    {newsletterMessage && (
+                        <p className="text-xs text-primary font-medium">{newsletterMessage}</p>
+                    )}
                 </div>
             </div>
 

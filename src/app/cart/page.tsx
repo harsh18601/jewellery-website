@@ -7,19 +7,14 @@ import Link from 'next/link'
 import { useCart } from '@/components/providers/CartContext'
 import { useSession } from 'next-auth/react'
 import { createOrder } from '@/actions/orderActions'
-
-const formatCurrency = (value: number) =>
-    new Intl.NumberFormat('en-IN', {
-        style: 'currency',
-        currency: 'INR',
-        maximumFractionDigits: 0
-    }).format(value)
+import { useCurrency } from '@/components/providers/CurrencyContext'
 
 const CartPage = () => {
     const { data: session } = useSession()
     const router = useRouter()
     const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
     const { cartItems, removeFromCart, updateQuantity } = useCart()
+    const { formatPrice } = useCurrency()
 
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
     const total = subtotal * 1.03
@@ -92,7 +87,7 @@ const CartPage = () => {
                                                     </p>
                                                 )}
                                             </div>
-                                            <span className="font-bold text-primary">{formatCurrency(item.price)}</span>
+                                            <span className="font-bold text-primary">{formatPrice(item.price)}</span>
                                         </div>
 
                                         <div className="flex justify-between items-center pt-2 sm:pt-4">
@@ -143,11 +138,11 @@ const CartPage = () => {
                     <div className="space-y-4 text-xs font-bold uppercase tracking-widest">
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Subtotal</span>
-                            <span>{formatCurrency(subtotal)}</span>
+                            <span>{formatPrice(subtotal)}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Tax (GST)</span>
-                            <span>{formatCurrency(subtotal * 0.03)}</span>
+                            <span>{formatPrice(subtotal * 0.03)}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Shipping</span>
@@ -155,7 +150,7 @@ const CartPage = () => {
                         </div>
                         <div className="border-t border-primary/20 pt-4 flex justify-between text-base">
                             <span>Total</span>
-                            <span>{formatCurrency(total)}</span>
+                            <span>{formatPrice(total)}</span>
                         </div>
                     </div>
 

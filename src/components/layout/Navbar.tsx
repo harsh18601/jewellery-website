@@ -8,6 +8,7 @@ import { useCart } from '@/components/providers/CartContext'
 import { useWishlist } from '@/components/providers/WishlistContext'
 import { useSession, signOut } from 'next-auth/react'
 import SearchOverlay from './SearchOverlay'
+import CurrencyDropdown from './CurrencyDropdown'
 
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -67,6 +68,9 @@ const Navbar = () => {
                         </div>
 
                         <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-6 flex-shrink-0">
+                            <div className="hidden sm:block">
+                                <CurrencyDropdown />
+                            </div>
                             <button
                                 onClick={() => setIsSearchOpen(true)}
                                 className="p-2 hover:text-primary transition-colors cursor-pointer"
@@ -145,6 +149,9 @@ const Navbar = () => {
                             </div>
 
                             <div className="pt-12 border-t border-primary/10">
+                                <div className="mb-6">
+                                    <CurrencyDropdown />
+                                </div>
                                 {session ? (
                                     <div className="space-y-6">
                                         <Link

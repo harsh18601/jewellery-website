@@ -7,6 +7,7 @@ import ConciergeButton from "@/components/layout/ConciergeButton";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { CartProvider } from "@/components/providers/CartContext";
 import { WishlistProvider } from "@/components/providers/WishlistContext";
+import { CurrencyProvider } from "@/components/providers/CurrencyContext";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-montserrat", weight: ["400", "500", "600", "700"] });
 const cinzel = Cinzel({ subsets: ["latin"], variable: "--font-cinzel", weight: ["400", "500", "600", "700", "800"] });
@@ -27,12 +28,14 @@ export default function RootLayout({
         <AuthProvider>
           <CartProvider>
             <WishlistProvider>
-              <Navbar />
-              <main className="min-h-screen pt-20">
-                {children}
-              </main>
-              <Footer />
-              <ConciergeButton />
+              <CurrencyProvider>
+                <Navbar />
+                <main className="min-h-screen pt-20">
+                  {children}
+                </main>
+                <Footer />
+                <ConciergeButton />
+              </CurrencyProvider>
             </WishlistProvider>
           </CartProvider>
         </AuthProvider>

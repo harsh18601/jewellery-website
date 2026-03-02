@@ -108,9 +108,9 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
                                     "{testimonial.content}"
                                 </p>
 
-                                <div className="mt-auto">
+                                <div className="mt-auto text-center md:text-left">
                                     <h4 className="font-bold uppercase tracking-widest text-xs text-foreground">{testimonial.name}</h4>
-                                    <span className="text-[10px] text-primary uppercase tracking-widest font-bold">{testimonial.role}</span>
+                                    <span className="text-[10px] text-primary uppercase tracking-widest font-bold block">{testimonial.role}</span>
                                 </div>
                             </motion.div>
                         ))}
