@@ -62,6 +62,11 @@ const CartPage = () => {
         String(address.id || address._id || `${address.street || 'addr'}-${address.zip || ''}-${index}`)
 
     const placeOrder = async (shippingAddress: any) => {
+        if (!session?.user) {
+            router.push('/auth/signin?callbackUrl=/cart')
+            return
+        }
+
         setIsCheckoutLoading(true)
         try {
             const orderData = {
