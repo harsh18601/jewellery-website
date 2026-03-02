@@ -78,7 +78,7 @@ const ConsultationPage = () => {
                         animate={{ opacity: 1, y: 0 }}
                         className="space-y-8 sm:space-y-12"
                     >
-                        <div className="space-y-4">
+                        <div className="space-y-4 text-left lg:text-center">
                             <Link href="/profile" className="inline-flex items-center text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary transition-colors mb-4">
                                 <ArrowLeft className="h-3 w-3 mr-2" /> Back to Profile
                             </Link>

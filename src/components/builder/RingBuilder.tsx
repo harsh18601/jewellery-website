@@ -44,9 +44,9 @@ const RingBuilder = () => {
 
     return (
         <div className="max-w-5xl mx-auto px-4 py-20">
-            <div className="text-center mb-16 space-y-4">
-                <h1 className="text-4xl font-bold gold-text uppercase tracking-widest">Design Your Masterpiece</h1>
-                <p className="text-muted-foreground font-serif italic">Your vision, our craftsmanship. Create a ring as unique as your story.</p>
+            <div className="text-center mb-16 space-y-4 flex flex-col items-center">
+                <h1 className="text-4xl font-bold gold-text uppercase tracking-widest text-center">Design Your Masterpiece</h1>
+                <p className="text-muted-foreground font-serif italic text-center">Your vision, our craftsmanship. Create a ring as unique as your story.</p>
             </div>
 
             <div className="flex justify-center mb-12">

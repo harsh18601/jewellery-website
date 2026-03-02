@@ -20,7 +20,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
                 }
             }
         }
-    } catch (error) {
+    } catch {
         // Fallback to DB
         product = await getProductById(id)
     }

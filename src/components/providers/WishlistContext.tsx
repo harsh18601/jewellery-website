@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect } from 'react'
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react'
 import { useSession } from 'next-auth/react'
 
 interface WishlistItem {
@@ -22,47 +22,49 @@ interface WishlistContextType {
 const WishlistContext = createContext<WishlistContextType | undefined>(undefined);
 
 export const WishlistProvider = ({ children }: { children: React.ReactNode }) => {
-    const { data: session } = useSession()
-    const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>([]);
-    const [isInitialLoad, setIsInitialLoad] = useState(true)
+    const { data: session, status } = useSession()
+    const [wishlistItems, setWishlistItems] = useState<WishlistItem[]>(() => {
+        if (typeof window === 'undefined') return []
+        const saved = localStorage.getItem('wishlist')
+        if (!saved) return []
+        try {
+            return JSON.parse(saved)
+        } catch (e) {
+            console.error("Failed to parse wishlist", e)
+            return []
+        }
+    });
+    const isHydratedRef = useRef(false)
 
-    // Initial load from localStorage
+    // Load from server when session is available.
     useEffect(() => {
-        const saved = localStorage.getItem('wishlist');
-        if (saved) {
+        if (status === 'loading') return
+        if (!session) {
+            isHydratedRef.current = true
+            return
+        }
+
+        const fetchWishlist = async () => {
             try {
-                setWishlistItems(JSON.parse(saved));
-            } catch (e) {
-                console.error("Failed to parse wishlist", e);
-            }
-        }
-        setIsInitialLoad(false)
-    }, []);
-
-    // Load from server when session is available
-    useEffect(() => {
-        if (session && !isInitialLoad) {
-            const fetchWishlist = async () => {
-                try {
-                    const res = await fetch('/api/user/sync')
-                    if (res.ok) {
-                        const data = await res.json()
-                        if (data.wishlist && data.wishlist.length > 0) {
-                            // Merge or use server data (using server data for persistence)
-                            setWishlistItems(data.wishlist)
-                        }
+                const res = await fetch('/api/user/sync')
+                if (res.ok) {
+                    const data = await res.json()
+                    if (Array.isArray(data.wishlist)) {
+                        setWishlistItems(data.wishlist)
                     }
-                } catch (e) {
-                    console.error("Failed to fetch wishlist from server", e)
                 }
+            } catch (e) {
+                console.error("Failed to fetch wishlist from server", e)
+            } finally {
+                isHydratedRef.current = true
             }
-            fetchWishlist()
         }
-    }, [session, isInitialLoad])
+        fetchWishlist()
+    }, [session, status])
 
     // Save to localStorage and sync to server
     useEffect(() => {
-        if (isInitialLoad) return;
+        if (!isHydratedRef.current) return;
 
         localStorage.setItem('wishlist', JSON.stringify(wishlistItems));
 
@@ -81,7 +83,7 @@ export const WishlistProvider = ({ children }: { children: React.ReactNode }) =>
             const timer = setTimeout(syncToServer, 1000)
             return () => clearTimeout(timer)
         }
-    }, [wishlistItems, session, isInitialLoad]);
+    }, [wishlistItems, session]);
 
     const addToWishlist = (item: WishlistItem) => {
         setWishlistItems(prev => {

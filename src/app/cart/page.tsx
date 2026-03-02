@@ -64,9 +64,9 @@ const CartPage = () => {
         <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24 min-h-screen">
             <div className="flex flex-col md:flex-row justify-between items-start gap-10 md:gap-16">
                 <div className="flex-grow space-y-10 sm:space-y-12 w-full">
-                    <div className="space-y-4 text-center sm:text-left">
-                        <h1 className="text-4xl font-bold uppercase tracking-tighter mb-2">Shopping Bag</h1>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                    <div className="space-y-4 text-center flex flex-col items-center">
+                        <h1 className="text-4xl font-bold uppercase tracking-tighter mb-2 text-center">Shopping Bag</h1>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold text-center">
                             {cartItems.length} ITEM(S) IN YOUR BAG
                         </p>
                     </div>

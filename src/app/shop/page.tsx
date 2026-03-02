@@ -61,7 +61,7 @@ export default async function ShopPage({ searchParams }: { searchParams: { cat?:
             {!isNoSearchResults && (
                 <div className="flex flex-col md:flex-row justify-between items-center mb-12 border-b border-primary/10 pb-8">
                     <div>
-                        <h1 className="text-4xl font-bold uppercase tracking-tighter mb-2">Our Collections</h1>
+                        <h1 className="text-4xl font-bold tracking-tighter mb-2 gold-text">Our Collections</h1>
                         <p className="text-muted-foreground font-serif italic text-sm">Exquisite craftsmanship for the refined taste.</p>
                     </div>
 

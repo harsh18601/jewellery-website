@@ -1,7 +1,6 @@
 "use client"
 
 import React from 'react'
-import { motion } from 'framer-motion'
 
 const InfoPage = ({ title, bannerImage, children }: { title: string, bannerImage: string, children: React.ReactNode }) => (
     <div className="bg-background">

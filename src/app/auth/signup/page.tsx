@@ -55,7 +55,7 @@ const SignUpPage = () => {
 
             // Success - redirect to sign-in
             router.push('/auth/signin?registered=true')
-        } catch (err) {
+        } catch {
             setError('Failed to register. Please try again.')
             setIsLoading(false)
         }

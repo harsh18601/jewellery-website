@@ -3,7 +3,6 @@
 import React from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { motion } from 'framer-motion'
 import { User, Package, MapPin, Settings, LogOut } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 

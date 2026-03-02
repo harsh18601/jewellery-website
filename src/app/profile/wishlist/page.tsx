@@ -1,8 +1,7 @@
 "use client"
 
 import React from 'react'
-import { motion } from 'framer-motion'
-import { Heart, ShoppingBag, ArrowRight } from 'lucide-react'
+import { Heart, ArrowRight } from 'lucide-react'
 import Link from 'next/link'
 import { useWishlist } from '@/components/providers/WishlistContext'
 import ProductGrid from '@/components/shop/ProductGrid'
@@ -15,7 +14,7 @@ const WishlistPage = () => {
             <div className="space-y-10 sm:space-y-12">
                 <div className="flex flex-col md:flex-row justify-between items-center md:items-end gap-5 sm:gap-6 border-b border-primary/10 pb-8 sm:pb-12 text-center md:text-left">
                     <div className="w-full md:w-auto">
-                        <h1 className="text-3xl sm:text-4xl font-bold uppercase tracking-tighter mb-3 sm:mb-4">My Wishlist</h1>
+                        <h1 className="text-3xl sm:text-4xl font-bold tracking-tighter mb-3 sm:mb-4 gold-text">My Wishlist</h1>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
                             {wishlistCount} SAVED TREASURE(S)
                         </p>

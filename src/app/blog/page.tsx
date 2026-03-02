@@ -4,7 +4,7 @@ import BlogSection from '@/components/home/BlogSection'
 import Link from 'next/link'
 import { ArrowLeft } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 export default async function BlogListingPage() {
     const blogEntries = await fetchEntries('blogPost')
@@ -27,7 +27,9 @@ export default async function BlogListingPage() {
                 </div>
 
                 <div className="text-center mb-20 space-y-4">
-                    <h1 className="text-5xl md:text-7xl font-serif text-white tracking-tighter uppercase">Our <span className="gold-text italic">Journal</span></h1>
+                    <h1 className="site-heading text-white text-center leading-tight">
+                        Our <span className="gold-text italic inline-block pr-1">Journal</span>
+                    </h1>
                     <p className="text-muted-foreground max-w-2xl mx-auto font-serif italic text-lg">
                         Insights into Jaipur's heritage, jewellery care, and the brilliance of lab-grown diamonds.
                     </p>

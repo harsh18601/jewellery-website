@@ -1,7 +1,7 @@
 "use server"
 
 import dbConnect from "@/lib/dbConnect";
-import Product, { IProduct } from "@/models/Product";
+import Product from "@/models/Product";
 import { revalidatePath } from "next/cache";
 
 export async function getProducts(query: any = {}) {

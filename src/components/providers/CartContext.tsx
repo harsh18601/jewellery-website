@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState, useEffect, useCallback } from 'react'
+import React, { createContext, useContext, useState, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
 
 interface CartItem {
@@ -24,71 +24,68 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export const CartProvider = ({ children }: { children: React.ReactNode }) => {
-    const { data: session } = useSession()
+    const { data: session, status } = useSession()
     const [cartItems, setCartItems] = useState<CartItem[]>([]);
     const [isInitialLoad, setIsInitialLoad] = useState(true)
+    const [isCartHydrated, setIsCartHydrated] = useState(false)
 
-    // Initial load from localStorage
+    // Start with an empty cart; cart data is user-session bound.
     useEffect(() => {
-        const saved = localStorage.getItem('cart');
-        if (saved) {
-            try {
-                setCartItems(JSON.parse(saved));
-            } catch (e) {
-                console.error("Failed to parse cart", e);
-            }
-        } else {
-            // Default placeholder if empty
-            setCartItems([
-                { id: '1', title: 'Eternal Solitaire Ring', price: 125000, category: 'Lab-Grown', image: 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=400', quantity: 1 }
-            ])
-        }
         setIsInitialLoad(false)
     }, []);
 
-    // Load from server when session is available
+    // Load user cart when authenticated. Clear cart immediately when signed out.
     useEffect(() => {
-        if (session && !isInitialLoad) {
-            const fetchCart = async () => {
-                try {
-                    const res = await fetch('/api/user/sync')
-                    if (res.ok) {
-                        const data = await res.json()
-                        if (data.cart && data.cart.length > 0) {
-                            setCartItems(data.cart)
-                        }
-                    }
-                } catch (e) {
-                    console.error("Failed to fetch cart from server", e)
-                }
-            }
-            fetchCart()
-        }
-    }, [session, isInitialLoad])
+        if (isInitialLoad || status === 'loading') return
 
-    // Save to localStorage and sync to server
+        if (!session) {
+            setCartItems([])
+            setIsCartHydrated(false)
+            localStorage.removeItem('cart')
+            return
+        }
+
+        const fetchCart = async () => {
+            try {
+                const res = await fetch('/api/user/sync')
+                if (res.ok) {
+                    const data = await res.json()
+                    setCartItems(Array.isArray(data.cart) ? data.cart : [])
+                } else {
+                    setCartItems([])
+                }
+            } catch (e) {
+                console.error("Failed to fetch cart from server", e)
+                setCartItems([])
+            } finally {
+                setIsCartHydrated(true)
+            }
+        }
+
+        fetchCart()
+    }, [session, status, isInitialLoad])
+
+    // Sync cart only for authenticated users after server cart is hydrated.
     useEffect(() => {
-        if (isInitialLoad) return;
+        if (isInitialLoad || !session || !isCartHydrated) return;
 
         localStorage.setItem('cart', JSON.stringify(cartItems));
 
-        if (session) {
-            const syncToServer = async () => {
-                try {
-                    await fetch('/api/user/sync', {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            cart: cartItems
-                        }),
-                    })
-                } catch (e) {
-                    console.error("Failed to sync cart to server", e)
-                }
+        const syncToServer = async () => {
+            try {
+                await fetch('/api/user/sync', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        cart: cartItems
+                    }),
+                })
+            } catch (e) {
+                console.error("Failed to sync cart to server", e)
             }
-            const timer = setTimeout(syncToServer, 1000)
-            return () => clearTimeout(timer)
         }
-    }, [cartItems, session, isInitialLoad]);
+        const timer = setTimeout(syncToServer, 1000)
+        return () => clearTimeout(timer)
+    }, [cartItems, session, isInitialLoad, isCartHydrated]);
 
     const cartCount = cartItems.reduce((acc, item) => acc + item.quantity, 0);
 

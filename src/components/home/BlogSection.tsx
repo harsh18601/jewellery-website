@@ -30,8 +30,8 @@ const BlogSection = ({ blogs }: { blogs: any[] }) => {
     return (
         <section className="py-24 bg-secondary text-white overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16 space-y-4">
-                    <h2 className="text-4xl md:text-5xl font-serif text-white tracking-tight">Blog</h2>
+                <div className="text-center mb-16 space-y-4 flex flex-col items-center">
+                    <h2 className="site-heading text-white">Blog</h2>
                     <div className="flex items-center justify-center gap-4">
                         <div className="h-[1px] w-20 bg-primary/50" />
                         <div className="text-primary">

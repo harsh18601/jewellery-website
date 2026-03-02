@@ -1,17 +1,17 @@
 import React from 'react'
-import Link from 'next/link'
-import { ArrowRight } from 'lucide-react'
 import { fetchEntries } from '@/lib/contentful'
 import HomeContent from '@/components/home/HomeContent'
 
 export default async function Home() {
-  // Fetch from Contentful
-  const heroEntries = await fetchEntries('hero')
-  const categoryEntries = await fetchEntries('category')
-  const heritageEntries = await fetchEntries('heritageFeature')
-  const blogEntries = await fetchEntries('blogPost')
-  const collectionEntries = await fetchEntries('collection')
-  const testimonialEntries = await fetchEntries('testimonial')
+  // Fetch CMS data in parallel for faster first render.
+  const [heroEntries, categoryEntries, heritageEntries, blogEntries, collectionEntries, testimonialEntries] = await Promise.all([
+    fetchEntries('hero'),
+    fetchEntries('category'),
+    fetchEntries('heritageFeature'),
+    fetchEntries('blogPost'),
+    fetchEntries('collection'),
+    fetchEntries('testimonial'),
+  ])
 
   const hero = heroEntries?.[0]?.fields as any || {
     title: "Pure Brilliance,",

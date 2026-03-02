@@ -42,7 +42,7 @@ export async function POST(req: Request) {
         if (cart !== undefined) updateData.cart = cart;
 
         await dbConnect();
-        const user = await User.findOneAndUpdate(
+        await User.findOneAndUpdate(
             { email: session.user.email },
             { $set: updateData },
             { returnDocument: 'after' }

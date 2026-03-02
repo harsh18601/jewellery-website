@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState, useEffect, Suspense } from 'react'
-import { signIn } from 'next-auth/react'
+import React, { useState, Suspense } from 'react'
+import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
@@ -10,18 +10,9 @@ import { Mail, Lock, LogIn, Loader2, CheckCircle2 } from 'lucide-react'
 const SignInPageContent = () => {
     const router = useRouter()
     const searchParams = useSearchParams()
+    const { data: session, status } = useSession()
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState('')
-    const [registered, setRegistered] = useState(false)
-
-    useEffect(() => {
-        if (searchParams.get('registered')) {
-            setRegistered(true)
-        }
-        if (searchParams.get('error')) {
-            setError('Invalid email or password')
-        }
-    }, [searchParams])
 
     const [formData, setFormData] = useState({
         email: '',
@@ -36,24 +27,36 @@ const SignInPageContent = () => {
         e.preventDefault()
         setError('')
         setIsLoading(true)
+        const callbackUrl = searchParams.get('callbackUrl') || '/profile'
 
         const result = await signIn('credentials', {
             redirect: false,
             email: formData.email,
             password: formData.password,
+            callbackUrl,
         })
 
         if (result?.error) {
             setError('Invalid credentials. Please try again.')
             setIsLoading(false)
         } else {
-            router.push('/profile')
+            router.push(result?.url || callbackUrl)
             router.refresh()
         }
     }
 
+    const userName = session?.user?.name?.trim() || 'Guest'
+    const headingText = status === 'authenticated' ? `Welcome, ${userName}` : 'Sign In'
+    const subHeadingText = status === 'authenticated'
+        ? 'You are already signed in to your boutique experience.'
+        : 'Sign in to access your exclusive boutique experience.'
+    const callbackUrl = searchParams.get('callbackUrl') || '/profile'
+    const registered = searchParams.get('registered') === 'true'
+    const queryError = searchParams.get('error') ? 'Invalid email or password' : ''
+    const displayError = error || queryError
+
     return (
-        <div className="min-h-screen bg-background flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+        <div className="min-h-screen bg-background flex flex-col justify-start sm:justify-center pt-16 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
             {/* Background Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
             <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
@@ -63,14 +66,11 @@ const SignInPageContent = () => {
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
-                    className="text-center"
+                    className="text-center flex flex-col items-center"
                 >
-                    <Link href="/" className="text-3xl font-bold tracking-tighter gold-text uppercase mb-8 inline-block">
-                        Radha Govind
-                    </Link>
-                    <h2 className="text-2xl font-bold uppercase tracking-widest mb-2">Welcome Back</h2>
-                    <p className="text-sm text-muted-foreground font-serif italic mb-8">
-                        Sign in to access your exclusive boutique experience.
+                    <h2 className="text-2xl font-bold uppercase tracking-widest mb-2 text-center">{headingText}</h2>
+                    <p className="text-sm text-muted-foreground font-serif italic mb-8 text-center">
+                        {subHeadingText}
                     </p>
                 </motion.div>
 
@@ -81,15 +81,15 @@ const SignInPageContent = () => {
                     className="bg-background border border-primary/10 p-10 shadow-2xl shadow-primary/5"
                 >
                     <form className="space-y-6" onSubmit={handleSubmit}>
-                        {registered && !error && (
+                        {registered && !displayError && (
                             <div className="bg-primary/10 border border-primary/20 text-primary text-[10px] p-4 rounded-sm flex items-center mb-6 uppercase tracking-widest font-bold">
                                 <CheckCircle2 className="h-4 w-4 mr-2" /> Account created! Please sign in.
                             </div>
                         )}
 
-                        {error && (
+                        {displayError && (
                             <div className="bg-destructive/10 border border-destructive/20 text-destructive text-xs p-4 rounded-sm">
-                                {error}
+                                {displayError}
                             </div>
                         )}
 
@@ -156,7 +156,7 @@ const SignInPageContent = () => {
                         <div className="grid grid-cols-1 gap-4">
                             <button
                                 type="button"
-                                onClick={() => signIn('google', { callbackUrl: '/' })}
+                                onClick={() => signIn('google', { callbackUrl })}
                                 className="flex w-full items-center justify-center gap-3 bg-muted/10 border border-primary/10 py-4 px-4 text-xs font-bold uppercase tracking-widest hover:bg-muted/20 transition-all group"
                             >
                                 <svg className="h-4 w-4" viewBox="0 0 24 24">

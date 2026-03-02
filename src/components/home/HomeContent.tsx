@@ -69,7 +69,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="text-primary uppercase tracking-[0.3em] text-sm font-semibold"
+                        className="site-subheading"
                     >
                         {hero.subtitleLabel || "Jaipur's Heritage & Innovation"}
                     </motion.p>
@@ -77,10 +77,10 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="text-5xl md:text-7xl font-bold text-foreground leading-tight"
+                        className="site-heading text-foreground leading-tight"
                     >
                         {hero.title} <br />
-                        <span className="gold-text italic">{hero.subtitle}</span>
+                        <span className="gold-text italic inline-block text-center">{hero.subtitle}</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
@@ -111,14 +111,16 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
 
             {/* Featured Categories */}
             <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
-                    <div>
-                        <h2 className="text-sm text-primary uppercase tracking-widest mb-4">Our Specialities</h2>
-                        <h3 className="text-4xl font-bold tracking-tight">Luxury for <span className="italic">Every Occasion</span></h3>
+                <div className="mb-16 space-y-6">
+                    <div className="text-center">
+                        <h2 className="site-subheading mb-4">Our Specialities</h2>
+                        <h3 className="site-heading">Luxury for <span className="italic">Every Occasion</span></h3>
                     </div>
-                    <Link href="/shop" className="text-sm font-bold uppercase tracking-widest flex items-center group">
-                        View All <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
-                    </Link>
+                    <div className="flex justify-end">
+                        <Link href="/shop" className="text-sm font-bold uppercase tracking-widest flex items-center group">
+                            View All <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        </Link>
+                    </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
@@ -143,18 +145,18 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="text-center mb-20 space-y-4">
+                    <div className="text-center mb-20 space-y-4 flex flex-col items-center">
                         <motion.span
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
-                            className="text-primary uppercase tracking-[0.4em] text-[10px] font-bold"
+                            className="site-subheading"
                         >
                             The Art of Jaipur
                         </motion.span>
                         <motion.h3
                             initial={{ opacity: 0, y: 20 }}
                             whileInView={{ opacity: 1, y: 0 }}
-                            className="text-4xl md:text-5xl font-bold text-foreground uppercase tracking-tighter"
+                            className="site-heading text-foreground"
                         >
                             Our <span className="gold-text italic">Heritage</span>
                         </motion.h3>

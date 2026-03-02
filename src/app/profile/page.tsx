@@ -1,7 +1,6 @@
 "use client"
 
 import React, { useEffect, useState } from 'react'
-import { motion } from 'framer-motion'
 import { Package, MapPin, Heart, Clock, Plus } from 'lucide-react'
 import Link from 'next/link'
 import { useSession } from 'next-auth/react'
@@ -11,7 +10,6 @@ const ProfileDashboard = () => {
     const { data: session } = useSession()
     const { wishlistCount } = useWishlist()
     const [addresses, setAddresses] = useState<any[]>([])
-    const [isLoading, setIsLoading] = useState(true)
 
     useEffect(() => {
         if (session) {
@@ -24,8 +22,6 @@ const ProfileDashboard = () => {
                     }
                 } catch (e) {
                     console.error("Failed to fetch profile data", e)
-                } finally {
-                    setIsLoading(false)
                 }
             }
             fetchUserData()
@@ -38,7 +34,7 @@ const ProfileDashboard = () => {
         <div className="space-y-8">
             <section className="bg-muted/10 p-10 border border-primary/10">
                 <div className="mb-8">
-                    <h2 className="text-xl font-bold uppercase tracking-widest gold-text">Welcome Back, {session?.user?.name || 'Member'}</h2>
+                    <h2 className="text-xl font-bold uppercase tracking-widest gold-text">Welcome, {session?.user?.name || 'Member'}</h2>
                     <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold mt-2">Your personalized experience awaits.</p>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">

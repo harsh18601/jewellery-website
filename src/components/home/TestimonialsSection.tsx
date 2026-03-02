@@ -30,9 +30,9 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
     return (
         <section className="py-24 bg-background overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="text-center mb-16 space-y-4">
-                    <h2 className="text-sm text-primary uppercase tracking-[0.4em] font-bold">Client Experiences</h2>
-                    <h3 className="text-4xl font-bold tracking-tight uppercase">What they <span className="italic font-serif">say about us</span></h3>
+                <div className="text-center mb-16 space-y-4 flex flex-col items-center">
+                    <h2 className="site-subheading">Client Experiences</h2>
+                    <h3 className="site-heading">Testimonials</h3>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-12">

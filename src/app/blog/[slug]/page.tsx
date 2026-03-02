@@ -4,7 +4,7 @@ import { RichTextRenderer } from '@/lib/richTextRenderer'
 import Link from 'next/link'
 import { ArrowLeft, Calendar, User } from 'lucide-react'
 
-export const dynamic = 'force-dynamic'
+export const revalidate = 300
 
 interface BlogPostPageProps {
     params: Promise<{ slug: string }>;
@@ -33,7 +33,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const image = featuredImage?.fields?.file?.url ? `https:${featuredImage.fields.file.url}` : null
 
     return (
-        <article className="min-h-screen bg-black text-white pt-32 pb-24">
+        <article className="min-h-screen bg-black text-white pt-36 sm:pt-32 pb-24">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header Section */}
                 <div className="mb-12 space-y-6">
@@ -41,16 +41,16 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         <ArrowLeft className="mr-2 h-4 w-4" /> Back to Journal
                     </Link>
 
-                    <div className="space-y-4">
+                    <div className="space-y-6">
                         <span className="text-primary text-[10px] uppercase tracking-[0.5em] font-bold border-l-2 border-primary pl-4">
                             {brand}
                         </span>
-                        <h1 className="text-4xl md:text-6xl font-serif tracking-tighter uppercase leading-tight">
+                        <h1 className="text-3xl md:text-5xl tracking-tight leading-[1.25] max-w-4xl">
                             {title}
                         </h1>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-6 text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold">
+                    <div className="flex flex-wrap items-center gap-6 pt-2 text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold">
                         {date && (
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-3 w-3 text-primary" />

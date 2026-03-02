@@ -70,11 +70,23 @@
   h4,
   h5,
   h6 {
-    @apply font-serif text-center sm:text-left;
+    font-family: var(--font-montserrat), sans-serif !important;
+    text-transform: none !important;
+    @apply text-center sm:text-left;
   }
 }
 
 @layer components {
+  .site-heading {
+    text-transform: none !important;
+    @apply text-4xl md:text-5xl font-bold tracking-tight text-center;
+  }
+
+  .site-subheading {
+    text-transform: none !important;
+    @apply text-sm tracking-[0.3em] font-bold text-primary text-center;
+  }
+
   .gold-text {
     @apply bg-gradient-to-r from-[#D4AF37] via-[#F9E272] to-[#D4AF37] bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient;
   }
