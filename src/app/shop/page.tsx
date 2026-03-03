@@ -356,7 +356,7 @@ export default async function ShopPage({
 
     return (
         <>
-        <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
+        <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-28 sm:pb-10">
             <div className="mb-4">
                 <BackButton fallbackHref="/" />
             </div>
@@ -366,7 +366,7 @@ export default async function ShopPage({
                 <div className="inline-flex min-w-max items-center gap-3">
                     <Link
                         href={buildShopHref({ cat: '' })}
-                        className={`px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all ${!cat ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                        className={`px-4 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all ${!cat ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                     >
                         All ({Object.values(categoryCounts).reduce((a, b) => a + b, 0)})
                     </Link>
@@ -374,11 +374,11 @@ export default async function ShopPage({
                         <Link
                             key={option.value}
                             href={buildShopHref({ cat: option.value })}
-                            className={`px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2.5 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                            className={`px-4 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 sm:gap-2.5 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                         >
                             {option.image
-                                ? <img src={option.image} alt={option.label} className="h-7 w-7 rounded-full object-cover border border-primary/30" />
-                                : <span className="h-7 w-7 rounded-full border border-primary/30 inline-flex items-center justify-center text-[10px] font-bold">{option.label.charAt(0)}</span>}
+                                ? <img src={option.image} alt={option.label} className="h-5 w-5 sm:h-7 sm:w-7 rounded-full object-cover border border-primary/30" />
+                                : <span className="h-5 w-5 sm:h-7 sm:w-7 rounded-full border border-primary/30 inline-flex items-center justify-center text-[10px] font-bold">{option.label.charAt(0)}</span>}
                             {option.label} ({categoryCounts[option.value] || 0})
                         </Link>
                     ))}
@@ -387,7 +387,7 @@ export default async function ShopPage({
             </div>
 
             <div className="mb-4 bg-muted/10 border border-primary/20 px-4 py-3.5">
-                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
+                <div className="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-x-4 gap-y-2 text-[10px] sm:text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
                     <span className="inline-flex items-center gap-2.5"><BadgeCheck className="h-4 w-4 text-primary" /> BIS Hallmarked</span>
                     <span className="inline-flex items-center gap-2.5"><Truck className="h-4 w-4 text-primary" /> Free Shipping</span>
                     <span className="inline-flex items-center gap-2.5"><Gem className="h-4 w-4 text-primary" /> Certified Diamonds</span>
@@ -458,12 +458,12 @@ export default async function ShopPage({
                     </Link>
                 </div>
             </details>
-            <div className="lg:hidden fixed bottom-24 left-4 right-4 z-30 grid grid-cols-2 gap-2">
-                <a href="#shop-mobile-filters" className="px-4 py-3 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest font-bold shadow-xl inline-flex items-center justify-center gap-2">
+            <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 grid grid-cols-2 gap-0 border-t border-primary/30 bg-background/95 backdrop-blur">
+                <a href="#shop-mobile-filters" className="h-14 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest font-bold inline-flex items-center justify-center gap-2 border-r border-primary/25">
                     <SlidersHorizontal className="h-4 w-4" />
                     Filters
                 </a>
-                <a href="#shop-sort-controls" className="px-4 py-3 bg-background border border-primary/35 text-foreground text-[10px] uppercase tracking-widest font-bold shadow-xl inline-flex items-center justify-center gap-2">
+                <a href="#shop-sort-controls" className="h-14 bg-background text-foreground text-[10px] uppercase tracking-widest font-bold inline-flex items-center justify-center gap-2">
                     <ChevronDown className="h-4 w-4" />
                     Sort
                 </a>
@@ -552,7 +552,38 @@ export default async function ShopPage({
                         <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold xl:text-center">
                             <VisibleResultsCount total={totalResults} />
                         </p>
-                        <div className="flex items-center gap-2 xl:justify-end">
+                        <form method="get" className="sm:hidden flex items-center gap-2">
+                            {cat ? <input type="hidden" name="cat" value={cat} /> : null}
+                            {metal ? <input type="hidden" name="metal" value={metal} /> : null}
+                            {stone ? <input type="hidden" name="stone" value={stone} /> : null}
+                            {price ? <input type="hidden" name="price" value={price} /> : null}
+                            {max ? <input type="hidden" name="max" value={max} /> : null}
+                            {search ? <input type="hidden" name="search" value={search} /> : null}
+                            <div className={`relative flex-1 ${totalResults === 0 ? 'opacity-50' : ''}`}>
+                                <select
+                                    name="sort"
+                                    defaultValue={sort || 'new-arrivals'}
+                                    disabled={totalResults === 0}
+                                    style={{ colorScheme: 'dark' }}
+                                    className={`h-10 w-full appearance-none pl-3.5 pr-10 text-[10px] uppercase tracking-widest font-bold border border-primary/30 bg-background text-foreground focus:border-primary transition-colors outline-none ${totalResults === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                                >
+                                    {sortOptions.map((option) => (
+                                        <option key={option.value} value={option.value} className="bg-secondary text-foreground">
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/75" />
+                            </div>
+                            <button
+                                type="submit"
+                                disabled={totalResults === 0}
+                                className={`h-10 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors ${totalResults === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                            >
+                                Apply
+                            </button>
+                        </form>
+                        <div className="hidden sm:flex items-center gap-2 xl:justify-end">
                             <Link
                                 href={buildShopHref({ clearAll: true })}
                                 className="h-9 px-3 inline-flex items-center text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors xl:hidden"

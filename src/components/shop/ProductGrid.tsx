@@ -274,14 +274,14 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                                 setWishlistPulse((prev) => ({ ...prev, [String(productId)]: false }))
                                             }, 260)
                                         }}
-                                        className="absolute top-4 right-4 z-10 p-2.5 rounded-full border border-primary/25 bg-background/65 backdrop-blur-md shadow-sm shadow-black/20 hover:bg-background/85 hover:border-primary/45 transition-all group/heart"
+                                        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 p-1.5 sm:p-2.5 rounded-full border border-primary/25 bg-background/55 backdrop-blur-md shadow-sm shadow-black/20 hover:bg-background/80 hover:border-primary/45 transition-all group/heart"
                                     >
                                         <Heart
-                                            className={`h-[18px] w-[18px] transition-all duration-200 ${wishlistPulse[String(productId)] ? 'scale-125' : 'scale-100'} ${isInWishlist(productId) ? 'fill-primary text-primary' : 'text-foreground/70 group-hover/heart:text-primary'}`}
+                                            className={`h-4 w-4 sm:h-[18px] sm:w-[18px] transition-all duration-200 ${wishlistPulse[String(productId)] ? 'scale-125' : 'scale-100'} ${isInWishlist(productId) ? 'fill-primary text-primary' : 'text-foreground/70 group-hover/heart:text-primary'}`}
                                         />
                                     </button>
 
-                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] grid grid-cols-2 gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] hidden sm:grid grid-cols-2 gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                                         <button
                                             type="button"
                                             onClick={(e) => {
@@ -337,8 +337,8 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                     </div>
                                 </div>
 
-                                <div className="flex h-[16.2rem] flex-col gap-2.5 pt-1">
-                                    <h3 className="text-base uppercase tracking-wide font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 min-h-[2.8rem]">
+                                <div className="flex min-h-[12rem] sm:h-[16.2rem] flex-col gap-2 pt-1">
+                                    <h3 className="text-lg sm:text-base uppercase tracking-wide font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 min-h-[2.8rem]">
                                         {product.title || 'Untitled Product'}
                                     </h3>
                                     <p className="text-[10px] tracking-[0.1em] text-foreground/50 line-clamp-1">
@@ -354,22 +354,22 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                     </div>
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <p className="text-[30px] leading-none font-extrabold text-primary">{displayPrice || "Price on request"}</p>
+                                            <p className="text-xl sm:text-[30px] leading-none font-semibold sm:font-extrabold text-primary">{displayPrice || "Price on request"}</p>
                                             {hasDiscount && (
-                                                <p className="text-xs text-foreground/45 line-through">{formatPrice(originalPriceRaw)}</p>
+                                                <p className="hidden sm:block text-xs text-foreground/45 line-through">{formatPrice(originalPriceRaw)}</p>
                                             )}
                                         </div>
                                         {hasDiscount && (
-                                            <p className="text-[10px] uppercase tracking-widest font-bold text-primary">Save {savePercent}%</p>
+                                            <p className="hidden sm:block text-[10px] uppercase tracking-widest font-bold text-primary">Save {savePercent}%</p>
                                         )}
                                     </div>
                                     <div className="flex flex-wrap gap-1.5 text-[8px] uppercase tracking-[0.12em] font-bold">
                                         <span className="px-2 py-0.5 border border-primary/15 text-primary inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> {certificationText}</span>
-                                        <span className="px-2 py-0.5 border border-primary/15 text-primary">100% Authentic</span>
+                                        <span className="hidden sm:inline-flex px-2 py-0.5 border border-primary/15 text-primary">100% Authentic</span>
                                     </div>
-                                    <p className="mt-auto text-[10px] uppercase tracking-[0.16em] text-foreground/55">Ships in {deliveryPromise}</p>
+                                    <p className="hidden sm:block mt-auto text-[10px] uppercase tracking-[0.16em] text-foreground/55">Ships in {deliveryPromise}</p>
                                     {isCustomisable && (
-                                        <p className="text-[10px] uppercase tracking-widest font-bold text-primary">Customisable</p>
+                                        <p className="hidden sm:block text-[10px] uppercase tracking-widest font-bold text-primary">Customisable</p>
                                     )}
                                 </div>
                             </div>
