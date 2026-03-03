@@ -15,6 +15,11 @@ const cinzel = Cinzel({ subsets: ["latin"], variable: "--font-cinzel", weight: [
 export const metadata: Metadata = {
   title: "Shree Radha Govind Jewellers | Premium Jewellery",
   description: "Jaipur's finest Lab-Grown Diamonds, Custom Jewellery, and Gemstones.",
+  icons: {
+    icon: "/brand-icon.svg?v=3",
+    shortcut: "/brand-icon.svg?v=3",
+    apple: "/brand-icon.svg?v=3",
+  },
 };
 
 export default function RootLayout({

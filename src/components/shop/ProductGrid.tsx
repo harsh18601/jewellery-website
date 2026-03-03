@@ -337,7 +337,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                     </div>
                                 </div>
 
-                                <div className="space-y-2.5 pt-1">
+                                <div className="flex h-[15.5rem] flex-col gap-2.5 pt-1">
                                     <h3 className="text-sm uppercase tracking-wide font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 min-h-[2.5rem]">
                                         {product.title || 'Untitled Product'}
                                     </h3>
@@ -367,7 +367,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                         <span className="px-2 py-1 border border-primary/20 text-primary inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> {certificationText}</span>
                                         <span className="px-2 py-1 border border-primary/20 text-primary">100% Authentic</span>
                                     </div>
-                                    <p className="text-[10px] uppercase tracking-[0.16em] text-foreground/55">Ships in {deliveryPromise} days</p>
+                                    <p className="mt-auto text-[10px] uppercase tracking-[0.16em] text-foreground/55">Ships in {deliveryPromise} </p>
                                     {isCustomisable && (
                                         <p className="text-[10px] uppercase tracking-widest font-bold text-primary">Customisable</p>
                                     )}

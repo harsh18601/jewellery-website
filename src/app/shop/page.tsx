@@ -3,6 +3,7 @@ import Link from 'next/link'
 import { getProducts } from '@/actions/productActions'
 import ProductGrid from '@/components/shop/ProductGrid'
 import VisibleResultsCount from '@/components/shop/VisibleResultsCount'
+import CurrencyPriceText from '@/components/shop/CurrencyPriceText'
 import BackButton from '@/components/common/BackButton'
 import { fetchEntries } from '@/lib/contentful'
 import { ShieldCheck, Truck, BadgeCheck, Gem, ChevronDown, SlidersHorizontal } from 'lucide-react'
@@ -360,11 +361,11 @@ export default async function ShopPage({
                 <BackButton fallbackHref="/" />
             </div>
 
-            <div className="mb-4 overflow-x-auto pb-1">
-                <div className="flex w-max min-w-full gap-2.5">
+            <div className="mb-4">
+                <div className="flex flex-wrap gap-2.5">
                     <Link
                         href={buildShopHref({ cat: '' })}
-                        className={`shrink-0 px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all ${!cat ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                        className={`px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all ${!cat ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                     >
                         All ({Object.values(categoryCounts).reduce((a, b) => a + b, 0)})
                     </Link>
@@ -372,7 +373,7 @@ export default async function ShopPage({
                         <Link
                             key={option.value}
                             href={buildShopHref({ cat: option.value })}
-                            className={`shrink-0 px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                            className={`px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                         >
                             {option.image
                                 ? <img src={option.image} alt={option.label} className="h-6 w-6 rounded-full object-cover border border-primary/30" />
@@ -444,7 +445,7 @@ export default async function ShopPage({
                         {stone ? <input type="hidden" name="stone" value={stone} /> : null}
                         {price ? <input type="hidden" name="price" value={price} /> : null}
                         {search ? <input type="hidden" name="search" value={search} /> : null}
-                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Max Price: Rs {selectedMaxPrice.toLocaleString('en-IN')}</p>
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Max Price: <CurrencyPriceText amountInInr={selectedMaxPrice} /></p>
                         <input type="range" name="max" min="10000" max={maxProductPrice} step="5000" defaultValue={selectedMaxPrice} className="w-full accent-[var(--color-primary)]" />
                         <button type="submit" className="px-3 py-2 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60">
                             Apply Max Price
@@ -522,7 +523,7 @@ export default async function ShopPage({
                         {stone ? <input type="hidden" name="stone" value={stone} /> : null}
                         {price ? <input type="hidden" name="price" value={price} /> : null}
                         {search ? <input type="hidden" name="search" value={search} /> : null}
-                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Max Price: Rs {selectedMaxPrice.toLocaleString('en-IN')}</p>
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Max Price: <CurrencyPriceText amountInInr={selectedMaxPrice} /></p>
                         <input type="range" name="max" min="10000" max={maxProductPrice} step="5000" defaultValue={selectedMaxPrice} className="w-full accent-[var(--color-primary)]" />
                         <button type="submit" className="w-full px-3 py-2 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60">
                             Apply Max Price
@@ -616,7 +617,7 @@ export default async function ShopPage({
                                     href={buildShopHref({ max: '' })}
                                     className="px-2.5 py-1 text-[10px] uppercase tracking-widest font-bold border border-primary/40 bg-primary/15 text-primary hover:bg-primary/25"
                                 >
-                                    Max: Rs {Number(max).toLocaleString('en-IN')} x
+                                    Max: <CurrencyPriceText amountInInr={Number(max)} /> x
                                 </Link>
                             )}
                             {normalizedSearch && (

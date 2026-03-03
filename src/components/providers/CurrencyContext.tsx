@@ -1,6 +1,6 @@
 "use client"
 
-import React, { createContext, useContext, useState } from "react"
+import React, { createContext, useContext, useEffect, useState } from "react"
 
 export type CurrencyCode = "INR" | "USD" | "EUR" | "GBP" | "CAD" | "AUD" | "AED" | "SGD"
 
@@ -57,14 +57,20 @@ const localeByCurrency: Record<CurrencyCode, string> = {
 }
 
 export const CurrencyProvider = ({ children }: { children: React.ReactNode }) => {
-    const [currency, setCurrencyState] = useState<CurrencyCode>(() => {
-        if (typeof window === "undefined") return "INR"
-        const saved = localStorage.getItem(STORAGE_KEY)
-        if (saved && options.some((option) => option.code === saved)) {
-            return saved as CurrencyCode
-        }
-        return "INR"
-    })
+    // Keep initial render deterministic (SSR + first client render both INR)
+    // to avoid hydration text mismatches in price formatting.
+    const [currency, setCurrencyState] = useState<CurrencyCode>("INR")
+
+    useEffect(() => {
+        if (typeof window === "undefined") return
+        const timer = window.setTimeout(() => {
+            const saved = localStorage.getItem(STORAGE_KEY)
+            if (saved && options.some((option) => option.code === saved)) {
+                setCurrencyState(saved as CurrencyCode)
+            }
+        }, 0)
+        return () => window.clearTimeout(timer)
+    }, [])
 
     const setCurrency = (nextCurrency: CurrencyCode) => {
         setCurrencyState(nextCurrency)

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Shree Radha Govind Jewellers Logo">
+  <defs>
+    <linearGradient id="gold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#f3d77b" />
+      <stop offset="50%" stop-color="#d4af37" />
+      <stop offset="100%" stop-color="#a57f1a" />
+    </linearGradient>
+  </defs>
+  <circle cx="64" cy="64" r="46" fill="#111827" />
+  <circle cx="64" cy="64" r="46" fill="none" stroke="url(#gold)" stroke-width="2.25" opacity="0.35" />
+  <path d="M64 38 86 60 64 90 42 60 64 38Z" fill="none" stroke="url(#gold)" stroke-width="5.25" stroke-linejoin="round" />
+</svg>
