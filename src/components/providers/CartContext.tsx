@@ -11,6 +11,26 @@ interface CartItem {
     image: string;
     quantity: number;
     description?: any;
+    sku?: string;
+    metal?: string;
+    metalType?: string;
+    metalPurity?: string;
+    metalWeight?: number;
+    stoneType?: string;
+    stoneShape?: string;
+    caratWeight?: string;
+    totalCaratWeight?: string;
+    deliveryTime?: string;
+    deliveryDays?: string;
+    certification?: string;
+    chainLength?: string;
+    warranty?: string;
+    returnEligibility?: string;
+    compareAtPrice?: number;
+    originalPrice?: number;
+    mrp?: number;
+    stock?: number;
+    isPopular?: boolean;
 }
 
 interface CartContextType {

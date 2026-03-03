@@ -3,7 +3,7 @@
 import React, { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { RichTextRenderer } from '@/lib/richTextRenderer'
-import { ShoppingBag, Heart, Share2, ShieldCheck, Truck, RefreshCw, ArrowLeft, CreditCard, Landmark, Wallet, CircleDollarSign, Lock, CheckCircle2, Gem, Hammer, Sparkles } from 'lucide-react'
+import { ShoppingBag, Heart, Share2, ShieldCheck, Truck, RefreshCw, ArrowLeft, CreditCard, Landmark, Wallet, CircleDollarSign, Lock, CheckCircle2, Gem, Hammer, Sparkles, Star } from 'lucide-react'
 import { useCart } from '@/components/providers/CartContext'
 import { useWishlist } from '@/components/providers/WishlistContext'
 import { usePathname, useRouter, useSearchParams } from 'next/navigation'
@@ -46,6 +46,23 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
             image: product.images?.[0] || '',
             quantity: 1,
             description: product.description,
+            sku: product.sku,
+            metalType: product.metalType || product.metal,
+            metalPurity: product.metalPurity,
+            metalWeight: Number(product.metalWeight || 0) || undefined,
+            stoneType: product.stoneType,
+            stoneShape: product.stoneShape,
+            caratWeight: product.caratWeight,
+            totalCaratWeight: product.totalCaratWeight,
+            deliveryTime: product.deliveryTime || product.deliveryDays,
+            deliveryDays: product.deliveryDays,
+            certification: product.certification || product.certificationType,
+            chainLength: product.chainLength,
+            warranty: product.warranty,
+            returnEligibility: product.returnEligibility,
+            compareAtPrice: Number(product.compareAtPrice || product.originalPrice || product.mrp || 0) || undefined,
+            stock: Number(product.stock || 0) || undefined,
+            isPopular: Boolean(product.isPopular),
         })
         setTimeout(() => setIsAdding(false), 1000)
     }
@@ -60,6 +77,23 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
             image: product.images?.[0] || '',
             quantity: 1,
             description: product.description,
+            sku: product.sku,
+            metalType: product.metalType || product.metal,
+            metalPurity: product.metalPurity,
+            metalWeight: Number(product.metalWeight || 0) || undefined,
+            stoneType: product.stoneType,
+            stoneShape: product.stoneShape,
+            caratWeight: product.caratWeight,
+            totalCaratWeight: product.totalCaratWeight,
+            deliveryTime: product.deliveryTime || product.deliveryDays,
+            deliveryDays: product.deliveryDays,
+            certification: product.certification || product.certificationType,
+            chainLength: product.chainLength,
+            warranty: product.warranty,
+            returnEligibility: product.returnEligibility,
+            compareAtPrice: Number(product.compareAtPrice || product.originalPrice || product.mrp || 0) || undefined,
+            stock: Number(product.stock || 0) || undefined,
+            isPopular: Boolean(product.isPopular),
         })
         router.push('/cart')
         setTimeout(() => setIsBuyingNow(false), 700)
@@ -72,6 +106,23 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
     const deliveryWindow = product.deliveryDays || '3-5'
     const certificationLabel = product.certification || 'BIS Hallmarked'
     const emiMonthly = Number(product.emiMonthly || (Number(product.price || 0) > 0 ? Math.round(Number(product.price || 0) / 24) : 0))
+    const ratingValue = Number(product.ratings || product.rating || 0)
+    const stoneShapeLabel = product.stoneShape || ''
+    const stoneTypeLabel = product.stoneType || ''
+    const caratWeightLabel = product.totalCaratWeight || product.caratWeight || ''
+    const metalTypeLabel = product.metalType || product.metal || ''
+    const metalPurityLabel = product.metalPurity || ''
+    const metalWeightLabel = Number(product.metalWeight || 0) > 0 ? `${Number(product.metalWeight).toFixed(2)} g` : ''
+    const productSpecs = [
+        { label: 'Metal Type', value: metalTypeLabel },
+        { label: 'Metal Purity', value: metalPurityLabel },
+        { label: 'Metal Weight', value: metalWeightLabel },
+        { label: 'Stone Type', value: stoneTypeLabel },
+        { label: 'Stone Shape', value: stoneShapeLabel },
+        { label: 'Total Carat Weight', value: caratWeightLabel },
+        { label: 'Certification', value: certificationLabel },
+        { label: 'Delivery Time', value: `${deliveryWindow} days` },
+    ].filter((item) => Boolean(item.value))
     useEffect(() => {
         const onScroll = () => {
             setShowStickyCartBar(window.scrollY > 600)
@@ -240,6 +291,13 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                             <div className="min-w-0">
                                 <p className="text-primary text-xs uppercase tracking-[0.3em] font-bold mb-2">{product.category}</p>
                                 <h1 className="text-3xl sm:text-4xl font-bold tracking-tight leading-tight break-words">{product.title}</h1>
+                                <div className="mt-3 flex flex-wrap items-center gap-2">
+                                    {product.isFeatured && (
+                                        <span className="px-2 py-1 text-[10px] uppercase tracking-widest font-bold border border-primary/35 bg-primary/10 text-primary">
+                                            Featured
+                                        </span>
+                                    )}
+                                </div>
                             </div>
                             <div className="flex space-x-2 self-start">
                                 <button
@@ -271,6 +329,16 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                                 <p className="text-sm text-muted-foreground line-through pb-1">{formatPrice(compareAtPrice)}</p>
                             )}
                         </div>
+                        {ratingValue > 0 && (
+                            <div className="flex items-center gap-2 text-primary">
+                                <div className="flex items-center">
+                                    {[...Array(5)].map((_, index) => (
+                                        <Star key={index} className={`h-4 w-4 ${index < Math.round(ratingValue) ? 'fill-current' : ''}`} />
+                                    ))}
+                                </div>
+                                <span className="text-xs font-bold">({ratingValue.toFixed(1)})</span>
+                            </div>
+                        )}
                     </div>
 
                     <div className="border border-primary/15 bg-muted/5 p-4 space-y-3">
@@ -312,6 +380,21 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                         {!product.description && (
                             <p className="leading-relaxed">Detailed description available in Contentful.</p>
                         )}
+                    </div>
+
+                    <div className="border border-primary/15 bg-muted/5 p-4 sm:p-5 space-y-4">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xs uppercase tracking-widest font-bold text-primary">Product Specifications</h3>
+                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Crafted Details</p>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                            {productSpecs.map((spec) => (
+                                <div key={spec.label} className="flex justify-between gap-3 border-b border-primary/10 py-1.5">
+                                    <span className="text-muted-foreground uppercase tracking-widest text-[10px]">{spec.label}</span>
+                                    <span className="text-right font-semibold">{String(spec.value)}</span>
+                                </div>
+                            ))}
+                        </div>
                     </div>
 
                     <div className="space-y-6 pt-8 mt-2">

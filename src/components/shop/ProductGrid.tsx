@@ -1,8 +1,8 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
-import { Star, Heart, CheckCircle2, X, ChevronLeft, ChevronRight, Scale, ShoppingBag } from 'lucide-react'
+import { Star, Heart, CheckCircle2, X, ChevronLeft, ChevronRight, Scale, ShoppingBag, Plus, Check } from 'lucide-react'
 import { useWishlist } from '@/components/providers/WishlistContext'
 import { useRouter, usePathname, useSearchParams } from 'next/navigation'
 import { useSession } from 'next-auth/react'
@@ -19,10 +19,15 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
     const searchParams = useSearchParams()
     const wishlistAuthMessage = 'You must login or register to add items to your wishlist.'
     const [wishlistPulse, setWishlistPulse] = useState<Record<string, boolean>>({})
-    const [visibleCount, setVisibleCount] = useState(12)
+    const [visibleCount, setVisibleCount] = useState(8)
     const [toastMessage, setToastMessage] = useState('')
     const [quickViewProduct, setQuickViewProduct] = useState<any | null>(null)
     const [quickViewImageIndex, setQuickViewImageIndex] = useState(0)
+    const [compareItems, setCompareItems] = useState<any[]>([])
+    const [compareModalOpen, setCompareModalOpen] = useState(false)
+    const [comparePickerOpen, setComparePickerOpen] = useState(false)
+    const [comparePickerCategoryKey, setComparePickerCategoryKey] = useState('')
+    const [comparePickerCategoryLabel, setComparePickerCategoryLabel] = useState('Jewellery')
 
     const showToast = (message: string) => {
         setToastMessage(message)
@@ -36,9 +41,108 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
             .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
             .join(' ')
 
+    const normalizeCategory = (value: any): string =>
+        String(value || '')
+            .toLowerCase()
+            .replace(/&/g, 'and')
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/^-+|-+$/g, '')
+
+    const getProductCategory = (product: any) => {
+        const firstCategory = Array.isArray(product?.categoryList) ? product.categoryList[0] : ''
+        return normalizeCategory(firstCategory || product?.category || '')
+    }
+
+    const toCompareItem = (product: any) => {
+        const id = String(product._id || product.id || product?.sys?.id || '')
+        const category = getProductCategory(product)
+        return {
+            id,
+            title: product.title || 'Product',
+            image: product.images?.[0] || '',
+            price: Number(product.price || 0),
+            ratings: Number(product.ratings || product.rating || 0),
+            categoryKey: category,
+            categoryLabel: String(product.category || product.categoryList?.[0] || 'Jewellery'),
+            metalType: String(product.metalType || product.metal || '--'),
+            stoneShape: String(product.stoneShape || product.stoneType || '--'),
+            caratWeight: String(product.totalCaratWeight || product.caratWeight || '--'),
+            deliveryTime: String(product.deliveryTime || product.deliveryDays || '--'),
+            certification: String(product.certification || product.certificationType || 'BIS Hallmarked'),
+        }
+    }
+
+    const handleCompareClick = (product: any) => {
+        const firstCategory = getProductCategory(product)
+        const firstLabel = String(product.category || product.categoryList?.[0] || 'Jewellery')
+        const firstItem = toCompareItem(product)
+        if (!firstItem.id) return
+
+        if (compareItems.length > 0 && compareItems[0].categoryKey !== firstCategory) {
+            setCompareItems([firstItem])
+            showToast('Compare reset to selected category')
+        } else if (!compareItems.some((item) => item.id === firstItem.id)) {
+            setCompareItems((prev) => {
+                if (prev.length >= 3) return prev
+                return [...prev, firstItem]
+            })
+        }
+        setComparePickerCategoryKey(firstCategory)
+        setComparePickerCategoryLabel(firstLabel)
+        setComparePickerOpen(true)
+    }
+
+    const handleCompareAdd = (product: any) => {
+        const nextItem = toCompareItem(product)
+        if (!nextItem.id) return
+        if (!comparePickerCategoryKey || nextItem.categoryKey !== comparePickerCategoryKey) {
+            showToast('Compare is allowed only within same category')
+            return
+        }
+
+        if (compareItems.some((item) => item.id === nextItem.id)) {
+            setCompareItems((prev) => prev.filter((item) => item.id !== nextItem.id))
+            showToast('Removed from Compare')
+            return
+        }
+
+        if (compareItems.length >= 3) {
+            showToast('You can compare up to 3 items')
+            return
+        }
+
+        setCompareItems((prev) => [...prev, nextItem])
+        showToast('Added to Compare')
+    }
+
+    const extractNodeText = (node: any): string => {
+        if (!node) return ''
+        if (typeof node === 'string') return node
+        if (Array.isArray(node)) {
+            return node
+                .map((child) => extractNodeText(child))
+                .filter(Boolean)
+                .join(' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+        }
+        if (typeof node === 'object') {
+            const valueText = typeof node.value === 'string' ? node.value : ''
+            const contentText = extractNodeText(node.content)
+            return [valueText, contentText]
+                .filter(Boolean)
+                .join(' ')
+                .replace(/\s+/g, ' ')
+                .trim()
+        }
+        return ''
+    }
+
     const toPlainText = (value: any): string => {
         if (typeof value === 'string') return value
         if (!value) return ''
+        const extractedText = extractNodeText(value)
+        if (extractedText) return extractedText
         try {
             return JSON.stringify(value)
         } catch {
@@ -53,6 +157,13 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
             `/auth/signin?callbackUrl=${encodeURIComponent(callbackUrl)}&message=${encodeURIComponent(wishlistAuthMessage)}`
         )
     }
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return
+        window.dispatchEvent(new CustomEvent('shop-visible-count', {
+            detail: { visibleCount: Math.min(visibleCount, products.length) }
+        }))
+    }, [visibleCount, products.length])
 
     if (products.length === 0) {
         return (
@@ -216,7 +327,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                             onClick={(e) => {
                                                 e.preventDefault()
                                                 e.stopPropagation()
-                                                showToast('Compare feature coming soon')
+                                                handleCompareClick(product)
                                             }}
                                             className="col-span-2 py-2 bg-background/80 text-foreground text-[10px] uppercase font-bold tracking-widest border border-primary/25 hover:border-primary/50 transition-colors inline-flex items-center justify-center gap-1"
                                         >
@@ -271,7 +382,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                 <div className="text-center pt-2">
                     <button
                         type="button"
-                        onClick={() => setVisibleCount((prev) => prev + 12)}
+                        onClick={() => setVisibleCount((prev) => prev + 8)}
                         className="px-6 py-3 text-xs uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/70 hover:bg-primary/10 transition-all"
                     >
                         Load More Designs
@@ -285,15 +396,194 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                 </div>
             )}
 
+            {compareItems.length > 0 && !compareModalOpen && (
+                <div className="fixed bottom-6 left-6 z-[135] px-4 py-3 bg-background border border-primary/35 shadow-xl flex items-center gap-3">
+                    <p className="text-[10px] uppercase tracking-widest font-bold">
+                        Compare {compareItems.length} item{compareItems.length > 1 ? 's' : ''}
+                    </p>
+                    <button
+                        type="button"
+                        onClick={() => setCompareModalOpen(true)}
+                        className="px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
+                    >
+                        Open
+                    </button>
+                    <button
+                        type="button"
+                        onClick={() => setCompareItems([])}
+                        className="px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold border border-primary/20 hover:border-primary/45 transition-colors"
+                    >
+                        Clear
+                    </button>
+                </div>
+            )}
+
+            {comparePickerOpen && (
+                <div
+                    className="fixed inset-0 z-[142] bg-black/70 p-4 flex items-center justify-center overflow-y-auto"
+                    onClick={() => setComparePickerOpen(false)}
+                >
+                    <div
+                        className="w-full max-w-5xl max-h-[90vh] bg-background border border-primary/20 p-4 sm:p-6 space-y-4 overflow-y-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between gap-3">
+                            <h3 className="text-lg font-bold uppercase tracking-widest">Add Items to Compare - {comparePickerCategoryLabel}</h3>
+                            <div className="flex items-center gap-2">
+                                {compareItems.length >= 2 && (
+                                    <button
+                                        type="button"
+                                        onClick={() => {
+                                            setComparePickerOpen(false)
+                                            setCompareModalOpen(true)
+                                        }}
+                                        className="px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors"
+                                    >
+                                        Compare Now
+                                    </button>
+                                )}
+                                <button
+                                    type="button"
+                                    onClick={() => setComparePickerOpen(false)}
+                                    className="px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
+                                >
+                                    Close
+                                </button>
+                            </div>
+                        </div>
+                        <p className="text-[10px] uppercase tracking-widest text-muted-foreground">
+                            Select up to 3 products from same category
+                        </p>
+                        <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            {products
+                                .filter((product) => getProductCategory(product) === comparePickerCategoryKey)
+                                .map((product) => {
+                                    const id = String(product._id || product.id || product?.sys?.id || '')
+                                    const selected = compareItems.some((item) => item.id === id)
+                                    return (
+                                        <div key={id} className="border border-primary/15 bg-muted/5 p-2 space-y-2">
+                                            <div className="aspect-square bg-secondary overflow-hidden">
+                                                <img src={product.images?.[0] || ''} alt={product.title || 'Product'} className="w-full h-full object-cover" />
+                                            </div>
+                                            <div className="space-y-1">
+                                                <p className="text-xs font-bold line-clamp-2">{product.title || 'Product'}</p>
+                                                <p className="text-sm font-extrabold text-primary">{formatPrice(Number(product.price || 0))}</p>
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={() => handleCompareAdd(product)}
+                                                className={`w-full py-2 text-[10px] uppercase tracking-widest font-bold border inline-flex items-center justify-center gap-1 ${selected ? 'border-primary/60 bg-primary/10 text-primary' : 'border-primary/25 hover:border-primary/55'}`}
+                                            >
+                                                {selected ? <Check className="h-3.5 w-3.5" /> : <Plus className="h-3.5 w-3.5" />}
+                                                {selected ? 'Added' : 'Add'}
+                                            </button>
+                                        </div>
+                                    )
+                                })}
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {compareModalOpen && compareItems.length > 0 && (
+                <div
+                    className="fixed inset-0 z-[145] bg-black/70 p-4 flex items-center justify-center overflow-y-auto"
+                    onClick={() => setCompareModalOpen(false)}
+                >
+                    <div
+                        className="w-full max-w-5xl max-h-[90vh] bg-background border border-primary/20 p-4 sm:p-6 space-y-4 overflow-y-auto"
+                        onClick={(e) => e.stopPropagation()}
+                    >
+                        <div className="flex items-center justify-between gap-3">
+                            <h3 className="text-lg font-bold uppercase tracking-widest">Compare {compareItems[0]?.categoryLabel || 'Jewellery'}</h3>
+                            <button
+                                type="button"
+                                onClick={() => setCompareModalOpen(false)}
+                                className="px-3 py-1.5 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
+                            >
+                                Close
+                            </button>
+                        </div>
+                        <div className="grid gap-3 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+                            {compareItems.map((item) => (
+                                <div key={item.id} className="border border-primary/15 bg-muted/5 p-3 space-y-3">
+                                    <div className="aspect-square bg-secondary overflow-hidden">
+                                        <img src={item.image} alt={item.title} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="space-y-1">
+                                        <p className="text-sm font-bold leading-snug">{item.title}</p>
+                                        <p className="text-xl font-extrabold text-primary">{formatPrice(Number(item.price || 0))}</p>
+                                    </div>
+                                    <div className="text-[11px] text-muted-foreground space-y-1">
+                                        <p>Metal: {item.metalType}</p>
+                                        <p>Stone: {item.stoneShape}</p>
+                                        <p>Carat: {item.caratWeight}</p>
+                                        <p>Delivery: {item.deliveryTime} days</p>
+                                        <p>Rating: {item.ratings > 0 ? item.ratings.toFixed(1) : '--'}</p>
+                                        <p>Cert: {item.certification}</p>
+                                    </div>
+                                    <div className="flex items-center gap-2">
+                                        <button
+                                            type="button"
+                                            onClick={() => router.push(`/product/${item.id}`)}
+                                            className="flex-1 px-3 py-2 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
+                                        >
+                                            View Product
+                                        </button>
+                                        <button
+                                            type="button"
+                                            onClick={() => {
+                                                const updated = compareItems.filter((c) => c.id !== item.id)
+                                                setCompareItems(updated)
+                                                if (updated.length === 0) setCompareModalOpen(false)
+                                            }}
+                                            className="px-3 py-2 text-[10px] uppercase tracking-widest font-bold border border-primary/20 hover:border-primary/45 transition-colors"
+                                        >
+                                            Remove
+                                        </button>
+                                    </div>
+                                </div>
+                            ))}
+                            {Array.from({ length: Math.max(0, 3 - compareItems.length) }).map((_, idx) => (
+                                <button
+                                    key={`compare-slot-${idx}`}
+                                    type="button"
+                                    onClick={() => {
+                                        setCompareModalOpen(false)
+                                        setComparePickerOpen(true)
+                                    }}
+                                    className="border border-dashed border-primary/30 bg-muted/5 p-3 min-h-[280px] flex flex-col items-center justify-center gap-3 hover:border-primary/60 hover:bg-primary/5 transition-colors"
+                                >
+                                    <div className="h-12 w-12 rounded-full border border-primary/45 inline-flex items-center justify-center">
+                                        <Plus className="h-6 w-6 text-primary" />
+                                    </div>
+                                    <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
+                                        Add Product to Compare
+                                    </p>
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {quickViewProduct && (
                 <div
                     className="fixed inset-0 z-[130] bg-black/70 p-4 flex items-center justify-center"
                     onClick={() => setQuickViewProduct(null)}
                 >
                     <div
-                        className="w-full max-w-4xl bg-background border border-primary/20 p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
+                        className="relative w-full max-w-4xl bg-background border border-primary/20 p-4 sm:p-6 grid grid-cols-1 md:grid-cols-2 gap-6"
                         onClick={(e) => e.stopPropagation()}
                     >
+                        <button
+                            type="button"
+                            onClick={() => setQuickViewProduct(null)}
+                            className="absolute top-3 right-3 z-10 p-1.5 bg-background/75 border border-primary/30 hover:border-primary/60 transition-colors"
+                            aria-label="Close quick view"
+                        >
+                            <X className="h-4 w-4" />
+                        </button>
                         <div className="space-y-3">
                             <div className="relative aspect-square bg-secondary overflow-hidden">
                                 <img
@@ -301,13 +591,6 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                     alt={quickViewProduct.title || 'Quick view product'}
                                     className="w-full h-full object-cover"
                                 />
-                                <button
-                                    type="button"
-                                    onClick={() => setQuickViewProduct(null)}
-                                    className="absolute top-3 right-3 p-1.5 bg-background/70 border border-primary/30"
-                                >
-                                    <X className="h-4 w-4" />
-                                </button>
                                 {(quickViewProduct.images?.length || 0) > 1 && (
                                     <>
                                         <button
@@ -350,6 +633,23 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                             image: quickViewProduct.images?.[0] || '',
                                             quantity: 1,
                                             description: quickViewProduct.description,
+                                            sku: quickViewProduct.sku,
+                                            metalType: quickViewProduct.metalType || quickViewProduct.metal,
+                                            metalPurity: quickViewProduct.metalPurity,
+                                            metalWeight: Number(quickViewProduct.metalWeight || 0) || undefined,
+                                            stoneType: quickViewProduct.stoneType,
+                                            stoneShape: quickViewProduct.stoneShape,
+                                            caratWeight: quickViewProduct.caratWeight,
+                                            totalCaratWeight: quickViewProduct.totalCaratWeight,
+                                            deliveryTime: quickViewProduct.deliveryTime || quickViewProduct.deliveryDays,
+                                            deliveryDays: quickViewProduct.deliveryDays,
+                                            certification: quickViewProduct.certification || quickViewProduct.certificationType,
+                                            chainLength: quickViewProduct.chainLength,
+                                            warranty: quickViewProduct.warranty,
+                                            returnEligibility: quickViewProduct.returnEligibility,
+                                            compareAtPrice: Number(quickViewProduct.compareAtPrice || quickViewProduct.originalPrice || quickViewProduct.mrp || 0) || undefined,
+                                            stock: Number(quickViewProduct.stock || 0) || undefined,
+                                            isPopular: Boolean(quickViewProduct.isPopular),
                                         })
                                         showToast('Added to Bag')
                                     }}

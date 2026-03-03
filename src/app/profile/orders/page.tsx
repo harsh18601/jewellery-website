@@ -145,6 +145,15 @@ const OrdersPage = () => {
                 category: product.category || 'Jewellery',
                 image: product.productImage || product.image || product.images?.[0] || '',
                 quantity: Math.max(1, Number(product.quantity || 1)),
+                sku: product.sku || '',
+                metalType: product.metalType || product.metal || '',
+                metalPurity: product.metalPurity || '',
+                metalWeight: Number(product.metalWeight || 0) || undefined,
+                stoneType: product.stoneType || '',
+                stoneShape: product.stoneShape || '',
+                caratWeight: product.caratWeight || '',
+                deliveryTime: product.deliveryTime || '',
+                certification: product.certification || '',
             })
         })
         router.push('/cart')

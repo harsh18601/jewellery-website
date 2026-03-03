@@ -1,7 +1,7 @@
 "use client"
 
 import React, { useState } from 'react'
-import { ShoppingBag, Trash2, ArrowRight, X } from 'lucide-react'
+import { ShoppingBag, Trash2, ArrowRight, X, ArrowLeft, CheckCircle2, CreditCard, Wallet, Landmark, ShieldCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useCart } from '@/components/providers/CartContext'
@@ -21,6 +21,10 @@ const CartPage = () => {
     const [addressModalOpen, setAddressModalOpen] = useState(false)
     const [selectedAddressKey, setSelectedAddressKey] = useState<string>('')
     const [isAddressLoading, setIsAddressLoading] = useState(false)
+    const [couponCode, setCouponCode] = useState('')
+    const [couponMessage, setCouponMessage] = useState('')
+    const [deliveryPin, setDeliveryPin] = useState('')
+    const [deliveryPinMessage, setDeliveryPinMessage] = useState('')
     const [checkoutModal, setCheckoutModal] = useState({
         open: false,
         title: '',
@@ -29,7 +33,57 @@ const CartPage = () => {
     })
 
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
+    const savingsTotal = cartItems.reduce((acc, item: any) => {
+        const compareAtPrice = Number(item.compareAtPrice || item.originalPrice || item.mrp || 0)
+        const saved = compareAtPrice > Number(item.price || 0) ? (compareAtPrice - Number(item.price || 0)) * item.quantity : 0
+        return acc + saved
+    }, 0)
+    const goldValue = cartItems.reduce((acc, item: any) => {
+        const perItemGold = Number(item.goldValue || item.price * 0.88)
+        return acc + (perItemGold * item.quantity)
+    }, 0)
+    const makingCharges = cartItems.reduce((acc, item: any) => {
+        const perItemMaking = Number(item.makingCharges || item.price * 0.12)
+        return acc + (perItemMaking * item.quantity)
+    }, 0)
+    const gstAmount = (goldValue + makingCharges) * 0.03
     const total = subtotal * 1.03
+
+    const formatDateLabel = (date: Date) =>
+        date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short' })
+
+    const estimateDeliveryWindow = () => {
+        const getMaxDays = (value: any) => {
+            if (typeof value === 'number' && Number.isFinite(value)) return value
+            if (typeof value === 'string') {
+                const matches = value.match(/\d+/g)
+                if (matches?.length) return Number(matches[matches.length - 1])
+            }
+            return 5
+        }
+
+        const maxDeliveryDays = Math.max(
+            3,
+            ...cartItems.map((item: any) => getMaxDays(item.deliveryTime || item.deliveryDays))
+        )
+
+        const earliest = new Date()
+        earliest.setDate(earliest.getDate() + Math.max(3, maxDeliveryDays - 2))
+        const latest = new Date()
+        latest.setDate(latest.getDate() + maxDeliveryDays)
+
+        return `${formatDateLabel(earliest)} - ${formatDateLabel(latest)}`
+    }
+
+    const estimatedDeliveryRange = estimateDeliveryWindow()
+
+    const handlePinDeliveryCheck = () => {
+        if (!/^\d{6}$/.test(deliveryPin)) {
+            setDeliveryPinMessage('Enter a valid 6-digit PIN code.')
+            return
+        }
+        setDeliveryPinMessage(`Delivering to ${deliveryPin}: expected by ${estimatedDeliveryRange}.`)
+    }
 
     useEffect(() => {
         if (!session) {
@@ -75,9 +129,24 @@ const CartPage = () => {
                     productId: item.id,
                     productName: item.title,
                     productImage: item.image,
+                    sku: (item as any).sku || '',
+                    metalType: (item as any).metalType || (item as any).metal || 'Yellow Gold',
+                    metalPurity: (item as any).metalPurity || '18K',
+                    metalWeight: Number((item as any).metalWeight || 0) || undefined,
+                    stoneType: (item as any).stoneType || '',
+                    stoneShape: (item as any).stoneShape || '',
+                    caratWeight: String((item as any).totalCaratWeight || (item as any).caratWeight || ''),
+                    deliveryTime: String((item as any).deliveryTime || (item as any).deliveryDays || ''),
+                    certification: String((item as any).certification || ''),
+                    chainLength: String((item as any).chainLength || ''),
+                    warranty: String((item as any).warranty || ''),
+                    returnEligibility: String((item as any).returnEligibility || ''),
                     quantity: item.quantity,
                     price: item.price
                 })),
+                couponCode: couponCode || undefined,
+                totalSavings: savingsTotal,
+                estimatedDelivery: estimatedDeliveryRange,
                 totalPrice: total,
                 paymentStatus: 'Pending',
                 orderStatus: 'Processing',
@@ -151,10 +220,17 @@ const CartPage = () => {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-4 py-16 sm:py-24 min-h-screen">
+        <div className="max-w-7xl mx-auto px-4 py-16 pb-28 sm:py-24 min-h-screen">
             <div className="flex flex-col md:flex-row justify-between items-start gap-10 md:gap-16">
                 <div className="flex-grow space-y-10 sm:space-y-12 w-full">
                     <div className="space-y-4 text-center flex flex-col items-center">
+                        <Link
+                            href="/shop"
+                            className="inline-flex items-center gap-2 self-start text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary transition-colors"
+                        >
+                            <ArrowLeft className="h-3.5 w-3.5" />
+                            Continue Shopping
+                        </Link>
                         <h1 className="text-4xl font-bold uppercase tracking-tighter mb-2 text-center">Shopping Bag</h1>
                         <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold text-center">
                             {cartItems.length} ITEM(S) IN YOUR BAG
@@ -165,20 +241,31 @@ const CartPage = () => {
                         <div className="space-y-8">
                             {cartItems.map(item => (
                                 <div key={item.id} className="flex flex-col sm:flex-row gap-6 sm:gap-8 border-b border-primary/10 pb-8">
-                                    <div className="w-full h-52 sm:w-32 sm:h-40 bg-secondary flex-shrink-0 overflow-hidden">
+                                    <Link href={`/product/${item.id}`} className="w-full h-56 sm:w-36 sm:h-44 bg-secondary flex-shrink-0 overflow-hidden">
                                         <img src={item.image} alt={item.title} className="w-full h-full object-cover grayscale hover:grayscale-0 transition-all duration-500" />
-                                    </div>
+                                    </Link>
 
                                     <div className="flex-grow space-y-4">
                                         <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2">
                                             <div className="space-y-1">
-                                                <h3 className="text-sm font-bold uppercase tracking-widest">{item.title}</h3>
+                                                <h3 className="text-base font-bold uppercase tracking-wide">{item.title}</h3>
                                                 <p className="text-[10px] text-muted-foreground uppercase tracking-[0.2em] mb-2">{item.category}</p>
-                                                {item.description && (
+                                                <div className="space-y-1 text-[11px] text-muted-foreground">
+                                                    <p>Weight: {item.metalWeight ? `${item.metalWeight}g` : '--'}</p>
+                                                    <p>SKU: {item.sku || '--'}</p>
+                                                    <p>Delivery by {estimatedDeliveryRange}</p>
+                                                </div>
+                                                <div className="flex items-center gap-4 pt-1">
+                                                    <Link
+                                                        href={`/product/${item.id}`}
+                                                        className="text-[10px] uppercase tracking-widest font-bold text-primary hover:text-primary/80 transition-colors"
+                                                    >
+                                                        View Details
+                                                    </Link>
+                                                </div>
+                                                {typeof item.description === 'string' && item.description.trim() && (
                                                     <p className="text-[10px] text-muted-foreground/60 line-clamp-2 font-serif italic max-w-md">
-                                                        {typeof item.description === 'string'
-                                                            ? item.description
-                                                            : 'Premium quality handcrafted piece.'}
+                                                        {item.description}
                                                     </p>
                                                 )}
                                             </div>
@@ -186,9 +273,15 @@ const CartPage = () => {
                                         </div>
 
                                         <div className="flex justify-between items-center pt-2 sm:pt-4">
-                                            <div className="flex items-center space-x-4 border border-primary/20 px-4 py-2">
+                                            <div className="flex items-center space-x-5 border border-primary/20 px-5 py-2.5">
                                                 <button
-                                                    onClick={() => updateQuantity(item.id, -1)}
+                                                    onClick={() => {
+                                                        if (item.quantity <= 1) {
+                                                            removeFromCart(item.id)
+                                                            return
+                                                        }
+                                                        updateQuantity(item.id, -1)
+                                                    }}
                                                     className="text-primary hover:text-secondary cursor-pointer"
                                                 >
                                                     -
@@ -203,7 +296,11 @@ const CartPage = () => {
                                             </div>
 
                                             <button
-                                                onClick={() => removeFromCart(item.id)}
+                                                onClick={() => {
+                                                    if (window.confirm('Remove this item from your bag?')) {
+                                                        removeFromCart(item.id)
+                                                    }
+                                                }}
                                                 className="text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
                                             >
                                                 <Trash2 className="h-4 w-4" />
@@ -232,21 +329,112 @@ const CartPage = () => {
 
                     <div className="space-y-4 text-xs font-bold uppercase tracking-widest">
                         <div className="flex justify-between">
+                            <span className="text-muted-foreground">Gold Value</span>
+                            <span>{formatPrice(goldValue)}</span>
+                        </div>
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">Making Charges</span>
+                            <span>{formatPrice(makingCharges)}</span>
+                        </div>
+                        <div className="flex justify-between">
                             <span className="text-muted-foreground">Subtotal</span>
                             <span>{formatPrice(subtotal)}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Tax (GST)</span>
-                            <span>{formatPrice(subtotal * 0.03)}</span>
+                            <span>{formatPrice(gstAmount)}</span>
                         </div>
                         <div className="flex justify-between">
                             <span className="text-muted-foreground">Shipping</span>
                             <span className="text-primary">FREE</span>
                         </div>
+                        {savingsTotal > 0 && (
+                            <div className="flex justify-between">
+                                <span className="text-muted-foreground">You Saved</span>
+                                <span className="text-primary">{formatPrice(savingsTotal)}</span>
+                            </div>
+                        )}
+                        <div className="flex justify-between">
+                            <span className="text-muted-foreground">Delivery</span>
+                            <span>{estimatedDeliveryRange}</span>
+                        </div>
                         <div className="border-t border-primary/20 pt-4 flex justify-between text-base">
                             <span>Total</span>
                             <span>{formatPrice(total)}</span>
                         </div>
+                    </div>
+
+                    <div className="space-y-2">
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Deliver to</p>
+                        <div className="flex items-center gap-2">
+                            <input
+                                value={deliveryPin}
+                                onChange={(e) => setDeliveryPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                placeholder="Enter PIN code"
+                                className="h-10 flex-1 px-3 text-xs bg-muted/10 border border-primary/20 focus:border-primary outline-none"
+                            />
+                            <button
+                                type="button"
+                                onClick={handlePinDeliveryCheck}
+                                className="h-10 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
+                            >
+                                Check
+                            </button>
+                        </div>
+                        {deliveryPinMessage && <p className="text-[10px] text-muted-foreground">{deliveryPinMessage}</p>}
+                    </div>
+
+                    <div className="space-y-2">
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Apply Coupon</p>
+                        <div className="flex items-center gap-2">
+                            <input
+                                value={couponCode}
+                                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                placeholder="Enter coupon code"
+                                className="h-10 flex-1 px-3 text-xs bg-muted/10 border border-primary/20 focus:border-primary outline-none"
+                            />
+                            <button
+                                type="button"
+                                onClick={() => setCouponMessage(couponCode ? 'Coupon will be validated at checkout.' : 'Enter a coupon code.')}
+                                className="h-10 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
+                            >
+                                Apply
+                            </button>
+                        </div>
+                        <div className="flex flex-wrap gap-2 pt-1">
+                            {['WELCOME10', 'SAVE5'].map((offer) => (
+                                <button
+                                    key={offer}
+                                    type="button"
+                                    onClick={() => {
+                                        setCouponCode(offer)
+                                        setCouponMessage(`${offer} selected. Coupon will be validated at checkout.`)
+                                    }}
+                                    className="px-2.5 py-1 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60"
+                                >
+                                    {offer}
+                                </button>
+                            ))}
+                        </div>
+                        {couponMessage && <p className="text-[10px] text-muted-foreground">{couponMessage}</p>}
+                    </div>
+
+                    <div className="border border-primary/15 bg-muted/5 p-3 space-y-2">
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Payment Methods</p>
+                        <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-widest font-bold">
+                            <p className="inline-flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> UPI</p>
+                            <p className="inline-flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5 text-primary" /> Cards</p>
+                            <p className="inline-flex items-center gap-1.5"><Landmark className="h-3.5 w-3.5 text-primary" /> Net Banking</p>
+                            <p className="inline-flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> Wallets</p>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">No-Cost EMI from {formatPrice(Math.max(1, Math.round(total / 12)))}/month</p>
+                    </div>
+
+                    <div className="space-y-2 text-[10px] uppercase tracking-widest font-bold">
+                        <p className="inline-flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> Secure Payment</p>
+                        <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Hallmarked Gold</p>
+                        <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Easy Returns</p>
+                        <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Lifetime Service</p>
                     </div>
 
                     <button
@@ -267,6 +455,37 @@ const CartPage = () => {
                     </div>
                 </aside>
             </div>
+
+            {cartItems.length > 0 && (
+                <section className="mt-10 border border-primary/10 bg-muted/5 p-6">
+                    <h3 className="text-sm font-bold uppercase tracking-widest mb-4">Complete the Look</h3>
+                    <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[10px] uppercase tracking-widest font-bold">
+                        <Link href="/shop?cat=earrings" className="border border-primary/20 px-3 py-3 hover:border-primary/55 transition-colors">Earrings</Link>
+                        <Link href="/shop?cat=bracelets" className="border border-primary/20 px-3 py-3 hover:border-primary/55 transition-colors">Bracelet</Link>
+                        <Link href="/shop?cat=rings" className="border border-primary/20 px-3 py-3 hover:border-primary/55 transition-colors">Ring</Link>
+                        <Link href="/shop?cat=necklaces" className="border border-primary/20 px-3 py-3 hover:border-primary/55 transition-colors">Necklace</Link>
+                    </div>
+                </section>
+            )}
+
+            {cartItems.length > 0 && (
+                <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 border-t border-primary/20 bg-background/95 backdrop-blur-md p-3">
+                    <div className="flex items-center justify-between gap-3">
+                        <div>
+                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold">Total</p>
+                            <p className="text-lg font-bold text-primary">{formatPrice(total)}</p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={handleCheckout}
+                            disabled={isCheckoutLoading || isAddressLoading}
+                            className="px-4 py-2.5 bg-primary text-foreground text-[10px] uppercase tracking-widest font-bold disabled:opacity-50"
+                        >
+                            {isCheckoutLoading ? 'Processing...' : 'Checkout'}
+                        </button>
+                    </div>
+                </div>
+            )}
 
             <AnimatePresence>
                 {checkoutModal.open && (

@@ -6,9 +6,24 @@ export interface IOrder extends Document {
         productId: string;
         productName?: string;
         productImage?: string;
+        sku?: string;
+        metalType?: string;
+        metalPurity?: string;
+        metalWeight?: number;
+        stoneType?: string;
+        stoneShape?: string;
+        caratWeight?: string;
+        deliveryTime?: string;
+        certification?: string;
+        chainLength?: string;
+        warranty?: string;
+        returnEligibility?: string;
         quantity: number;
         price: number;
     }[];
+    couponCode?: string;
+    totalSavings?: number;
+    estimatedDelivery?: string;
     totalPrice: number;
     shippingAddress?: {
         id?: number;
@@ -32,9 +47,24 @@ const OrderSchema: Schema = new Schema({
         productId: { type: String, required: true },
         productName: { type: String },
         productImage: { type: String },
+        sku: { type: String },
+        metalType: { type: String },
+        metalPurity: { type: String },
+        metalWeight: { type: Number },
+        stoneType: { type: String },
+        stoneShape: { type: String },
+        caratWeight: { type: String },
+        deliveryTime: { type: String },
+        certification: { type: String },
+        chainLength: { type: String },
+        warranty: { type: String },
+        returnEligibility: { type: String },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
     }],
+    couponCode: { type: String },
+    totalSavings: { type: Number, default: 0 },
+    estimatedDelivery: { type: String },
     totalPrice: { type: Number, required: true },
     shippingAddress: {
         id: Number,
@@ -53,7 +83,14 @@ const OrderSchema: Schema = new Schema({
 });
 
 const existingOrderModel = mongoose.models.Order as mongoose.Model<IOrder> | undefined;
-if (existingOrderModel && !existingOrderModel.schema.path('products.productName')) {
+if (
+    existingOrderModel &&
+    (
+        !existingOrderModel.schema.path('products.productName') ||
+        !existingOrderModel.schema.path('products.sku') ||
+        !existingOrderModel.schema.path('couponCode')
+    )
+) {
     delete mongoose.models.Order;
 }
 

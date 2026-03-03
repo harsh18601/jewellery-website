@@ -4,12 +4,11 @@ import HomeContent from '@/components/home/HomeContent'
 
 export default async function Home() {
   // Fetch CMS data in parallel for faster first render.
-  const [heroEntries, categoryEntries, heritageEntries, blogEntries, collectionEntries, testimonialEntries] = await Promise.all([
+  const [heroEntries, categoryEntries, heritageEntries, blogEntries, testimonialEntries] = await Promise.all([
     fetchEntries('hero'),
     fetchEntries('category'),
     fetchEntries('heritageFeature'),
     fetchEntries('blogPost'),
-    fetchEntries('collection'),
     fetchEntries('testimonial'),
   ])
 
@@ -52,14 +51,6 @@ export default async function Home() {
     slug: entry.fields.slug
   })) || []
 
-  const collections = collectionEntries?.map((entry: any) => ({
-    title: entry.fields.title,
-    subtitle: entry.fields.subtitle,
-    image: entry.fields.image?.fields?.file?.url ? `https:${entry.fields.image.fields.file.url}` : null,
-    color: entry.fields.color || "bg-black/60",
-    slug: entry.fields.slug
-  })) || []
-
   const testimonials = testimonialEntries?.map((entry: any) => ({
     name: entry.fields.name,
     role: entry.fields.role,
@@ -73,7 +64,6 @@ export default async function Home() {
       categories={categories}
       heritageFeatures={heritageFeatures}
       blogs={blogs}
-      collections={collections}
       testimonials={testimonials}
     />
   )

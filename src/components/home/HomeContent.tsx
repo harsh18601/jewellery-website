@@ -5,7 +5,6 @@ import Link from 'next/link'
 import { motion } from 'framer-motion'
 import { ArrowRight, Sparkles, ShieldCheck, Gem, Crown, Fingerprint } from 'lucide-react'
 
-import CollectionsSection from './CollectionsSection'
 import BlogSection from './BlogSection'
 import TestimonialsSection from './TestimonialsSection'
 
@@ -14,11 +13,10 @@ interface HomeContentProps {
     categories: any[];
     heritageFeatures?: any[];
     blogs: any[];
-    collections: any[];
     testimonials: any[];
 }
 
-const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, testimonials }: HomeContentProps) => {
+const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }: HomeContentProps) => {
     const heroImage = hero.backgroundImage?.fields?.file?.url ? `https:${hero.backgroundImage.fields.file.url}` : "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=2070"
 
     const iconMap: { [key: string]: any } = {
@@ -106,9 +104,6 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                 </div>
             </section>
 
-            {/* Shop By Collections Section */}
-            <CollectionsSection collections={collections} />
-
             {/* Featured Categories */}
             <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-16 space-y-6">
@@ -117,8 +112,8 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                         <h3 className="site-heading">Luxury for <span className="italic">Every Occasion</span></h3>
                     </div>
                     <div className="flex justify-end">
-                        <Link href="/shop" className="text-sm font-bold uppercase tracking-widest flex items-center group">
-                            View All <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                        <Link href="/shop" className="text-sm font-bold uppercase tracking-widest flex items-center group transition-colors hover:text-primary">
+                            View All <ArrowRight className="ml-2 h-4 w-4 transition-all group-hover:translate-x-1 group-hover:text-primary" />
                         </Link>
                     </div>
                 </div>

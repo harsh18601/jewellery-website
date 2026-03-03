@@ -2,8 +2,10 @@ import React from 'react'
 import Link from 'next/link'
 import { getProducts } from '@/actions/productActions'
 import ProductGrid from '@/components/shop/ProductGrid'
+import VisibleResultsCount from '@/components/shop/VisibleResultsCount'
+import BackButton from '@/components/common/BackButton'
 import { fetchEntries } from '@/lib/contentful'
-import { ShieldCheck, Truck, BadgeCheck, Gem } from 'lucide-react'
+import { ShieldCheck, Truck, BadgeCheck, Gem, ChevronDown } from 'lucide-react'
 
 type CategoryOption = {
     label: string
@@ -176,7 +178,6 @@ export default async function ShopPage({
     }).filter((entry: CategoryOption) => Boolean(entry.value))
 
     const categoryOptions: CategoryOption[] = cmsCategoryOptions.length > 0 ? cmsCategoryOptions : defaultCategoryOptions
-    const selectedCategory = categoryOptions.find((option: CategoryOption) => option.value === cat)
 
     if (!products || products.length === 0) {
         const query = {
@@ -328,12 +329,8 @@ export default async function ShopPage({
     return (
         <>
         <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
-            <div className="mb-6 border-b border-primary/10 pb-5">
-                <h1 className="text-4xl font-bold tracking-tighter mb-2 gold-text">Our Collections</h1>
-                <p className="text-[11px] uppercase tracking-[0.28em] text-primary font-bold mb-1.5">Shop Our Collection</p>
-                <p className="text-muted-foreground font-serif italic text-sm">
-                    {selectedCategory?.description || selectedCategory?.subtitle || 'Exquisite craftsmanship for the refined taste.'}
-                </p>
+            <div className="mb-4">
+                <BackButton fallbackHref="/" />
             </div>
 
             <div className="mb-4 flex flex-wrap gap-2.5">
@@ -457,7 +454,7 @@ export default async function ShopPage({
                 <main className="lg:border-l lg:border-primary/15 lg:pl-6">
                     <div className="relative z-30 mb-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 bg-background/90 backdrop-blur-sm">
                         <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
-                            {totalResults === 0 ? '0 Results Found' : `Showing ${totalResults} of ${products.length} designs`}
+                            <VisibleResultsCount total={totalResults} />
                         </p>
                         <div className="flex items-center gap-2">
                             <Link
@@ -472,18 +469,22 @@ export default async function ShopPage({
                             {price ? <input type="hidden" name="price" value={price} /> : null}
                             {search ? <input type="hidden" name="search" value={search} /> : null}
                             <label className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Sort By</label>
-                            <select
-                                name="sort"
-                                defaultValue={sort || 'new-arrivals'}
-                                disabled={totalResults === 0}
-                                className={`h-9 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/30 bg-background text-foreground focus:border-primary outline-none ${totalResults === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                            >
-                                {sortOptions.map((option) => (
-                                    <option key={option.value} value={option.value} className="bg-white text-black">
-                                        {option.label}
-                                    </option>
-                                ))}
-                            </select>
+                            <div className={`relative ${totalResults === 0 ? 'opacity-50' : ''}`}>
+                                <select
+                                    name="sort"
+                                    defaultValue={sort || 'new-arrivals'}
+                                    disabled={totalResults === 0}
+                                    style={{ colorScheme: 'dark' }}
+                                    className={`h-9 min-w-[200px] appearance-none pl-3.5 pr-10 text-[10px] uppercase tracking-widest font-bold border border-primary/30 bg-background text-foreground focus:border-primary hover:border-primary/70 hover:bg-primary/5 transition-colors outline-none ${totalResults === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                                >
+                                    {sortOptions.map((option) => (
+                                        <option key={option.value} value={option.value} className="bg-secondary text-foreground">
+                                            {option.label}
+                                        </option>
+                                    ))}
+                                </select>
+                                <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/75" />
+                            </div>
                             <button
                                 type="submit"
                                 disabled={totalResults === 0}
