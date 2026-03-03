@@ -1,14 +1,101 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { MessageCircle, X, Sparkles, Phone, Mail, Instagram } from 'lucide-react'
 
 const ConciergeButton = () => {
     const [isOpen, setIsOpen] = useState(false)
+    const [isMobile, setIsMobile] = useState(false)
+    const [position, setPosition] = useState({ x: 0, y: 0 })
+    const dragStateRef = useRef({
+        dragging: false,
+        moved: false,
+        startX: 0,
+        startY: 0,
+        originX: 0,
+        originY: 0,
+    })
+
+    useEffect(() => {
+        if (typeof window === 'undefined') return
+
+        const updateViewportMode = () => {
+            const mobile = window.innerWidth < 640
+            setIsMobile(mobile)
+
+            if (mobile) {
+                setPosition((prev) => {
+                    if (prev.x === 0 && prev.y === 0) {
+                        return {
+                            x: Math.max(12, window.innerWidth - 76),
+                            y: Math.max(12, window.innerHeight - 92),
+                        }
+                    }
+                    const maxX = Math.max(12, window.innerWidth - 60)
+                    const maxY = Math.max(12, window.innerHeight - 60)
+                    return {
+                        x: Math.min(maxX, Math.max(12, prev.x)),
+                        y: Math.min(maxY, Math.max(12, prev.y)),
+                    }
+                })
+            }
+        }
+
+        updateViewportMode()
+        window.addEventListener('resize', updateViewportMode)
+        return () => window.removeEventListener('resize', updateViewportMode)
+    }, [])
+
+    const onDragStart = (event: React.PointerEvent<HTMLButtonElement>) => {
+        if (!isMobile) return
+        dragStateRef.current = {
+            dragging: true,
+            moved: false,
+            startX: event.clientX,
+            startY: event.clientY,
+            originX: position.x,
+            originY: position.y,
+        }
+        event.currentTarget.setPointerCapture(event.pointerId)
+    }
+
+    const onDragMove = (event: React.PointerEvent<HTMLButtonElement>) => {
+        if (!isMobile || !dragStateRef.current.dragging) return
+        const dx = event.clientX - dragStateRef.current.startX
+        const dy = event.clientY - dragStateRef.current.startY
+
+        if (Math.abs(dx) > 4 || Math.abs(dy) > 4) {
+            dragStateRef.current.moved = true
+        }
+
+        const maxX = Math.max(12, window.innerWidth - 60)
+        const maxY = Math.max(12, window.innerHeight - 60)
+        const nextX = Math.min(maxX, Math.max(12, dragStateRef.current.originX + dx))
+        const nextY = Math.min(maxY, Math.max(12, dragStateRef.current.originY + dy))
+
+        setPosition({ x: nextX, y: nextY })
+    }
+
+    const onDragEnd = (event: React.PointerEvent<HTMLButtonElement>) => {
+        if (!isMobile) return
+        dragStateRef.current.dragging = false
+        event.currentTarget.releasePointerCapture(event.pointerId)
+    }
+
+    const onToggle = () => {
+        if (isMobile && dragStateRef.current.moved) {
+            dragStateRef.current.moved = false
+            return
+        }
+        setIsOpen(!isOpen)
+    }
 
     return (
-        <div className="fixed bottom-4 right-4 sm:bottom-8 sm:right-8 z-[100]">
+        <div
+            className={`fixed z-[100] ${isMobile ? '' : 'bottom-4 right-4 sm:bottom-8 sm:right-8'}`}
+            style={isMobile ? { left: `${position.x}px`, top: `${position.y}px` } : undefined}
+        >
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -67,7 +154,11 @@ const ConciergeButton = () => {
             <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
-                onClick={() => setIsOpen(!isOpen)}
+                onClick={onToggle}
+                onPointerDown={onDragStart}
+                onPointerMove={onDragMove}
+                onPointerUp={onDragEnd}
+                onPointerCancel={onDragEnd}
                 className="bg-primary text-foreground p-3 sm:p-4 rounded-full shadow-2xl flex items-center justify-center hover:bg-primary/90 transition-all group"
             >
                 {isOpen ? (

@@ -208,7 +208,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                     const stoneShape = product.stoneShape || product.stoneType || ''
                     const caratWeight = product.totalCaratWeight || product.caratWeight || product.carat || product.carats || ''
                     const deliveryPromise = product.deliveryTime || product.deliveryDays || '3-5'
-                    const detailSummary = [metalType ? toTitleCase(String(metalType)) : '', stoneShape ? `${toTitleCase(String(stoneShape))} Cut` : '', caratWeight ? `${caratWeight} Carat` : ''].filter(Boolean).join(' • ')
+                    const detailSummary = [metalType ? toTitleCase(String(metalType)) : '', stoneShape ? `${toTitleCase(String(stoneShape))} Cut` : '', caratWeight ? `${caratWeight} Carat` : ''].filter(Boolean).join(' | ')
                     const badgeLabel = isFeatured ? 'Premium' : isNew ? 'New Arrival' : isBestSeller ? 'Trending' : 'Best Value'
                     const reviewCount = Number(product.reviewCount || product.reviewsCount || product.ratingsCount || 0)
 
@@ -218,7 +218,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                             whileInView={{ opacity: 1, y: 0 }}
                             transition={{ delay: i * 0.1 }}
                             key={productId}
-                            whileHover={{ scale: 1.02, y: -2 }}
+                            whileHover={{ scale: 1.015, y: -4 }}
                             onClick={() => router.push(`/product/${productId}`)}
                             onKeyDown={(e) => {
                                 if (e.key === 'Enter' || e.key === ' ') {
@@ -228,19 +228,19 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                             }}
                             role="link"
                             tabIndex={0}
-                            className="group h-full cursor-pointer active:scale-[0.98] luxury-card bg-background p-3 sm:p-4 border border-primary/10 hover:border-primary/50 shadow-[0_12px_22px_rgba(0,0,0,0.16)] hover:shadow-[0_16px_30px_rgba(0,0,0,0.22)] transition-all"
+                            className="group h-full cursor-pointer active:scale-[0.98] luxury-card bg-background p-3 sm:p-4 border border-primary/10 hover:border-primary/55 shadow-[0_12px_22px_rgba(0,0,0,0.16)] hover:shadow-[0_20px_34px_rgba(0,0,0,0.26)] transition-all"
                         >
                             <div className="block h-full">
                                 <div className="relative aspect-[4/5] overflow-hidden mb-4 sm:mb-5 bg-secondary">
                                     <img
                                         src={imageUrl}
                                         alt={product.title || 'Jewellery product'}
-                                        className="w-full h-full object-cover transition-all duration-600 opacity-100 group-hover:opacity-0 group-hover:scale-110"
+                                        className="w-full h-full object-cover transition-all duration-600 opacity-100 group-hover:opacity-0 group-hover:scale-[1.03]"
                                     />
                                     <img
                                         src={lifestyleImageUrl}
                                         alt={`${product.title || 'Jewellery product'} lifestyle`}
-                                        className="absolute inset-0 w-full h-full object-cover transition-all duration-600 opacity-0 group-hover:opacity-100 group-hover:scale-105"
+                                        className="absolute inset-0 w-full h-full object-cover transition-all duration-600 opacity-0 group-hover:opacity-100 group-hover:scale-[1.03]"
                                     />
                                     <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
                                     <span className="absolute top-3 left-3 z-10 px-2.5 py-1 text-[9px] uppercase tracking-[0.16em] font-bold border border-primary/50 bg-primary/20 backdrop-blur text-primary">
@@ -274,10 +274,10 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                                 setWishlistPulse((prev) => ({ ...prev, [String(productId)]: false }))
                                             }, 260)
                                         }}
-                                        className="absolute top-4 right-4 z-10 p-2 rounded-full border border-primary/25 bg-background/65 backdrop-blur-md shadow-sm shadow-black/20 hover:bg-background/85 hover:border-primary/45 transition-all group/heart"
+                                        className="absolute top-4 right-4 z-10 p-2.5 rounded-full border border-primary/25 bg-background/65 backdrop-blur-md shadow-sm shadow-black/20 hover:bg-background/85 hover:border-primary/45 transition-all group/heart"
                                     >
                                         <Heart
-                                            className={`h-4 w-4 transition-all duration-200 ${wishlistPulse[String(productId)] ? 'scale-125' : 'scale-100'} ${isInWishlist(productId) ? 'fill-primary text-primary' : 'text-foreground/70 group-hover/heart:text-primary'}`}
+                                            className={`h-[18px] w-[18px] transition-all duration-200 ${wishlistPulse[String(productId)] ? 'scale-125' : 'scale-100'} ${isInWishlist(productId) ? 'fill-primary text-primary' : 'text-foreground/70 group-hover/heart:text-primary'}`}
                                         />
                                     </button>
 
@@ -337,16 +337,24 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                     </div>
                                 </div>
 
-                                <div className="flex h-[15.5rem] flex-col gap-2.5 pt-1">
-                                    <h3 className="text-sm uppercase tracking-wide font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 min-h-[2.5rem]">
+                                <div className="flex h-[16.2rem] flex-col gap-2.5 pt-1">
+                                    <h3 className="text-base uppercase tracking-wide font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 min-h-[2.8rem]">
                                         {product.title || 'Untitled Product'}
                                     </h3>
                                     <p className="text-[10px] tracking-[0.1em] text-foreground/50 line-clamp-1">
                                         {detailSummary || (product.category || 'Jewellery')}
                                     </p>
+                                    <div className="flex items-center gap-1.5 text-primary -mt-0.5">
+                                        <div className="flex items-center">
+                                            {[...Array(5)].map((_, starIndex) => (
+                                                <Star key={starIndex} className={`h-[17px] w-[17px] ${starIndex < Math.round(rating) ? 'fill-current' : ''}`} />
+                                            ))}
+                                        </div>
+                                        <span className="text-[10px] font-bold">({reviewCount > 0 ? reviewCount : rating.toFixed(1)})</span>
+                                    </div>
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2">
-                                            <p className="text-2xl leading-none font-extrabold text-primary">{displayPrice || "Price on request"}</p>
+                                            <p className="text-[30px] leading-none font-extrabold text-primary">{displayPrice || "Price on request"}</p>
                                             {hasDiscount && (
                                                 <p className="text-xs text-foreground/45 line-through">{formatPrice(originalPriceRaw)}</p>
                                             )}
@@ -355,19 +363,11 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                             <p className="text-[10px] uppercase tracking-widest font-bold text-primary">Save {savePercent}%</p>
                                         )}
                                     </div>
-                                    <div className="flex items-center gap-1.5 text-primary -mt-1">
-                                        <div className="flex items-center">
-                                            {[...Array(5)].map((_, starIndex) => (
-                                                <Star key={starIndex} className={`h-[17px] w-[17px] ${starIndex < Math.round(rating) ? 'fill-current' : ''}`} />
-                                            ))}
-                                        </div>
-                                        <span className="text-[10px] font-bold">({reviewCount > 0 ? reviewCount : rating.toFixed(1)})</span>
+                                    <div className="flex flex-wrap gap-1.5 text-[8px] uppercase tracking-[0.12em] font-bold">
+                                        <span className="px-2 py-0.5 border border-primary/15 text-primary inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> {certificationText}</span>
+                                        <span className="px-2 py-0.5 border border-primary/15 text-primary">100% Authentic</span>
                                     </div>
-                                    <div className="flex flex-wrap gap-1.5 text-[9px] uppercase tracking-widest font-bold">
-                                        <span className="px-2 py-1 border border-primary/20 text-primary inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> {certificationText}</span>
-                                        <span className="px-2 py-1 border border-primary/20 text-primary">100% Authentic</span>
-                                    </div>
-                                    <p className="mt-auto text-[10px] uppercase tracking-[0.16em] text-foreground/55">Ships in {deliveryPromise} </p>
+                                    <p className="mt-auto text-[10px] uppercase tracking-[0.16em] text-foreground/55">Ships in {deliveryPromise}</p>
                                     {isCustomisable && (
                                         <p className="text-[10px] uppercase tracking-widest font-bold text-primary">Customisable</p>
                                     )}
@@ -615,7 +615,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                             <h3 className="text-xl font-bold leading-tight">{quickViewProduct.title || 'Product'}</h3>
                             <p className="text-3xl font-extrabold text-primary">{formatPrice(Number(quickViewProduct.price || 0))}</p>
                             <p className="text-xs uppercase tracking-widest text-foreground/65">
-                                {[quickViewProduct.metalType || quickViewProduct.metal, quickViewProduct.stoneShape || quickViewProduct.stoneType, quickViewProduct.totalCaratWeight || quickViewProduct.caratWeight].filter(Boolean).join(' • ')}
+                                {[quickViewProduct.metalType || quickViewProduct.metal, quickViewProduct.stoneShape || quickViewProduct.stoneType, quickViewProduct.totalCaratWeight || quickViewProduct.caratWeight].filter(Boolean).join(' | ')}
                             </p>
                             <p className="text-xs uppercase tracking-widest text-foreground/65">
                                 Delivery: {quickViewProduct.deliveryTime || quickViewProduct.deliveryDays || '3-5 days'}
@@ -675,3 +675,5 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
 }
 
 export default ProductGrid
+
+

@@ -361,11 +361,12 @@ export default async function ShopPage({
                 <BackButton fallbackHref="/" />
             </div>
 
-            <div className="mb-4">
-                <div className="flex flex-wrap gap-2.5">
+            <div className="mb-6">
+                <div className="overflow-x-auto no-scrollbar pb-2">
+                <div className="inline-flex min-w-max items-center gap-3">
                     <Link
                         href={buildShopHref({ cat: '' })}
-                        className={`px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all ${!cat ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                        className={`px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all ${!cat ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                     >
                         All ({Object.values(categoryCounts).reduce((a, b) => a + b, 0)})
                     </Link>
@@ -373,23 +374,24 @@ export default async function ShopPage({
                         <Link
                             key={option.value}
                             href={buildShopHref({ cat: option.value })}
-                            className={`px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                            className={`px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2.5 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                         >
                             {option.image
-                                ? <img src={option.image} alt={option.label} className="h-6 w-6 rounded-full object-cover border border-primary/30" />
-                                : <span className="h-6 w-6 rounded-full border border-primary/30 inline-flex items-center justify-center text-[10px] font-bold">{option.label.charAt(0)}</span>}
+                                ? <img src={option.image} alt={option.label} className="h-7 w-7 rounded-full object-cover border border-primary/30" />
+                                : <span className="h-7 w-7 rounded-full border border-primary/30 inline-flex items-center justify-center text-[10px] font-bold">{option.label.charAt(0)}</span>}
                             {option.label} ({categoryCounts[option.value] || 0})
                         </Link>
                     ))}
                 </div>
+                </div>
             </div>
 
-            <div className="mb-3 bg-muted/10 border border-primary/20 px-4 py-3">
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
-                    <span className="inline-flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-primary" /> BIS Hallmarked</span>
-                    <span className="inline-flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> Free Shipping</span>
-                    <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Certified Diamonds</span>
-                    <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Secure Checkout</span>
+            <div className="mb-4 bg-muted/10 border border-primary/20 px-4 py-3.5">
+                <div className="flex flex-wrap items-center gap-x-6 gap-y-2 text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
+                    <span className="inline-flex items-center gap-2.5"><BadgeCheck className="h-4 w-4 text-primary" /> BIS Hallmarked</span>
+                    <span className="inline-flex items-center gap-2.5"><Truck className="h-4 w-4 text-primary" /> Free Shipping</span>
+                    <span className="inline-flex items-center gap-2.5"><Gem className="h-4 w-4 text-primary" /> Certified Diamonds</span>
+                    <span className="inline-flex items-center gap-2.5"><ShieldCheck className="h-4 w-4 text-primary" /> Secure Checkout</span>
                 </div>
             </div>
 
@@ -456,10 +458,16 @@ export default async function ShopPage({
                     </Link>
                 </div>
             </details>
-            <a href="#shop-mobile-filters" className="lg:hidden fixed bottom-24 right-4 z-30 px-4 py-3 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest font-bold shadow-xl inline-flex items-center gap-2">
-                <SlidersHorizontal className="h-4 w-4" />
-                Filters
-            </a>
+            <div className="lg:hidden fixed bottom-24 left-4 right-4 z-30 grid grid-cols-2 gap-2">
+                <a href="#shop-mobile-filters" className="px-4 py-3 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest font-bold shadow-xl inline-flex items-center justify-center gap-2">
+                    <SlidersHorizontal className="h-4 w-4" />
+                    Filters
+                </a>
+                <a href="#shop-sort-controls" className="px-4 py-3 bg-background border border-primary/35 text-foreground text-[10px] uppercase tracking-widest font-bold shadow-xl inline-flex items-center justify-center gap-2">
+                    <ChevronDown className="h-4 w-4" />
+                    Sort
+                </a>
+            </div>
 
             <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
                 <aside className="hidden lg:block lg:sticky lg:top-24 lg:h-fit bg-muted/5 border border-primary/15 p-5 space-y-6">
@@ -532,14 +540,22 @@ export default async function ShopPage({
                 </aside>
 
                 <main className="lg:border-l lg:border-primary/15 lg:pl-6">
-                    <div className="relative z-30 mb-2.5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 bg-background/90 backdrop-blur-sm">
-                        <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">
-                            <VisibleResultsCount total={totalResults} />
-                        </p>
-                        <div className="flex items-center gap-2">
+                    <div id="shop-sort-controls" className="relative z-30 mb-2.5 grid grid-cols-1 xl:grid-cols-[auto_1fr_auto] items-center gap-2.5 bg-background/90 backdrop-blur-sm">
+                        <div className="hidden xl:flex items-center">
                             <Link
                                 href={buildShopHref({ clearAll: true })}
                                 className="h-9 px-3 inline-flex items-center text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors"
+                            >
+                                Filters: Reset
+                            </Link>
+                        </div>
+                        <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold xl:text-center">
+                            <VisibleResultsCount total={totalResults} />
+                        </p>
+                        <div className="flex items-center gap-2 xl:justify-end">
+                            <Link
+                                href={buildShopHref({ clearAll: true })}
+                                className="h-9 px-3 inline-flex items-center text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors xl:hidden"
                             >
                                 Reset Filters
                             </Link>
