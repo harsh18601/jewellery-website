@@ -114,6 +114,9 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
     const metalTypeLabel = product.metalType || product.metal || ''
     const metalPurityLabel = product.metalPurity || ''
     const metalWeightLabel = Number(product.metalWeight || 0) > 0 ? `${Number(product.metalWeight).toFixed(2)} g` : ''
+    const sizeLabel = product.size || product.braceletSize || product.ringSize || ''
+    const lengthLabel = product.length || product.chainLength || ''
+    const fitLabel = product.adjustable ? 'Adjustable' : (product.fit || '')
     const productSpecs = [
         { label: 'Metal Type', value: metalTypeLabel },
         { label: 'Metal Purity', value: metalPurityLabel },
@@ -121,6 +124,9 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
         { label: 'Stone Type', value: stoneTypeLabel },
         { label: 'Stone Shape', value: stoneShapeLabel },
         { label: 'Total Carat Weight', value: caratWeightLabel },
+        { label: 'Size', value: sizeLabel },
+        { label: 'Length', value: lengthLabel },
+        { label: 'Fit', value: fitLabel },
         { label: 'Certification', value: certificationLabel },
         { label: 'Delivery Time', value: `${deliveryWindow} days` },
     ].filter((item) => Boolean(item.value))
@@ -250,7 +256,7 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                     <motion.div
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="relative aspect-square bg-secondary overflow-hidden"
+                        className="relative aspect-square bg-gradient-to-br from-secondary via-background to-secondary overflow-hidden border border-primary/15 shadow-[0_28px_54px_-38px_rgba(212,175,55,0.5)]"
                         onPointerMove={handlePointerMove}
                         onPointerLeave={handlePointerLeave}
                         onClick={handleImageClick}
@@ -264,10 +270,11 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                                 transition={{ duration: 0.5 }}
                                 src={images[selectedImage]}
                                 alt={product.title}
-                                className={`w-full h-full object-cover transition-transform duration-300 will-change-transform [backface-visibility:hidden] ${isZoomed ? 'scale-[1.75] cursor-zoom-out' : 'scale-[1.12] cursor-zoom-in'}`}
+                                className={`w-full h-full object-cover transition-transform duration-300 will-change-transform [backface-visibility:hidden] ${isZoomed ? 'scale-[1.75] cursor-zoom-out' : 'scale-[1.04] cursor-zoom-in'}`}
                                 style={{ transformOrigin: `${zoomPosition.x}% ${zoomPosition.y}%` }}
                             />
                         </AnimatePresence>
+                        <div className="pointer-events-none absolute bottom-5 left-1/2 h-10 w-48 -translate-x-1/2 rounded-full bg-primary/18 blur-2xl" />
                         <p className="pointer-events-none absolute bottom-3 right-3 bg-background/60 px-2 py-1 text-[10px] uppercase tracking-widest text-foreground/80">
                             {isZoomed ? 'Tap or move out to reset' : 'Hover or tap to zoom'}
                         </p>
@@ -299,7 +306,7 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                                 <div className="mt-3 flex flex-wrap items-center gap-2">
                                     {product.isFeatured && (
                                         <span className="px-2 py-1 text-[10px] uppercase tracking-widest font-bold border border-primary/35 bg-primary/10 text-primary">
-                                            Featured
+                                            Popular Choice
                                         </span>
                                     )}
                                 </div>
@@ -349,9 +356,9 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                         )}
                     </div>
 
-                    <div className="border border-primary/15 bg-muted/5 p-4 space-y-3">
+                    <div className="border border-primary/20 bg-gradient-to-br from-muted/10 via-muted/5 to-background p-5 space-y-4 shadow-[0_18px_34px_-26px_rgba(0,0,0,0.55)]">
                         <p className="text-xs uppercase tracking-widest font-bold flex items-center gap-2">
-                            <Truck className="h-4 w-4 text-primary" /> Delivery in {deliveryWindow} days
+                            <Truck className="h-4.5 w-4.5 text-primary" /> Delivery to your area
                         </p>
                         <div className="flex flex-col sm:flex-row gap-2">
                             <input
@@ -374,16 +381,16 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                         <p className="text-xs text-muted-foreground">{shippingMessage}</p>
                         <p className="text-xs text-primary font-bold uppercase tracking-widest">{certificationLabel}</p>
                         {emiMonthly > 0 && (
-                            <p className="text-xs text-muted-foreground uppercase tracking-widest">EMI starting at {formatPrice(emiMonthly)}/month</p>
+                            <p className="text-xs text-primary/95 uppercase tracking-widest font-bold">EMI starting at {formatPrice(emiMonthly)}/month</p>
                         )}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                            <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> 7-Day Easy Return</p>
-                            <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Lifetime Polishing</p>
-                            <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Free Shipping</p>
+                            <p className="flex items-center gap-2"><CheckCircle2 className="h-4.5 w-4.5 text-primary" /> 7-Day Easy Return</p>
+                            <p className="flex items-center gap-2"><CheckCircle2 className="h-4.5 w-4.5 text-primary" /> Lifetime Polishing</p>
+                            <p className="flex items-center gap-2"><CheckCircle2 className="h-4.5 w-4.5 text-primary" /> Free Shipping</p>
                         </div>
                     </div>
 
-                    <div className="text-foreground/90">
+                    <div className="text-foreground/90 text-[15px] leading-relaxed">
                         <RichTextRenderer content={product.description} isDark={true} />
                         {!product.description && (
                             <p className="leading-relaxed">Detailed description available in Contentful.</p>
@@ -395,9 +402,9 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                             <h3 className="text-xs uppercase tracking-widest font-bold text-primary">Product Specifications</h3>
                             <p className="text-[10px] uppercase tracking-widest text-muted-foreground">Crafted Details</p>
                         </div>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-2 text-xs">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-5 gap-y-3 text-xs">
                             {productSpecs.map((spec) => (
-                                <div key={spec.label} className="flex justify-between gap-3 border-b border-primary/10 py-1.5">
+                                <div key={spec.label} className="flex justify-between gap-4 border-b border-primary/10 py-2">
                                     <span className="text-muted-foreground uppercase tracking-widest text-[10px]">{spec.label}</span>
                                     <span className="text-right font-semibold">{String(spec.value)}</span>
                                 </div>
@@ -408,9 +415,18 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                     <div className="space-y-6 pt-8 mt-2">
                         <div className="space-y-3">
                             <button
+                                type="button"
+                                onClick={handleBuyNow}
+                                disabled={isBuyingNow}
+                                className="w-full min-h-16 px-6 bg-primary text-foreground uppercase tracking-widest text-sm font-extrabold hover:bg-primary/90 transition-all shadow-lg shadow-primary/25"
+                            >
+                                {isBuyingNow ? 'Processing...' : 'Buy Now'}
+                            </button>
+
+                            <button
                                 onClick={handleAddToCart}
                                 disabled={isAdding}
-                                className={`w-full min-h-16 px-6 bg-primary text-foreground uppercase tracking-widest text-sm font-extrabold transition-all relative overflow-hidden shadow-lg shadow-primary/20 ${isAdding ? 'bg-green-600' : 'hover:bg-primary/90 hover:shadow-xl hover:shadow-primary/30'}`}
+                                className={`w-full min-h-16 px-6 border border-primary text-primary uppercase tracking-widest text-sm font-extrabold transition-all relative overflow-hidden ${isAdding ? 'bg-green-600 text-white border-green-600' : 'hover:bg-primary/10'}`}
                             >
                                 <span className="relative z-10 flex items-center justify-center">
                                     {isAdding ? 'Added to Bag' : (
@@ -421,20 +437,12 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                                     )}
                                 </span>
                             </button>
-
-                            <button
-                                type="button"
-                                onClick={handleBuyNow}
-                                disabled={isBuyingNow}
-                                className="w-full min-h-16 px-6 border border-primary text-primary uppercase tracking-widest text-sm font-extrabold hover:bg-primary/10 transition-all"
-                            >
-                                {isBuyingNow ? 'Processing...' : 'Buy Now'}
-                            </button>
                         </div>
                         <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">Secure Checkout | Easy Returns</p>
                     </div>
 
                     <div className="border border-primary/15 p-5 space-y-4 bg-muted/5">
+                        <p className="text-xs uppercase tracking-widest font-bold text-primary">100% Secure Checkout</p>
                         <h3 className="text-xs uppercase tracking-widest font-bold text-primary">Trusted Payments</h3>
                         <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[10px] uppercase tracking-widest font-bold">
                             <div className="border border-primary/20 p-3 flex items-center gap-2"><Wallet className="h-4 w-4 text-primary" /> UPI</div>

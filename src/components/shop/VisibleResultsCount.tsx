@@ -3,11 +3,11 @@
 import React, { useEffect, useState } from 'react'
 
 const VisibleResultsCount = ({ total, overallTotal }: { total: number, overallTotal?: number }) => {
-    const [visible, setVisible] = useState(Math.min(8, total))
+    const [visible, setVisible] = useState(Math.min(9, total))
     const baseTotal = typeof overallTotal === 'number' ? overallTotal : total
 
     useEffect(() => {
-        setVisible(Math.min(8, total))
+        setVisible(Math.min(9, total))
     }, [total])
 
     useEffect(() => {

@@ -101,6 +101,16 @@ export async function GET() {
         return NextResponse.json({
             name: user.name,
             email: user.email,
+            avatar: user.avatar || "",
+            phone: user.phone || "",
+            birthday: user.birthday || "",
+            preferences: user.preferences || {
+                emailNotifications: true,
+                orderUpdates: true,
+                promotions: true,
+                newArrivals: true,
+                wishlistAlerts: true,
+            },
             passwordUpdatedAt: user.passwordUpdatedAt || null,
             wishlist: user.wishlist || [],
             cart: hydratedCart,
@@ -127,11 +137,15 @@ export async function POST(req: Request) {
         } catch {
             payload = {};
         }
-        const { wishlist, cart, name, email, addresses } = payload;
+        const { wishlist, cart, name, email, addresses, avatar, phone, birthday, preferences } = payload;
 
         const updateData: any = {};
         if (typeof name === 'string' && name.trim()) updateData.name = name.trim();
         if (typeof email === 'string' && email.trim()) updateData.email = email.trim().toLowerCase();
+        if (typeof avatar === 'string') updateData.avatar = avatar;
+        if (typeof phone === 'string') updateData.phone = phone;
+        if (typeof birthday === 'string') updateData.birthday = birthday;
+        if (preferences && typeof preferences === 'object') updateData.preferences = preferences;
         if (wishlist !== undefined) updateData.wishlist = wishlist;
         if (cart !== undefined) updateData.cart = cart;
         if (Array.isArray(addresses)) updateData.addresses = addresses;

@@ -5,19 +5,40 @@ import Link from 'next/link'
 import { signIn } from 'next-auth/react'
 import { useRouter } from 'next/navigation'
 import { motion } from 'framer-motion'
-import { User, Mail, Lock, ArrowRight, Loader2 } from 'lucide-react'
+import { User, Mail, Lock, ArrowRight, Loader2, Eye, EyeOff, Phone } from 'lucide-react'
 
 const SignUpPage = () => {
     const router = useRouter()
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [showConfirmPassword, setShowConfirmPassword] = useState(false)
 
     const [formData, setFormData] = useState({
         name: '',
         email: '',
+        phone: '',
         password: '',
         confirmPassword: ''
     })
+
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    const digitsOnlyPhone = formData.phone.replace(/\D/g, '')
+    const passwordHasMinLength = formData.password.length >= 8
+    const passwordHasUppercase = /[A-Z]/.test(formData.password)
+    const passwordHasNumber = /\d/.test(formData.password)
+    const isEmailValid = emailPattern.test(formData.email)
+    const isPhoneValid = digitsOnlyPhone.length >= 10
+    const passwordsMatch = formData.confirmPassword.length > 0 && formData.password === formData.confirmPassword
+    const showPasswordMismatch = formData.confirmPassword.length > 0 && formData.password !== formData.confirmPassword
+
+    const passwordScore =
+        Number(passwordHasMinLength) +
+        Number(passwordHasUppercase) +
+        Number(passwordHasNumber)
+    const passwordStrengthLabel = passwordScore <= 1 ? 'Weak' : passwordScore === 2 ? 'Medium' : 'Strong'
+    const passwordStrengthColor =
+        passwordScore <= 1 ? 'text-destructive' : passwordScore === 2 ? 'text-amber-400' : 'text-emerald-400'
 
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -27,6 +48,30 @@ const SignUpPage = () => {
         e.preventDefault()
         setError('')
         setIsLoading(true)
+
+        if (!formData.name.trim()) {
+            setError('Please enter your full name')
+            setIsLoading(false)
+            return
+        }
+
+        if (!isEmailValid) {
+            setError('Please enter a valid email address')
+            setIsLoading(false)
+            return
+        }
+
+        if (!isPhoneValid) {
+            setError('Please enter a valid phone number')
+            setIsLoading(false)
+            return
+        }
+
+        if (!passwordHasMinLength || !passwordHasUppercase || !passwordHasNumber) {
+            setError('Password must be at least 8 characters, with one uppercase letter and one number')
+            setIsLoading(false)
+            return
+        }
 
         if (formData.password !== formData.confirmPassword) {
             setError('Passwords do not match')
@@ -41,6 +86,7 @@ const SignUpPage = () => {
                 body: JSON.stringify({
                     name: formData.name,
                     email: formData.email,
+                    phone: digitsOnlyPhone,
                     password: formData.password
                 }),
             })
@@ -53,7 +99,6 @@ const SignUpPage = () => {
                 return
             }
 
-            // Success - redirect to sign-in
             router.push('/auth/signin?registered=true')
         } catch {
             setError('Failed to register. Please try again.')
@@ -63,12 +108,12 @@ const SignUpPage = () => {
 
     return (
         <div className="min-h-screen bg-background flex flex-col justify-center py-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-            {/* Background Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
             <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
             <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
+            <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(circle_at_20%_20%,#d6ae39_0,transparent_35%),radial-gradient(circle_at_80%_70%,#d6ae39_0,transparent_35%)]" />
 
-            <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+            <div className="sm:mx-auto sm:w-full sm:max-w-xl relative z-10">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -77,9 +122,9 @@ const SignUpPage = () => {
                     <Link href="/" className="text-3xl font-bold tracking-tighter gold-text uppercase mb-8 inline-block">
                         Radha Govind
                     </Link>
-                    <h2 className="text-2xl font-bold uppercase tracking-widest mb-2">Create Your Account</h2>
-                    <p className="text-sm text-muted-foreground font-serif italic mb-8">
-                        Join our exclusive boutique for a personalized experience.
+                    <h2 className="text-2xl font-bold uppercase tracking-widest mb-2 text-center">Create Your Account</h2>
+                    <p className="text-sm text-muted-foreground font-serif italic mb-10 text-center">
+                        Join the Radha Govind family to track orders, save favourites, and checkout faster.
                     </p>
                 </motion.div>
 
@@ -100,14 +145,15 @@ const SignUpPage = () => {
                             <div>
                                 <label className="block text-[10px] uppercase tracking-widest font-bold mb-2">Full Name</label>
                                 <div className="relative group">
-                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary group-focus-within:text-primary transition-colors" />
+                                    <User className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary group-focus-within:text-primary transition-colors" />
                                     <input
                                         name="name"
                                         type="text"
                                         required
+                                        autoFocus
                                         value={formData.name}
                                         onChange={handleChange}
-                                        className="w-full bg-muted/20 border border-primary/10 py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-all"
+                                        className="w-full bg-muted/20 border border-primary/10 py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary focus:shadow-[0_0_0_2px_rgba(214,174,57,0.18)] transition-all"
                                         placeholder="Enter your name"
                                     />
                                 </div>
@@ -116,72 +162,128 @@ const SignUpPage = () => {
                             <div>
                                 <label className="block text-[10px] uppercase tracking-widest font-bold mb-2">Email Address</label>
                                 <div className="relative group">
-                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary group-focus-within:text-primary transition-colors" />
+                                    <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary group-focus-within:text-primary transition-colors" />
                                     <input
                                         name="email"
                                         type="email"
                                         required
                                         value={formData.email}
                                         onChange={handleChange}
-                                        className="w-full bg-muted/20 border border-primary/10 py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-all"
-                                        placeholder="your@email.com"
+                                        className={`w-full bg-muted/20 border py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary focus:shadow-[0_0_0_2px_rgba(214,174,57,0.18)] transition-all ${formData.email && !isEmailValid ? 'border-destructive/60' : 'border-primary/10'}`}
+                                        placeholder="Enter your email"
                                     />
                                 </div>
+                                {formData.email && !isEmailValid && (
+                                    <p className="mt-2 text-[11px] text-destructive">Please enter a valid email address.</p>
+                                )}
+                            </div>
+
+                            <div>
+                                <label className="block text-[10px] uppercase tracking-widest font-bold mb-2">Phone Number</label>
+                                <div className="relative group">
+                                    <Phone className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary group-focus-within:text-primary transition-colors" />
+                                    <input
+                                        name="phone"
+                                        type="tel"
+                                        required
+                                        value={formData.phone}
+                                        onChange={handleChange}
+                                        className={`w-full bg-muted/20 border py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary focus:shadow-[0_0_0_2px_rgba(214,174,57,0.18)] transition-all ${formData.phone && !isPhoneValid ? 'border-destructive/60' : 'border-primary/10'}`}
+                                        placeholder="Enter your phone number"
+                                    />
+                                </div>
+                                {formData.phone && !isPhoneValid && (
+                                    <p className="mt-2 text-[11px] text-destructive">Phone number must be at least 10 digits.</p>
+                                )}
                             </div>
 
                             <div>
                                 <label className="block text-[10px] uppercase tracking-widest font-bold mb-2">Password</label>
                                 <div className="relative group">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary group-focus-within:text-primary transition-colors" />
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary group-focus-within:text-primary transition-colors" />
                                     <input
                                         name="password"
-                                        type="password"
+                                        type={showPassword ? 'text' : 'password'}
                                         required
                                         value={formData.password}
                                         onChange={handleChange}
-                                        className="w-full bg-muted/20 border border-primary/10 py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-all"
-                                        placeholder="••••••••"
+                                        className={`w-full bg-muted/20 border py-4 pl-12 pr-12 text-sm focus:outline-none focus:border-primary focus:shadow-[0_0_0_2px_rgba(214,174,57,0.18)] transition-all ${formData.password && (!passwordHasMinLength || !passwordHasUppercase || !passwordHasNumber) ? 'border-destructive/60' : 'border-primary/10'}`}
+                                        placeholder="********"
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
                                 </div>
+                                <p className="mt-2 text-[11px] text-muted-foreground">Must be at least 8 characters, with one uppercase letter and one number.</p>
+                                {formData.password && (
+                                    <p className={`mt-1 text-[11px] font-semibold ${passwordStrengthColor}`}>
+                                        Password strength: {passwordStrengthLabel}
+                                    </p>
+                                )}
                             </div>
 
                             <div>
                                 <label className="block text-[10px] uppercase tracking-widest font-bold mb-2">Confirm Password</label>
                                 <div className="relative group">
-                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary group-focus-within:text-primary transition-colors" />
+                                    <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-primary group-focus-within:text-primary transition-colors" />
                                     <input
                                         name="confirmPassword"
-                                        type="password"
+                                        type={showConfirmPassword ? 'text' : 'password'}
                                         required
                                         value={formData.confirmPassword}
                                         onChange={handleChange}
-                                        className="w-full bg-muted/20 border border-primary/10 py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-all"
-                                        placeholder="••••••••"
+                                        className={`w-full bg-muted/20 border py-4 pl-12 pr-12 text-sm focus:outline-none focus:border-primary focus:shadow-[0_0_0_2px_rgba(214,174,57,0.18)] transition-all ${showPasswordMismatch ? 'border-destructive/60' : 'border-primary/10'}`}
+                                        placeholder="********"
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowConfirmPassword((prev) => !prev)}
+                                        aria-label={showConfirmPassword ? 'Hide confirm password' : 'Show confirm password'}
+                                        className="absolute right-4 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-primary transition-colors"
+                                    >
+                                        {showConfirmPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
                                 </div>
+                                {passwordsMatch && (
+                                    <p className="mt-2 text-[11px] text-emerald-400">Passwords match.</p>
+                                )}
+                                {showPasswordMismatch && (
+                                    <p className="mt-2 text-[11px] text-destructive">Passwords do not match.</p>
+                                )}
                             </div>
                         </div>
 
                         <button
                             type="submit"
                             disabled={isLoading}
-                            className="w-full bg-primary text-foreground py-4 uppercase tracking-[0.2em] text-xs font-bold hover:bg-primary/90 transition-all flex items-center justify-center group"
+                            className="w-full bg-primary text-foreground py-4 uppercase tracking-[0.2em] text-sm font-bold hover:bg-primary/90 transition-all flex items-center justify-center group disabled:opacity-70"
                         >
                             {isLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span className="flex items-center gap-2">
+                                    <Loader2 className="h-4 w-4 animate-spin" /> Signing in...
+                                </span>
                             ) : (
                                 <>
-                                    Join the Boutique <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                                    Create My Account <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
                                 </>
                             )}
                         </button>
+
+                        <p className="text-center text-[11px] text-muted-foreground">
+                            Secure and private registration. We never share your information.
+                        </p>
 
                         <div className="relative my-8">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-primary/10"></div>
                             </div>
                             <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
-                                <span className="bg-background px-4 text-muted-foreground">Or Continue With</span>
+                                <span className="bg-background px-4 text-muted-foreground">Or sign up with</span>
                             </div>
                         </div>
 
@@ -189,7 +291,7 @@ const SignUpPage = () => {
                             <button
                                 type="button"
                                 onClick={() => signIn('google', { callbackUrl: '/' })}
-                                className="flex w-full items-center justify-center gap-3 bg-muted/10 border border-primary/10 py-4 px-4 text-xs font-bold uppercase tracking-widest hover:bg-muted/20 transition-all group"
+                                className="flex w-full items-center justify-center gap-3 bg-white text-black border border-white/80 py-4 px-4 text-xs font-bold uppercase tracking-widest hover:bg-white/90 transition-all group"
                             >
                                 <svg className="h-4 w-4" viewBox="0 0 24 24">
                                     <path
@@ -209,7 +311,7 @@ const SignUpPage = () => {
                                         fill="#EA4335"
                                     />
                                 </svg>
-                                Google
+                                Continue with Google
                             </button>
                         </div>
 
@@ -227,4 +329,3 @@ const SignUpPage = () => {
 }
 
 export default SignUpPage
-

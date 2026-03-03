@@ -6,7 +6,7 @@ import VisibleResultsCount from '@/components/shop/VisibleResultsCount'
 import CurrencyPriceText from '@/components/shop/CurrencyPriceText'
 import MobileStickyActions from '@/components/shop/MobileStickyActions'
 import PriceRangeFilter from '@/components/shop/PriceRangeFilter'
-import BackButton from '@/components/common/BackButton'
+import AutoSortSelect from '@/components/shop/AutoSortSelect'
 import { fetchEntries } from '@/lib/contentful'
 import { ShieldCheck, Truck, BadgeCheck, Gem, ChevronDown } from 'lucide-react'
 
@@ -381,6 +381,7 @@ export default async function ShopPage({
 
     const emptyMessage = "No jewellery found. Try adjusting filters."
     const totalResults = filteredProducts.length
+    const hasActiveFilters = Boolean(cat || metal || stone || price || min || max || normalizedSearch)
     const recommendedProducts = [...products]
         .sort((a: any, b: any) => {
             const aScore = (a.isFeatured ? 2 : 0) + Number(a.ratings || a.rating || 0)
@@ -392,8 +393,9 @@ export default async function ShopPage({
     return (
         <>
             <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-28 sm:pb-10">
-                <div className="mb-4">
-                    <BackButton fallbackHref="/" />
+                <div className="mb-6 border border-primary/20 bg-gradient-to-r from-primary/8 via-transparent to-primary/8 px-5 py-4">
+                    <p className="text-[11px] uppercase tracking-[0.2em] text-primary font-bold mb-1">Lab Grown Diamond Collection</p>
+                    <p className="text-sm text-foreground/75 font-serif italic">Sustainable luxury crafted in Jaipur</p>
                 </div>
 
                 <div className="mb-6">
@@ -444,12 +446,12 @@ export default async function ShopPage({
                     </div>
                 </div>
 
-                <div className="mb-4 bg-muted/10 border border-primary/20 px-4 py-3.5">
-                    <div className="grid grid-cols-2 lg:grid-cols-4 items-center gap-x-4 lg:gap-x-6 gap-y-2 text-[10px] sm:text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
-                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><BadgeCheck className="h-4 w-4 text-primary" /> BIS Hallmarked</span>
-                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><Truck className="h-4 w-4 text-primary" /> Free Shipping</span>
-                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><Gem className="h-4 w-4 text-primary" /> Certified Diamonds</span>
-                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><ShieldCheck className="h-4 w-4 text-primary" /> Secure Checkout</span>
+                <div className="mb-4 bg-muted/10 border border-primary/20 px-4 py-4">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 items-center gap-x-5 lg:gap-x-8 gap-y-3 text-[11px] sm:text-xs uppercase tracking-[0.16em] text-foreground/78 font-bold">
+                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><BadgeCheck className="h-[18px] w-[18px] text-primary" /> BIS Hallmarked</span>
+                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><Truck className="h-[18px] w-[18px] text-primary" /> Free Shipping</span>
+                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><Gem className="h-[18px] w-[18px] text-primary" /> Certified Diamonds</span>
+                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><ShieldCheck className="h-[18px] w-[18px] text-primary" /> Secure Checkout</span>
                     </div>
                 </div>
 
@@ -471,7 +473,7 @@ export default async function ShopPage({
                                     <Link
                                         key={option.value}
                                         href={buildShopHref({ metal: metal === option.value ? '' : option.value })}
-                                        className={`px-3 py-2 text-[10px] uppercase tracking-widest font-bold border transition-all ${metal === option.value ? 'border-primary bg-primary text-primary-foreground' : 'border-primary/30 hover:border-primary/65'}`}
+                                        className={`px-3 py-2 rounded-full text-[10px] uppercase tracking-widest font-bold border transition-all ${metal === option.value ? 'border-primary bg-primary text-primary-foreground' : 'border-primary/25 bg-background/45 hover:border-primary/65 hover:bg-primary/10'}`}
                                     >
                                         {option.label}
                                     </Link>
@@ -485,7 +487,7 @@ export default async function ShopPage({
                                     <Link
                                         key={option.value}
                                         href={buildShopHref({ stone: stone === option.value ? '' : option.value })}
-                                        className={`px-3 py-2 text-[10px] uppercase tracking-widest font-bold border transition-all ${stone === option.value ? 'border-primary bg-primary text-primary-foreground' : 'border-primary/30 hover:border-primary/65'}`}
+                                        className={`px-3 py-2 rounded-full text-[10px] uppercase tracking-widest font-bold border transition-all ${stone === option.value ? 'border-primary bg-primary text-primary-foreground' : 'border-primary/25 bg-background/45 hover:border-primary/65 hover:bg-primary/10'}`}
                                     >
                                         {option.label}
                                     </Link>
@@ -499,10 +501,18 @@ export default async function ShopPage({
                 </details>
                 <MobileStickyActions />
 
-                <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
-                    <aside className="hidden lg:block bg-muted/5 border border-primary/15 p-5 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-7">
+                    <aside className="hidden lg:block self-start bg-muted/5 border border-primary/12 p-5 space-y-6 shadow-[0_20px_40px_-36px_rgba(0,0,0,0.55)]">
                         <div className="flex items-center justify-between">
                             <h2 className="text-sm uppercase tracking-widest font-bold">Filters</h2>
+                            {hasActiveFilters ? (
+                                <Link
+                                    href={buildShopHref({ clearAll: true })}
+                                    className="text-[10px] uppercase tracking-widest font-bold border-b border-primary/40 hover:border-primary"
+                                >
+                                    Reset Filters
+                                </Link>
+                            ) : null}
                         </div>
 
                         <div className="space-y-3 pt-1 border-t border-primary/10">
@@ -522,7 +532,7 @@ export default async function ShopPage({
                                     <Link
                                         key={option.value}
                                         href={buildShopHref({ metal: metal === option.value ? '' : option.value })}
-                                        className={`px-3.5 py-2 text-[10px] uppercase tracking-widest font-bold border transition-all ${metal === option.value ? 'border-primary bg-primary text-black shadow-[0_0_14px_rgba(201,162,39,0.25)]' : 'border-primary/30 hover:border-primary/65 hover:shadow-[0_0_12px_rgba(201,162,39,0.14)]'}`}
+                                        className={`px-3.5 py-2 rounded-full text-[10px] uppercase tracking-widest font-bold border transition-all ${metal === option.value ? 'border-primary bg-primary text-black shadow-[0_0_14px_rgba(201,162,39,0.25)]' : 'border-primary/25 bg-background/45 hover:border-primary/65 hover:bg-primary/10'}`}
                                     >
                                         {option.label}
                                     </Link>
@@ -536,7 +546,7 @@ export default async function ShopPage({
                                     <Link
                                         key={option.value}
                                         href={buildShopHref({ stone: stone === option.value ? '' : option.value })}
-                                        className={`px-3.5 py-2 text-[10px] uppercase tracking-widest font-bold border transition-all ${stone === option.value ? 'border-primary bg-primary text-black shadow-[0_0_14px_rgba(201,162,39,0.25)]' : 'border-primary/30 hover:border-primary/65 hover:shadow-[0_0_12px_rgba(201,162,39,0.14)]'}`}
+                                        className={`px-3.5 py-2 rounded-full text-[10px] uppercase tracking-widest font-bold border transition-all ${stone === option.value ? 'border-primary bg-primary text-black shadow-[0_0_14px_rgba(201,162,39,0.25)]' : 'border-primary/25 bg-background/45 hover:border-primary/65 hover:bg-primary/10'}`}
                                     >
                                         {option.label}
                                     </Link>
@@ -546,94 +556,51 @@ export default async function ShopPage({
                     </aside>
 
                     <main className="lg:border-l lg:border-primary/15 lg:pl-6">
-                        <div id="shop-sort-controls" className="relative z-30 mb-2.5 grid grid-cols-1 xl:grid-cols-[auto_1fr_auto] items-center gap-2.5 bg-background/90 backdrop-blur-sm">
-                            <div className="hidden xl:flex items-center">
-                                <Link
-                                    href={buildShopHref({ clearAll: true })}
-                                    className="h-9 px-3 inline-flex items-center text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors"
-                                >
-                                    Filters: Reset
-                                </Link>
-                            </div>
+                        <div className="mb-3">
+                            <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wide text-foreground">Lab Grown Diamond Jewellery</h1>
+                            <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">{products.length} Designs Available</p>
+                        </div>
+                        <div id="shop-sort-controls" className="relative z-30 mb-3 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 bg-background/90 backdrop-blur-sm">
+                            <div className="hidden xl:flex items-center" />
                             <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold xl:text-center">
                                 <VisibleResultsCount total={totalResults} overallTotal={products.length} />
                             </p>
-                            <form action="/shop" method="get" className="sm:hidden flex items-center gap-3 mt-1 mb-1">
-                                {cat ? <input type="hidden" name="cat" value={cat} /> : null}
-                                {metal ? <input type="hidden" name="metal" value={metal} /> : null}
-                                {stone ? <input type="hidden" name="stone" value={stone} /> : null}
-                                {price ? <input type="hidden" name="price" value={price} /> : null}
-                                {min ? <input type="hidden" name="min" value={min} /> : null}
-                                {max ? <input type="hidden" name="max" value={max} /> : null}
-                                {search ? <input type="hidden" name="search" value={search} /> : null}
+                            <div className="sm:hidden flex items-center gap-3 mt-1 mb-1">
                                 <div className={`relative min-w-0 flex-1 ${totalResults === 0 ? 'opacity-50' : ''}`}>
-                                    <select
+                                    <AutoSortSelect
                                         id="shop-mobile-sort-select"
-                                        name="sort"
-                                        defaultValue={sort || 'new-arrivals'}
+                                        options={sortOptions}
+                                        currentSort={sort || 'new-arrivals'}
                                         disabled={totalResults === 0}
-                                        style={{ colorScheme: 'dark' }}
                                         className={`h-9 w-full appearance-none pl-3 pr-9 text-[10px] uppercase tracking-widest font-bold border border-primary/30 bg-background text-foreground focus:border-primary transition-colors outline-none ${totalResults === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                                    >
-                                        {sortOptions.map((option) => (
-                                            <option key={option.value} value={option.value} className="bg-secondary text-foreground">
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    />
                                     <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/75" />
                                 </div>
-                                <button
-                                    type="submit"
-                                    disabled={totalResults === 0}
-                                    className={`h-9 px-3.5 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors shrink-0 ${totalResults === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                >
-                                    Apply
-                                </button>
-                            </form>
+                            </div>
                             <div className="hidden sm:flex items-center gap-2 xl:justify-end">
-                                <Link
-                                    href={buildShopHref({ clearAll: true })}
-                                    className="h-9 px-3 inline-flex items-center text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors xl:hidden"
-                                >
-                                    Reset Filters
-                                </Link>
-                                <form action="/shop" method="get" className="flex items-center gap-2">
-                                    {cat ? <input type="hidden" name="cat" value={cat} /> : null}
-                                    {metal ? <input type="hidden" name="metal" value={metal} /> : null}
-                                    {stone ? <input type="hidden" name="stone" value={stone} /> : null}
-                                    {price ? <input type="hidden" name="price" value={price} /> : null}
-                                    {min ? <input type="hidden" name="min" value={min} /> : null}
-                                    {max ? <input type="hidden" name="max" value={max} /> : null}
-                                    {search ? <input type="hidden" name="search" value={search} /> : null}
+                                {hasActiveFilters ? (
+                                    <Link
+                                        href={buildShopHref({ clearAll: true })}
+                                        className="h-9 px-3 inline-flex items-center text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors xl:hidden"
+                                    >
+                                        Reset Filters
+                                    </Link>
+                                ) : null}
+                                <div className="flex items-center gap-2">
                                     <label className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Sort By</label>
                                     <div className={`relative ${totalResults === 0 ? 'opacity-50' : ''}`}>
-                                        <select
-                                            name="sort"
-                                            defaultValue={sort || 'new-arrivals'}
+                                        <AutoSortSelect
+                                            options={sortOptions}
+                                            currentSort={sort || 'new-arrivals'}
                                             disabled={totalResults === 0}
-                                            style={{ colorScheme: 'dark' }}
                                             className={`h-9 min-w-[200px] appearance-none pl-3.5 pr-10 text-[10px] uppercase tracking-widest font-bold border border-primary/30 bg-background text-foreground focus:border-primary hover:border-primary/70 hover:bg-primary/5 transition-colors outline-none ${totalResults === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
-                                        >
-                                            {sortOptions.map((option) => (
-                                                <option key={option.value} value={option.value} className="bg-secondary text-foreground">
-                                                    {option.label}
-                                                </option>
-                                            ))}
-                                        </select>
+                                        />
                                         <ChevronDown className="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-foreground/75" />
                                     </div>
-                                    <button
-                                        type="submit"
-                                        disabled={totalResults === 0}
-                                        className={`h-9 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors ${totalResults === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
-                                    >
-                                        Apply
-                                    </button>
-                                </form>
+                                </div>
                             </div>
                         </div>
-                        {(cat || metal || stone || price || min || max || normalizedSearch) && (
+                        {hasActiveFilters && (
                             <div className="mb-3 flex flex-wrap items-center gap-2">
                                 <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mr-1">Filters Applied:</span>
                                 {cat && (
@@ -742,4 +709,3 @@ export default async function ShopPage({
         </>
     )
 }
-

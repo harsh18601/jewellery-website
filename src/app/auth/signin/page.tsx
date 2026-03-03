@@ -5,7 +5,7 @@ import { signIn, useSession } from 'next-auth/react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { Mail, Lock, LogIn, Loader2, CheckCircle2 } from 'lucide-react'
+import { Mail, Lock, LogIn, Loader2, CheckCircle2, Eye, EyeOff, ShieldCheck } from 'lucide-react'
 
 const SignInPageContent = () => {
     const router = useRouter()
@@ -13,6 +13,8 @@ const SignInPageContent = () => {
     const { data: session, status } = useSession()
     const [isLoading, setIsLoading] = useState(false)
     const [error, setError] = useState('')
+    const [showPassword, setShowPassword] = useState(false)
+    const [fieldErrors, setFieldErrors] = useState<{ email?: string; password?: string }>({})
 
     const [formData, setFormData] = useState({
         email: '',
@@ -26,18 +28,37 @@ const SignInPageContent = () => {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setError('')
+
+        const email = formData.email.trim()
+        const password = formData.password
+        const nextFieldErrors: { email?: string; password?: string } = {}
+
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+            nextFieldErrors.email = 'Enter a valid email address.'
+        }
+        if (!password) {
+            nextFieldErrors.password = 'Password is required.'
+        }
+
+        if (Object.keys(nextFieldErrors).length > 0) {
+            setFieldErrors(nextFieldErrors)
+            return
+        }
+
+        setFieldErrors({})
         setIsLoading(true)
+
         const callbackUrl = searchParams.get('callbackUrl') || '/profile'
 
         const result = await signIn('credentials', {
             redirect: false,
-            email: formData.email,
-            password: formData.password,
+            email,
+            password,
             callbackUrl,
         })
 
         if (result?.error) {
-            setError('Invalid credentials. Please try again.')
+            setError('Invalid email or password. Please try again.')
             setIsLoading(false)
         } else {
             router.push(result?.url || callbackUrl)
@@ -58,12 +79,11 @@ const SignInPageContent = () => {
 
     return (
         <div className="min-h-screen bg-background flex flex-col justify-start sm:justify-center pt-16 pb-12 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
-            {/* Background Decorative Elements */}
             <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
             <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
             <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
 
-            <div className="sm:mx-auto sm:w-full sm:max-w-md relative z-10">
+            <div className="sm:mx-auto sm:w-full sm:max-w-xl relative z-10">
                 <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -94,7 +114,7 @@ const SignInPageContent = () => {
                         )}
 
                         {displayError && (
-                            <div className="bg-destructive/10 border border-destructive/20 text-destructive text-xs p-4 rounded-sm">
+                            <div className="bg-destructive/10 border border-destructive/25 text-destructive text-xs p-4 rounded-sm">
                                 {displayError}
                             </div>
                         )}
@@ -109,30 +129,50 @@ const SignInPageContent = () => {
                                         type="email"
                                         required
                                         value={formData.email}
-                                        onChange={handleChange}
-                                        className="w-full bg-muted/20 border border-primary/10 py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-all"
-                                        placeholder="your@email.com"
+                                        onChange={(e) => {
+                                            handleChange(e)
+                                            if (fieldErrors.email) setFieldErrors((prev) => ({ ...prev, email: '' }))
+                                        }}
+                                        className={`w-full bg-muted/20 border py-4 pl-12 pr-4 text-sm focus:outline-none transition-all focus:border-primary focus:shadow-[0_0_0_1px_rgba(212,175,55,0.35),0_0_16px_rgba(212,175,55,0.18)] ${fieldErrors.email ? 'border-destructive/60' : 'border-primary/10'}`}
+                                        placeholder="Enter your email"
                                     />
                                 </div>
+                                {fieldErrors.email && (
+                                    <p className="mt-2 text-[11px] text-destructive">{fieldErrors.email}</p>
+                                )}
                             </div>
 
                             <div>
                                 <div className="flex justify-between items-center mb-2">
                                     <label className="block text-[10px] uppercase tracking-widest font-bold">Password</label>
-                                    <Link href="#" className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary">Forgot?</Link>
+                                    <Link href="#" className="text-[11px] tracking-wide font-semibold text-primary/85 hover:text-primary">Forgot your password?</Link>
                                 </div>
                                 <div className="relative group">
                                     <Lock className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-primary group-focus-within:text-primary transition-colors" />
                                     <input
                                         name="password"
-                                        type="password"
+                                        type={showPassword ? 'text' : 'password'}
                                         required
                                         value={formData.password}
-                                        onChange={handleChange}
-                                        className="w-full bg-muted/20 border border-primary/10 py-4 pl-12 pr-4 text-sm focus:outline-none focus:border-primary transition-all"
-                                        placeholder="••••••••"
+                                        onChange={(e) => {
+                                            handleChange(e)
+                                            if (fieldErrors.password) setFieldErrors((prev) => ({ ...prev, password: '' }))
+                                        }}
+                                        className={`w-full bg-muted/20 border py-4 pl-12 pr-12 text-sm focus:outline-none transition-all focus:border-primary focus:shadow-[0_0_0_1px_rgba(212,175,55,0.35),0_0_16px_rgba(212,175,55,0.18)] ${fieldErrors.password ? 'border-destructive/60' : 'border-primary/10'}`}
+                                        placeholder="........"
                                     />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowPassword((prev) => !prev)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 p-1 text-primary/80 hover:text-primary transition-colors"
+                                        aria-label={showPassword ? 'Hide password' : 'Show password'}
+                                    >
+                                        {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                                    </button>
                                 </div>
+                                {fieldErrors.password && (
+                                    <p className="mt-2 text-[11px] text-destructive">{fieldErrors.password}</p>
+                                )}
                             </div>
                         </div>
 
@@ -142,7 +182,10 @@ const SignInPageContent = () => {
                             className="w-full bg-primary text-foreground py-4 uppercase tracking-[0.2em] text-xs font-bold hover:bg-primary/90 transition-all flex items-center justify-center group"
                         >
                             {isLoading ? (
-                                <Loader2 className="h-4 w-4 animate-spin" />
+                                <span className="inline-flex items-center gap-2">
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                    Signing in...
+                                </span>
                             ) : (
                                 <>
                                     Sign In <LogIn className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -150,12 +193,17 @@ const SignInPageContent = () => {
                             )}
                         </button>
 
+                        <p className="text-center text-[11px] text-muted-foreground inline-flex items-center justify-center w-full gap-2">
+                            <ShieldCheck className="h-4 w-4 text-primary" />
+                            Your information is safely encrypted.
+                        </p>
+
                         <div className="relative my-8">
                             <div className="absolute inset-0 flex items-center">
                                 <div className="w-full border-t border-primary/10"></div>
                             </div>
                             <div className="relative flex justify-center text-[10px] uppercase tracking-widest font-bold">
-                                <span className="bg-background px-4 text-muted-foreground">Or Continue With</span>
+                                <span className="bg-background px-4 text-muted-foreground">Or sign in with</span>
                             </div>
                         </div>
 
@@ -163,7 +211,7 @@ const SignInPageContent = () => {
                             <button
                                 type="button"
                                 onClick={() => signIn('google', { callbackUrl })}
-                                className="flex w-full items-center justify-center gap-3 bg-muted/10 border border-primary/10 py-4 px-4 text-xs font-bold uppercase tracking-widest hover:bg-muted/20 transition-all group"
+                                className="flex w-full items-center justify-center gap-3 bg-white text-black border border-white/70 py-4 px-4 text-xs font-bold uppercase tracking-widest hover:bg-white/90 transition-all group"
                             >
                                 <svg className="h-4 w-4" viewBox="0 0 24 24">
                                     <path
@@ -213,4 +261,3 @@ const SignInPage = () => {
 }
 
 export default SignInPage
-

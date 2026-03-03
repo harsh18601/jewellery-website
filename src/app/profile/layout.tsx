@@ -1,51 +1,139 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { User, Package, MapPin, Settings, LogOut } from 'lucide-react'
+import { User, Package, MapPin, Settings, LogOut, Heart, Camera, LayoutDashboard } from 'lucide-react'
 import { signOut, useSession } from 'next-auth/react'
 
 const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
     const pathname = usePathname()
     const { data: session } = useSession()
+    const fileRef = useRef<HTMLInputElement | null>(null)
+    const [avatar, setAvatar] = useState('')
     const hideSidebarOnMobile = pathname === '/profile/wishlist'
 
+    useEffect(() => {
+        const fetchProfile = async () => {
+            try {
+                const res = await fetch('/api/user/sync')
+                if (!res.ok) return
+                const data = await res.json()
+                setAvatar(data.avatar || '')
+            } catch (e) {
+                console.error('Failed to load profile avatar', e)
+            }
+        }
+        fetchProfile()
+    }, [])
+
     const navItems = [
+        { icon: LayoutDashboard, text: 'Overview', href: '/profile' },
         { icon: Package, text: 'My Orders', href: '/profile/orders' },
-        { icon: MapPin, text: 'Manage Addresses', href: '/profile/addresses' },
+        { icon: Heart, text: 'Wishlist', href: '/profile/wishlist' },
+        { icon: MapPin, text: 'Addresses', href: '/profile/addresses' },
         { icon: Settings, text: 'Account Settings', href: '/profile/settings' },
     ]
 
+    const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0]
+        if (!file) return
+
+        const reader = new FileReader()
+        reader.onload = async () => {
+            const dataUrl = typeof reader.result === 'string' ? reader.result : ''
+            if (!dataUrl) return
+            setAvatar(dataUrl)
+            try {
+                await fetch('/api/user/sync', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ avatar: dataUrl }),
+                })
+            } catch (err) {
+                console.error('Failed to save avatar', err)
+            }
+        }
+        reader.readAsDataURL(file)
+        e.currentTarget.value = ''
+    }
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-24 min-h-screen">
+            <div className="md:hidden mb-6 overflow-x-auto no-scrollbar">
+                <div className="flex items-center gap-2 min-w-max border border-primary/10 p-2 bg-muted/10">
+                    {navItems.map((item) => {
+                        const isActive = pathname === item.href
+                        return (
+                            <Link
+                                key={item.href}
+                                href={item.href}
+                                className={`flex items-center gap-2 px-3 py-2 text-[10px] uppercase tracking-widest font-bold whitespace-nowrap transition-all ${isActive ? 'bg-primary text-foreground' : 'border border-primary/20 text-foreground/80'}`}
+                            >
+                                <item.icon className="h-3.5 w-3.5" />
+                                <span>{item.text}</span>
+                            </Link>
+                        )
+                    })}
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
-                {/* Sidebar */}
                 <aside className={`space-y-8 ${hideSidebarOnMobile ? 'hidden md:block' : ''}`}>
-                    <div className="flex items-center space-x-4 pb-8 border-b border-primary/10">
-                        <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center">
-                            <User className="h-8 w-8 text-primary" />
-                        </div>
-                        <div>
-                            <h1 className="font-bold uppercase tracking-tight">
-                                {session?.user?.name || "Boutique Member"}
-                            </h1>
-                            <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
-                                {session?.user?.email}
-                            </p>
+                    <div className="pb-8 border-b border-primary/10">
+                        <div className="flex items-center space-x-4">
+                            <div className="relative">
+                                <div className="w-16 h-16 rounded-full border border-primary/30 bg-primary/10 overflow-hidden flex items-center justify-center group">
+                                    {avatar ? (
+                                        <img src={avatar} alt="Profile" className="h-full w-full object-cover" />
+                                    ) : (
+                                        <User className="h-8 w-8 text-primary" />
+                                    )}
+                                </div>
+                                <button
+                                    type="button"
+                                    onClick={() => fileRef.current?.click()}
+                                    className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-primary text-black flex items-center justify-center hover:bg-primary/90 transition-colors"
+                                    title="Upload profile photo"
+                                >
+                                    <Camera className="h-3.5 w-3.5" />
+                                </button>
+                                <input
+                                    ref={fileRef}
+                                    type="file"
+                                    accept="image/*"
+                                    className="hidden"
+                                    onChange={handleAvatarChange}
+                                />
+                            </div>
+                            <div>
+                                <h1 className="font-bold uppercase tracking-tight">
+                                    {session?.user?.name || "Boutique Member"}
+                                </h1>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                                    {session?.user?.email}
+                                </p>
+                                <button
+                                    type="button"
+                                    onClick={() => fileRef.current?.click()}
+                                    className="text-[10px] uppercase tracking-widest font-bold text-primary mt-1 hover:text-primary/80 transition-colors"
+                                >
+                                    Upload Photo
+                                </button>
+                            </div>
                         </div>
                     </div>
 
-                    <nav className="flex flex-col space-y-1">
-                        {navItems.map((item, i) => {
+                    <nav className="hidden md:flex flex-col space-y-1">
+                        {navItems.map((item) => {
                             const isActive = pathname === item.href
                             return (
                                 <Link
-                                    key={i}
+                                    key={item.href}
                                     href={item.href}
-                                    className={`flex items-center space-x-3 p-4 text-xs uppercase tracking-widest font-bold transition-all ${isActive
-                                        ? 'bg-primary text-foreground'
-                                        : 'hover:bg-secondary hover:text-foreground'
+                                    className={`flex items-center space-x-3 p-4 text-xs uppercase tracking-widest font-bold transition-all border-l-2 ${isActive
+                                        ? 'bg-gradient-to-r from-primary/12 to-primary/4 text-primary border-primary/70'
+                                        : 'border-transparent hover:bg-secondary hover:text-foreground'
                                         }`}
                                 >
                                     <item.icon className="h-4 w-4" />
@@ -63,7 +151,6 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
                     </nav>
                 </aside>
 
-                {/* Main Content */}
                 <main className="md:col-span-3">
                     {children}
                 </main>
@@ -73,4 +160,3 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
 }
 
 export default ProfileLayout
-

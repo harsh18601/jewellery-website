@@ -2,9 +2,10 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { ShoppingBag, User, Search, Menu, Diamond, X, ChevronDown } from 'lucide-react'
+import { ShoppingBag, User, Search, Menu, Diamond, X, ChevronDown, Heart } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/components/providers/CartContext'
+import { useWishlist } from '@/components/providers/WishlistContext'
 import { useSession, signOut } from 'next-auth/react'
 import SearchOverlay from './SearchOverlay'
 
@@ -48,12 +49,14 @@ const Navbar = () => {
     const { data: session } = useSession()
 
     const { cartCount } = useCart()
+    const { wishlistCount } = useWishlist()
 
     React.useEffect(() => {
         setIsMounted(true)
     }, [])
 
     const safeCartCount = isMounted ? cartCount : 0
+    const safeWishlistCount = isMounted ? wishlistCount : 0
     const mobileNavLinks = mobileNavOrder
         .map((name) => navLinks.find((link) => link.name === name))
         .filter((link): link is NavLink => Boolean(link))
@@ -135,6 +138,16 @@ const Navbar = () => {
                                 aria-label={session ? 'Account' : 'Sign in'}
                             >
                                 <User className="h-6 w-6 sm:h-5 sm:w-5 text-muted-foreground hover:text-primary" />
+                            </Link>
+
+                            <Link href="/profile/wishlist" className="p-3 sm:p-2 hover:text-primary transition-colors relative cursor-pointer" aria-label="Wishlist">
+                                <Heart className="h-6 w-6 sm:h-5 sm:w-5" />
+                                <span
+                                    suppressHydrationWarning
+                                    className={`absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full ${safeWishlistCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+                                >
+                                    {safeWishlistCount}
+                                </span>
                             </Link>
 
                             <Link href="/cart" className="p-3 sm:p-2 hover:text-primary transition-colors relative cursor-pointer" aria-label="Cart">

@@ -3,6 +3,16 @@ import mongoose, { Schema, Document } from 'mongoose';
 export interface IUser extends Document {
     name: string;
     email: string;
+    avatar?: string;
+    phone?: string;
+    birthday?: string;
+    preferences?: {
+        emailNotifications?: boolean;
+        orderUpdates?: boolean;
+        promotions?: boolean;
+        newArrivals?: boolean;
+        wishlistAlerts?: boolean;
+    };
     password?: string;
     passwordUpdatedAt?: Date;
     role: 'admin' | 'customer';
@@ -25,6 +35,16 @@ export interface IUser extends Document {
 const UserSchema: Schema = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
+    avatar: { type: String, default: "" },
+    phone: { type: String, default: "" },
+    birthday: { type: String, default: "" },
+    preferences: {
+        emailNotifications: { type: Boolean, default: true },
+        orderUpdates: { type: Boolean, default: true },
+        promotions: { type: Boolean, default: true },
+        newArrivals: { type: Boolean, default: true },
+        wishlistAlerts: { type: Boolean, default: true },
+    },
     password: { type: String },
     passwordUpdatedAt: { type: Date },
     role: { type: String, enum: ['admin', 'customer'], default: 'customer' },
