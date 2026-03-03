@@ -1,5 +1,4 @@
 import mongoose from 'mongoose';
-import dbConnect from './src/lib/dbConnect';
 import Product from './src/models/Product';
 
 const seedProducts = [

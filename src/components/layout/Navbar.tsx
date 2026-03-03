@@ -42,7 +42,7 @@ const Navbar = () => {
                         <div className="flex items-center">
                             <button
                                 onClick={() => setIsMobileMenuOpen(true)}
-                                className="p-2 sm:hidden hover:bg-primary/10 transition-colors rounded-full cursor-pointer"
+                                className="p-3 sm:hidden hover:bg-primary/10 transition-colors rounded-full cursor-pointer"
                             >
                                 <Menu className="h-6 w-6 text-primary" />
                             </button>
@@ -73,12 +73,12 @@ const Navbar = () => {
                             </div>
                             <button
                                 onClick={() => setIsSearchOpen(true)}
-                                className="p-2 hover:text-primary transition-colors cursor-pointer"
+                                className="p-3 sm:p-2 hover:text-primary transition-colors cursor-pointer"
                             >
-                                <Search className="h-5 w-5" />
+                                <Search className="h-6 w-6 sm:h-5 sm:w-5" />
                             </button>
-                            <Link href="/profile/wishlist" className="p-2 hover:text-primary transition-colors relative cursor-pointer">
-                                <Heart className="h-5 w-5" />
+                            <Link href="/profile/wishlist" className="p-3 sm:p-2 hover:text-primary transition-colors relative cursor-pointer">
+                                <Heart className="h-6 w-6 sm:h-5 sm:w-5" />
                                 <span
                                     suppressHydrationWarning
                                     className={`absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full ${safeWishlistCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
@@ -89,22 +89,22 @@ const Navbar = () => {
 
                             {session ? (
                                 <Link href="/profile" className="p-2 hover:text-primary transition-colors flex items-center space-x-2 group cursor-pointer">
-                                    <User className="h-5 w-5" />
+                                    <User className="h-6 w-6 sm:h-5 sm:w-5" />
                                     <span className="hidden lg:inline text-[10px] uppercase tracking-widest font-bold group-hover:text-primary transition-colors">
                                         {session.user?.name?.split(' ')[0]}
                                     </span>
                                 </Link>
                             ) : (
                                 <Link href="/auth/signin" className="p-2 hover:text-primary transition-colors flex items-center space-x-2 group cursor-pointer">
-                                    <User className="h-5 w-5 text-muted-foreground group-hover:text-primary" />
+                                    <User className="h-6 w-6 sm:h-5 sm:w-5 text-muted-foreground group-hover:text-primary" />
                                     <span className="hidden lg:inline text-[10px] uppercase tracking-widest font-bold group-hover:text-primary transition-colors">
                                         Sign In
                                     </span>
                                 </Link>
                             )}
 
-                            <Link href="/cart" className="p-2 hover:text-primary transition-colors relative cursor-pointer">
-                                <ShoppingBag className="h-5 w-5" />
+                            <Link href="/cart" className="p-3 sm:p-2 hover:text-primary transition-colors relative cursor-pointer">
+                                <ShoppingBag className="h-6 w-6 sm:h-5 sm:w-5" />
                                 <span
                                     suppressHydrationWarning
                                     className={`absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full ${safeCartCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}

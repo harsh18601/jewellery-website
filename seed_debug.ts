@@ -45,8 +45,12 @@ async function seed() {
     try {
         await Product.insertMany(seedProducts);
         console.log("Success!");
-    } catch (err: any) {
-        console.log("Error details:", JSON.stringify(err.errors, null, 2));
+    } catch (err: unknown) {
+        const errorPayload =
+            err && typeof err === 'object' && 'errors' in err
+                ? (err as { errors?: unknown }).errors
+                : err;
+        console.log("Error details:", JSON.stringify(errorPayload, null, 2));
     }
     process.exit(0);
 }

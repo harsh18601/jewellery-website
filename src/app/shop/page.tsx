@@ -5,7 +5,7 @@ import ProductGrid from '@/components/shop/ProductGrid'
 import VisibleResultsCount from '@/components/shop/VisibleResultsCount'
 import BackButton from '@/components/common/BackButton'
 import { fetchEntries } from '@/lib/contentful'
-import { ShieldCheck, Truck, BadgeCheck, Gem, ChevronDown } from 'lucide-react'
+import { ShieldCheck, Truck, BadgeCheck, Gem, ChevronDown, SlidersHorizontal } from 'lucide-react'
 
 type CategoryOption = {
     label: string
@@ -28,10 +28,12 @@ export default async function ShopPage({
         search?: string
         sort?: string
         metal?: string
+        stone?: string
         price?: string
+        max?: string
     }
 }) {
-    const { cat, search, sort, metal, price } = await searchParams
+    const { cat, search, sort, metal, stone, price, max } = await searchParams
     const normalizedSearch = search?.trim().toLowerCase() || ''
 
     const toSearchableText = (value: unknown): string => {
@@ -68,6 +70,12 @@ export default async function ShopPage({
         { label: 'Rose Gold', value: 'rose-gold' },
         { label: 'Platinum', value: 'platinum' },
         { label: 'Silver', value: 'silver' },
+    ]
+    const defaultStoneOptions: MetalOption[] = [
+        { label: 'Round', value: 'round' },
+        { label: 'Oval', value: 'oval' },
+        { label: 'Cushion', value: 'cushion' },
+        { label: 'Pear', value: 'pear' },
     ]
 
     const priceOptions = [
@@ -121,18 +129,7 @@ export default async function ShopPage({
             .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
             .join(' ')
 
-    const getCategoryEmoji = (label: string) => {
-        const normalized = label.toLowerCase()
-        if (normalized.includes('ring')) return '💍'
-        if (normalized.includes('diamond')) return '💎'
-        if (normalized.includes('custom')) return '✨'
-        if (normalized.includes('silver')) return '🪙'
-        if (normalized.includes('necklace')) return '📿'
-        if (normalized.includes('earring')) return '🪄'
-        return '💠'
-    }
-
-    const buildShopHref = (next: { cat?: string, sort?: string, metal?: string, price?: string, search?: string, clearAll?: boolean }) => {
+    const buildShopHref = (next: { cat?: string, sort?: string, metal?: string, stone?: string, price?: string, max?: string, search?: string, clearAll?: boolean }) => {
         const params = new URLSearchParams()
         if (next.clearAll) {
             if (search) params.set('search', search)
@@ -143,13 +140,17 @@ export default async function ShopPage({
         const nextCat = next.cat !== undefined ? next.cat : cat
         const nextSort = next.sort !== undefined ? next.sort : sort
         const nextMetal = next.metal !== undefined ? next.metal : metal
+        const nextStone = next.stone !== undefined ? next.stone : stone
         const nextPrice = next.price !== undefined ? next.price : price
+        const nextMax = next.max !== undefined ? next.max : max
         const nextSearch = next.search !== undefined ? next.search : search
 
         if (nextCat) params.set('cat', nextCat)
         if (nextSort) params.set('sort', nextSort)
         if (nextMetal) params.set('metal', nextMetal)
+        if (nextStone) params.set('stone', nextStone)
         if (nextPrice) params.set('price', nextPrice)
+        if (nextMax) params.set('max', nextMax)
         if (nextSearch) params.set('search', nextSearch)
 
         const query = params.toString()
@@ -245,6 +246,21 @@ export default async function ShopPage({
     }))
     const metalOptions = cmsMetalOptions.length > 0 ? cmsMetalOptions : defaultMetalOptions
     const getMetalLabel = (value?: string) => metalOptions.find((option) => option.value === value)?.label || value || ''
+    const cmsStoneMap = new Map<string, string>()
+    products.forEach((product: any) => {
+        const raw = resolveText(product?.stoneShape || product?.stoneType).trim()
+        if (!raw) return
+        const slug = toSlug(raw)
+        if (!cmsStoneMap.has(slug)) cmsStoneMap.set(slug, raw)
+    })
+    const cmsStoneOptions: MetalOption[] = Array.from(cmsStoneMap.entries()).map(([slug, label]) => ({
+        value: slug,
+        label: label || toLabelFromSlug(slug),
+    }))
+    const stoneOptions = cmsStoneOptions.length > 0 ? cmsStoneOptions : defaultStoneOptions
+    const getStoneLabel = (value?: string) => stoneOptions.find((option) => option.value === value)?.label || value || ''
+    const maxProductPrice = Math.max(50000, ...products.map((p: any) => Number(p.price || 0)))
+    const selectedMaxPrice = Math.max(10000, Math.min(maxProductPrice, Number(max || maxProductPrice)))
 
     let filteredProducts = [...products]
 
@@ -273,6 +289,17 @@ export default async function ShopPage({
             if (price === '50000-plus') return amount >= 50000
             return true
         })
+    }
+
+    if (stone) {
+        filteredProducts = filteredProducts.filter((p) => toSlug(resolveText(p.stoneShape || p.stoneType)) === stone)
+    }
+
+    if (max) {
+        const maxPrice = Number(max)
+        if (Number.isFinite(maxPrice) && maxPrice > 0) {
+            filteredProducts = filteredProducts.filter((p) => Number(p.price || 0) <= maxPrice)
+        }
     }
 
     if (normalizedSearch) {
@@ -333,45 +360,39 @@ export default async function ShopPage({
                 <BackButton fallbackHref="/" />
             </div>
 
-            <div className="mb-4 flex flex-wrap gap-2.5">
-                <Link
-                    href={buildShopHref({ cat: '' })}
-                    className={`px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all ${!cat ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
-                >
-                    All ({Object.values(categoryCounts).reduce((a, b) => a + b, 0)})
-                </Link>
-                {categoryOptions.map((option) => (
+            <div className="mb-4 overflow-x-auto pb-1">
+                <div className="flex w-max min-w-full gap-2.5">
                     <Link
-                        key={option.value}
-                        href={buildShopHref({ cat: option.value })}
-                        className={`px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                        href={buildShopHref({ cat: '' })}
+                        className={`shrink-0 px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all ${!cat ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                     >
-                        {option.image
-                            ? <img src={option.image} alt={option.label} className="h-6 w-6 rounded-full object-cover border border-primary/30" />
-                            : <span className="text-sm leading-none">{getCategoryEmoji(option.label)}</span>}
-                        {option.label} ({categoryCounts[option.value] || 0})
+                        All ({Object.values(categoryCounts).reduce((a, b) => a + b, 0)})
                     </Link>
-                ))}
-            </div>
-
-            <div className="mb-3 bg-muted/10 border border-primary/20 px-4 py-3 overflow-hidden">
-                <div className="trust-marquee">
-                    <div className="trust-marquee-track text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
-                        <span className="inline-flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> Free Shipping Across India</span>
-                        <span className="inline-flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-primary" /> BIS Hallmarked Jewellery</span>
-                        <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Certified Diamonds</span>
-                        <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Secure Checkout</span>
-                    </div>
-                    <div className="trust-marquee-track trust-marquee-track-alt text-[11px] uppercase tracking-widest text-muted-foreground font-bold" aria-hidden="true">
-                        <span className="inline-flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> Free Shipping Across India</span>
-                        <span className="inline-flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-primary" /> BIS Hallmarked Jewellery</span>
-                        <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Certified Diamonds</span>
-                        <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Secure Checkout</span>
-                    </div>
+                    {categoryOptions.map((option) => (
+                        <Link
+                            key={option.value}
+                            href={buildShopHref({ cat: option.value })}
+                            className={`shrink-0 px-5 py-2.5 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/85 text-black border-primary shadow-[0_0_18px_rgba(201,162,39,0.35)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                        >
+                            {option.image
+                                ? <img src={option.image} alt={option.label} className="h-6 w-6 rounded-full object-cover border border-primary/30" />
+                                : <span className="h-6 w-6 rounded-full border border-primary/30 inline-flex items-center justify-center text-[10px] font-bold">{option.label.charAt(0)}</span>}
+                            {option.label} ({categoryCounts[option.value] || 0})
+                        </Link>
+                    ))}
                 </div>
             </div>
 
-            <details className="lg:hidden mb-4 border border-primary/20 bg-muted/5 px-4 py-3">
+            <div className="mb-3 bg-muted/10 border border-primary/20 px-4 py-3">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-[11px] uppercase tracking-widest text-muted-foreground font-bold">
+                    <span className="inline-flex items-center gap-2"><BadgeCheck className="h-4 w-4 text-primary" /> BIS Hallmarked</span>
+                    <span className="inline-flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> Free Shipping</span>
+                    <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Certified Diamonds</span>
+                    <span className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Secure Checkout</span>
+                </div>
+            </div>
+
+            <details id="shop-mobile-filters" className="lg:hidden mb-4 border border-primary/20 bg-muted/5 px-4 py-3">
                 <summary className="text-xs uppercase tracking-widest font-bold cursor-pointer">Filters</summary>
                 <div className="mt-4 space-y-5">
                     <div className="space-y-2">
@@ -402,11 +423,42 @@ export default async function ShopPage({
                             ))}
                         </div>
                     </div>
+                    <div className="space-y-2">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Stone Type</p>
+                        <div className="flex flex-wrap gap-2">
+                            {stoneOptions.map((option) => (
+                                <Link
+                                    key={option.value}
+                                    href={buildShopHref({ stone: option.value })}
+                                    className={`px-3 py-2 text-[10px] uppercase tracking-widest font-bold border transition-all ${stone === option.value ? 'border-primary bg-primary text-primary-foreground' : 'border-primary/30 hover:border-primary/65'}`}
+                                >
+                                    {option.label}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                    <form method="get" className="space-y-2 border-t border-primary/10 pt-4">
+                        {cat ? <input type="hidden" name="cat" value={cat} /> : null}
+                        {sort ? <input type="hidden" name="sort" value={sort} /> : null}
+                        {metal ? <input type="hidden" name="metal" value={metal} /> : null}
+                        {stone ? <input type="hidden" name="stone" value={stone} /> : null}
+                        {price ? <input type="hidden" name="price" value={price} /> : null}
+                        {search ? <input type="hidden" name="search" value={search} /> : null}
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Max Price: Rs {selectedMaxPrice.toLocaleString('en-IN')}</p>
+                        <input type="range" name="max" min="10000" max={maxProductPrice} step="5000" defaultValue={selectedMaxPrice} className="w-full accent-[var(--color-primary)]" />
+                        <button type="submit" className="px-3 py-2 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60">
+                            Apply Max Price
+                        </button>
+                    </form>
                     <Link href={buildShopHref({ clearAll: true })} className="inline-block text-[10px] uppercase tracking-widest font-bold border-b border-primary/40">
                         Clear Filters
                     </Link>
                 </div>
             </details>
+            <a href="#shop-mobile-filters" className="lg:hidden fixed bottom-24 right-4 z-30 px-4 py-3 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest font-bold shadow-xl inline-flex items-center gap-2">
+                <SlidersHorizontal className="h-4 w-4" />
+                Filters
+            </a>
 
             <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
                 <aside className="hidden lg:block lg:sticky lg:top-24 lg:h-fit bg-muted/5 border border-primary/15 p-5 space-y-6">
@@ -449,6 +501,33 @@ export default async function ShopPage({
                             ))}
                         </div>
                     </div>
+                    <div className="space-y-3 pt-3 border-t border-primary/10">
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Stone Type</p>
+                        <div className="flex flex-wrap gap-2.5">
+                            {stoneOptions.map((option) => (
+                                <Link
+                                    key={option.value}
+                                    href={buildShopHref({ stone: option.value })}
+                                    className={`px-3.5 py-2 text-[10px] uppercase tracking-widest font-bold border transition-all ${stone === option.value ? 'border-primary bg-primary text-black shadow-[0_0_14px_rgba(201,162,39,0.25)]' : 'border-primary/30 hover:border-primary/65 hover:shadow-[0_0_12px_rgba(201,162,39,0.14)]'}`}
+                                >
+                                    {option.label}
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                    <form method="get" className="space-y-2 pt-3 border-t border-primary/10">
+                        {cat ? <input type="hidden" name="cat" value={cat} /> : null}
+                        {sort ? <input type="hidden" name="sort" value={sort} /> : null}
+                        {metal ? <input type="hidden" name="metal" value={metal} /> : null}
+                        {stone ? <input type="hidden" name="stone" value={stone} /> : null}
+                        {price ? <input type="hidden" name="price" value={price} /> : null}
+                        {search ? <input type="hidden" name="search" value={search} /> : null}
+                        <p className="text-[11px] uppercase tracking-[0.2em] text-muted-foreground font-bold">Max Price: Rs {selectedMaxPrice.toLocaleString('en-IN')}</p>
+                        <input type="range" name="max" min="10000" max={maxProductPrice} step="5000" defaultValue={selectedMaxPrice} className="w-full accent-[var(--color-primary)]" />
+                        <button type="submit" className="w-full px-3 py-2 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60">
+                            Apply Max Price
+                        </button>
+                    </form>
                 </aside>
 
                 <main className="lg:border-l lg:border-primary/15 lg:pl-6">
@@ -466,7 +545,9 @@ export default async function ShopPage({
                             <form method="get" className="flex items-center gap-2">
                             {cat ? <input type="hidden" name="cat" value={cat} /> : null}
                             {metal ? <input type="hidden" name="metal" value={metal} /> : null}
+                            {stone ? <input type="hidden" name="stone" value={stone} /> : null}
                             {price ? <input type="hidden" name="price" value={price} /> : null}
+                            {max ? <input type="hidden" name="max" value={max} /> : null}
                             {search ? <input type="hidden" name="search" value={search} /> : null}
                             <label className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Sort By</label>
                             <div className={`relative ${totalResults === 0 ? 'opacity-50' : ''}`}>
@@ -495,7 +576,7 @@ export default async function ShopPage({
                             </form>
                         </div>
                     </div>
-                    {(cat || metal || price || normalizedSearch) && (
+                    {(cat || metal || stone || price || max || normalizedSearch) && (
                         <div className="mb-3 flex flex-wrap items-center gap-2">
                             <span className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold mr-1">Filters Applied:</span>
                             {cat && (
@@ -520,6 +601,22 @@ export default async function ShopPage({
                                     className="px-2.5 py-1 text-[10px] uppercase tracking-widest font-bold border border-primary/40 bg-primary/15 text-primary hover:bg-primary/25"
                                 >
                                     Metal: {getMetalLabel(metal)} x
+                                </Link>
+                            )}
+                            {stone && (
+                                <Link
+                                    href={buildShopHref({ stone: '' })}
+                                    className="px-2.5 py-1 text-[10px] uppercase tracking-widest font-bold border border-primary/40 bg-primary/15 text-primary hover:bg-primary/25"
+                                >
+                                    Stone: {getStoneLabel(stone)} x
+                                </Link>
+                            )}
+                            {max && (
+                                <Link
+                                    href={buildShopHref({ max: '' })}
+                                    className="px-2.5 py-1 text-[10px] uppercase tracking-widest font-bold border border-primary/40 bg-primary/15 text-primary hover:bg-primary/25"
+                                >
+                                    Max: Rs {Number(max).toLocaleString('en-IN')} x
                                 </Link>
                             )}
                             {normalizedSearch && (
@@ -588,3 +685,4 @@ export default async function ShopPage({
         </>
     )
 }
+

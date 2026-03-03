@@ -30,6 +30,7 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
     const [isZoomed, setIsZoomed] = useState(false)
     const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 })
     const [shareFeedback, setShareFeedback] = useState('')
+    const [wishlistFeedback, setWishlistFeedback] = useState('')
     const [pincode, setPincode] = useState('')
     const [shippingMessage, setShippingMessage] = useState('Delivery in 3-5 days across major cities.')
     const [showStickyCartBar, setShowStickyCartBar] = useState(false)
@@ -188,9 +189,13 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
         }
         if (isInWishlist(productId)) {
             removeFromWishlist(productId)
+            setWishlistFeedback('Removed from wishlist')
+            setTimeout(() => setWishlistFeedback(''), 1500)
             return
         }
         addToWishlist(item)
+        setWishlistFeedback('Added to wishlist')
+        setTimeout(() => setWishlistFeedback(''), 1500)
     }
 
     const handleShareClick = async () => {
@@ -318,6 +323,9 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                         </div>
                         {shareFeedback && (
                             <p className="text-[10px] uppercase tracking-widest text-primary font-bold">{shareFeedback}</p>
+                        )}
+                        {wishlistFeedback && (
+                            <p className="text-[10px] uppercase tracking-widest text-primary font-bold">{wishlistFeedback}</p>
                         )}
 
                         {product.tagline && (
@@ -513,7 +521,29 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
 
             {showStickyCartBar && (
                 <div className="fixed bottom-0 left-0 right-0 z-40 border-t border-primary/20 bg-background/95 backdrop-blur-md px-4 py-3">
-                    <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
+                    <div className="max-w-7xl mx-auto md:hidden">
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                            <p className="text-lg font-bold text-primary">{formattedPrice}</p>
+                            <p className="text-[10px] uppercase tracking-widest text-muted-foreground font-bold truncate">{product.title}</p>
+                        </div>
+                        <div className="grid grid-cols-2 gap-2">
+                            <button
+                                type="button"
+                                onClick={handleAddToCart}
+                                className="px-4 py-2.5 bg-primary text-foreground text-[10px] uppercase tracking-widest font-bold hover:bg-primary/90 transition-colors"
+                            >
+                                Add to Cart
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleBuyNow}
+                                className="px-4 py-2.5 border border-primary text-primary text-[10px] uppercase tracking-widest font-bold hover:bg-primary/10 transition-colors"
+                            >
+                                Buy Now
+                            </button>
+                        </div>
+                    </div>
+                    <div className="max-w-7xl mx-auto hidden md:flex items-center justify-between gap-4">
                         <div className="min-w-0">
                             <p className="text-sm font-bold truncate">{product.title}</p>
                             <p className="text-xs text-primary font-semibold">{formattedPrice}</p>
