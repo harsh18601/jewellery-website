@@ -13,15 +13,24 @@ export default async function Home() {
     fetchEntries('product'),
   ])
 
-  const hero = heroEntries?.[0]?.fields as any || {
-    title: "Pure Brilliance,",
-    subtitle: "Ethically Crafted",
-    subtitleLabel: "Jaipur's Heritage & Innovation",
-    description: "Discover our exclusive collection of Lab-Grown Diamonds and Bespoke Jewellery.",
-    backgroundImage: { fields: { file: { url: "//images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=2070" } } },
-    ctaText: "Explore Collection",
+  const rawHero = heroEntries?.[0]?.fields as any
+  const hero = rawHero || {
+    title: "Real Diamonds",
+    subtitle: "Ethically Created",
+    subtitleLabel: "Lab-Grown Diamond Specialists",
+    description: "Modern diamonds with traditional craftsmanship from Jaipur.",
+    backgroundImage: { fields: { file: { url: "//images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=2070" } } },
+    ctaText: "Shop Lab Diamonds",
     ctaLink: "/shop"
   }
+
+  if (hero.title === "Pure Brilliance,") hero.title = "Real Diamonds."
+  if (hero.subtitle === "Ethically Crafted") hero.subtitle = "Ethically Created."
+  if (hero.subtitleLabel === "Jaipur's Heritage & Innovation") hero.subtitleLabel = "Lab-Grown Diamond Specialists"
+  if (hero.description?.includes("Discover our exclusive collection")) {
+    hero.description = "Modern diamonds with traditional craftsmanship from Jaipur."
+  }
+  if (hero.ctaText === "Explore Collection") hero.ctaText = "Shop Lab Diamonds"
 
   const categories = categoryEntries?.map((cat: any) => ({
     title: cat.fields.name,

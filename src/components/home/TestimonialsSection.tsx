@@ -9,19 +9,22 @@ const defaultTestimonials = [
         name: "Ananya Sharma",
         role: "Verified Buyer",
         content: "The custom ring they designed for my anniversary is absolutely stunning. The craftsmanship is world-class, and the lab-grown diamonds are exceptionally brilliant.",
-        rating: 5
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=220"
     },
     {
         name: "Vikram Mehta",
         role: "Verified Buyer",
         content: "Found the perfect pair of emerald earrings here. Their attention to detail and traditional Jaipur heritage really shows in every piece.",
-        rating: 5
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=220"
     },
     {
         name: "Priya Patel",
         role: "Bespoke Client",
         content: "Exceptional service from the concierge team. They helped me through the entire design process for my bridal set. Highly recommended!",
-        rating: 5
+        rating: 5,
+        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=220"
     }
 ]
 
@@ -69,18 +72,12 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
                 <div className="text-center mb-16 space-y-4 flex flex-col items-center">
                     <h2 className="site-subheading">Client Experiences</h2>
                     <h3 className="site-heading">Testimonials</h3>
+                    <p className="text-foreground/70 text-sm md:text-base font-serif italic">
+                        Loved by modern couples choosing lab-grown diamonds
+                    </p>
                 </div>
 
-                <div className="relative px-14 sm:px-16">
-                    <button
-                        onClick={handlePrev}
-                        disabled={total <= 1}
-                        className="absolute left-0 top-1/2 -translate-y-1/2 h-11 w-11 border border-primary/30 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed z-10"
-                        aria-label="Previous testimonials"
-                    >
-                        <ChevronLeft className="h-5 w-5" />
-                    </button>
-
+                <div className="relative">
                     <motion.div
                         key={`${safePage}-${slidesPerView}`}
                         initial={{ opacity: 0, y: 12 }}
@@ -88,10 +85,24 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
                         transition={{ duration: 0.25 }}
                         className={`grid gap-8 lg:gap-12 ${visibleCount === 1 ? 'grid-cols-1' : visibleCount === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}
                     >
-                        {visibleTestimonials.map((testimonial: any, i: number) => (
+                        {visibleTestimonials.map((testimonial: any, i: number) => {
+                            const isCenterFeatured = slidesPerView >= 3 && visibleCount >= 3 && i === 1
+                            const testimonialImage =
+                                testimonial?.image ||
+                                testimonial?.photo ||
+                                testimonial?.avatar ||
+                                testimonial?.featuredImage?.fields?.file?.url
+
+                            const resolvedImage = testimonialImage
+                                ? (String(testimonialImage).startsWith("//")
+                                    ? `https:${testimonialImage}`
+                                    : String(testimonialImage))
+                                : "https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&q=80&w=220"
+
+                            return (
                             <motion.div
                                 key={`${testimonial.name}-${safePage}-${i}`}
-                                className="bg-muted/5 p-10 border border-primary/10 relative group hover:border-primary/30 transition-all duration-500 h-full min-h-[360px] flex flex-col"
+                                className={`bg-muted/5 p-10 border border-primary/10 relative group hover:border-primary/35 transition-all duration-500 h-full min-h-[380px] flex flex-col ${isCenterFeatured ? 'lg:scale-[1.04] border-primary/35 shadow-[0_24px_52px_-34px_rgba(212,175,55,0.65)]' : ''}`}
                             >
                                 <Quote className="h-8 w-8 text-primary/20 absolute top-8 right-8 group-hover:text-primary/40 transition-colors" />
 
@@ -104,30 +115,39 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
                                     ))}
                                 </div>
 
-                                <p className="text-sm text-muted-foreground leading-relaxed font-serif italic mb-8">
+                                <p className={`text-foreground/80 leading-relaxed font-serif italic mb-8 ${isCenterFeatured ? 'text-lg' : 'text-base'}`}>
                                     "{testimonial.content}"
                                 </p>
 
-                                <div className="mt-auto text-center md:text-left">
-                                    <h4 className="font-bold uppercase tracking-widest text-xs text-foreground">{testimonial.name}</h4>
-                                    <span className="text-[10px] text-primary uppercase tracking-widest font-bold block">{testimonial.role}</span>
+                                <div className="mt-auto flex items-center gap-3">
+                                    <div className="h-12 w-12 rounded-full border border-primary/30 overflow-hidden shrink-0 bg-muted/40">
+                                        <img
+                                            src={resolvedImage}
+                                            alt={testimonial.name}
+                                            className="h-full w-full object-cover"
+                                        />
+                                    </div>
+                                    <div className="text-left">
+                                        <h4 className="font-bold uppercase tracking-widest text-xs text-foreground">{testimonial.name}</h4>
+                                        <span className="text-[10px] text-primary uppercase tracking-widest font-bold block">{testimonial.role}</span>
+                                    </div>
                                 </div>
                             </motion.div>
-                        ))}
+                            )
+                        })}
                     </motion.div>
-
-                    <button
-                        onClick={handleNext}
-                        disabled={total <= 1}
-                        className="absolute right-0 top-1/2 -translate-y-1/2 h-11 w-11 border border-primary/30 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed z-10"
-                        aria-label="Next testimonials"
-                    >
-                        <ChevronRight className="h-5 w-5" />
-                    </button>
                 </div>
 
                 {pageCount > 1 && (
-                    <div className="mt-8 flex items-center justify-center gap-2">
+                    <div className="mt-10 flex items-center justify-center gap-3">
+                        <button
+                            onClick={handlePrev}
+                            disabled={total <= 1}
+                            className="h-10 w-10 border border-primary/30 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Previous testimonials"
+                        >
+                            <ChevronLeft className="h-4 w-4" />
+                        </button>
                         {Array.from({ length: pageCount }).map((_, i: number) => (
                             <button
                                 key={`dot-${i}`}
@@ -136,6 +156,14 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
                                 className={`h-2.5 w-2.5 rounded-full transition-all ${safePage === i ? 'bg-primary scale-110' : 'bg-primary/35 hover:bg-primary/60'}`}
                             />
                         ))}
+                        <button
+                            onClick={handleNext}
+                            disabled={total <= 1}
+                            className="h-10 w-10 border border-primary/30 rounded-full flex items-center justify-center text-primary hover:bg-primary/10 transition-colors disabled:opacity-40 disabled:cursor-not-allowed"
+                            aria-label="Next testimonials"
+                        >
+                            <ChevronRight className="h-4 w-4" />
+                        </button>
                     </div>
                 )}
             </div>

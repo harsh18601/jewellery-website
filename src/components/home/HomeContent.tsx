@@ -17,8 +17,11 @@ interface HomeContentProps {
     testimonials: any[];
 }
 
-const HomeContent = ({ hero, categories, heritageFeatures, featuredProducts = [], blogs, testimonials }: HomeContentProps) => {
-    const heroImage = hero.backgroundImage?.fields?.file?.url ? `https:${hero.backgroundImage.fields.file.url}` : "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=2070"
+const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }: HomeContentProps) => {
+    const rawHeroImage = hero.backgroundImage?.fields?.file?.url ? `https:${hero.backgroundImage.fields.file.url}` : "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=2070"
+    const heroImage = rawHeroImage.includes("1515562141207-7a88fb7ce338")
+        ? "https://images.unsplash.com/photo-1615655096345-61a54750068d?auto=format&fit=crop&q=80&w=2070"
+        : rawHeroImage
 
     const iconMap: { [key: string]: any } = {
         Sparkles,
@@ -31,61 +34,91 @@ const HomeContent = ({ hero, categories, heritageFeatures, featuredProducts = []
     const defaultFeatures = [
         {
             title: "Master Craftsmanship",
-            description: "Every piece is hand-finished by master artisans in Jaipur, preserving centuries-old techniques.",
+            description: "Jaipur artisans hand-finish each piece with precise, enduring craft.",
             iconName: "Sparkles",
-            image: "https://images.unsplash.com/photo-1588444650733-d0c5123fb96e?auto=format&fit=crop&q=80&w=800"
+            image: "https://images.unsplash.com/photo-1631983090121-8ea8701904b7?auto=format&fit=crop&q=80&w=1200"
         },
         {
             title: "Modern Ethics",
-            description: "We specialize in lab-grown diamonds, offering brilliance without compromise to human or environmental life.",
+            description: "Lab-grown diamonds with uncompromising brilliance and ethics.",
             iconName: "ShieldCheck",
-            image: "https://images.unsplash.com/photo-1573408339371-c063b784999f?auto=format&fit=crop&q=80&w=1000"
+            image: "https://images.unsplash.com/photo-1617038260897-41a1f14a8ca0?auto=format&fit=crop&q=80&w=1200"
         },
         {
             title: "Universal Timelessness",
-            description: "Designs that bridge the gap between traditional Rajasthani royalty and contemporary global elegance.",
+            description: "Contemporary silhouettes inspired by timeless royal elegance.",
             iconName: "Gem",
-            image: "https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=1000"
+            image: "https://images.unsplash.com/photo-1599643478518-a784e5dc4c8f?auto=format&fit=crop&q=80&w=1200"
         }
     ]
 
     const displayFeatures = heritageFeatures && heritageFeatures.length > 0 ? heritageFeatures : defaultFeatures
+    const orderedFeatures = [...displayFeatures].sort((a, b) => {
+        const aModern = String(a?.title || '').toLowerCase().includes('modern ethics') ? -1 : 1
+        const bModern = String(b?.title || '').toLowerCase().includes('modern ethics') ? -1 : 1
+        if (aModern !== bModern) return aModern - bModern
+        return 0
+    })
+    const categoryPriority = [
+        'Engagement Rings',
+        'Lab Diamonds',
+        'Lab Grown Diamonds',
+        'Earrings',
+    ]
+
+    const orderedCategories = [...categories].sort((a, b) => {
+        const aIndex = categoryPriority.findIndex((name) => name.toLowerCase() === String(a?.title || '').toLowerCase())
+        const bIndex = categoryPriority.findIndex((name) => name.toLowerCase() === String(b?.title || '').toLowerCase())
+        const aRank = aIndex === -1 ? 999 : aIndex
+        const bRank = bIndex === -1 ? 999 : bIndex
+        if (aRank !== bRank) return aRank - bRank
+        return String(a?.title || '').localeCompare(String(b?.title || ''))
+    })
+    const storyHighlights = [
+        { label: '25+ Years Craftsmanship', icon: Crown },
+        { label: 'Ethical Lab Diamonds', icon: ShieldCheck },
+        { label: 'Bespoke Design Studio', icon: Fingerprint },
+        { label: 'Trusted Jaipur Legacy', icon: Gem },
+    ]
 
     return (
         <div className="overflow-x-hidden">
             {/* Hero Section */}
             <section className="relative h-[90vh] flex items-center justify-center bg-secondary">
-                <div className="absolute inset-0 z-0 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
+                <div className="absolute inset-0 z-0 opacity-38 grayscale hover:grayscale-0 transition-all duration-700">
                     <img
                         src={heroImage}
                         alt="Radha Govind Hero"
                         className="w-full h-full object-cover"
                     />
                 </div>
+                <div className="absolute inset-0 z-0 bg-background/68 backdrop-blur-[2px]" />
+                <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.14),rgba(5,10,22,0.86)_60%)]" />
+                <div className="absolute z-0 left-1/2 top-[48%] h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/12 blur-[95px]" />
 
-                <div className="relative z-10 text-center space-y-8 px-4 max-w-4xl">
+                <div className="relative z-10 text-center lg:text-left space-y-10 px-4 max-w-4xl">
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8 }}
                         className="site-subheading"
                     >
-                        {hero.subtitleLabel || "Jaipur's Heritage & Innovation"}
+                        {hero.subtitleLabel || "Modern Diamonds. Traditional Craftsmanship."}
                     </motion.p>
                     <motion.h1
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.2 }}
-                        className="site-heading text-foreground leading-tight"
+                        className="site-heading text-foreground leading-[1.14]"
                     >
-                        {hero.title} <br />
-                        <span className="gold-text italic inline-block text-center">{hero.subtitle}</span>
+                        {(hero.title || "Real Diamonds").replace(/\.$/, "")} <br />
+                        <span className="gold-text italic inline-block">{(hero.subtitle || "Ethically Created").replace(/\.$/, "")}</span>
                     </motion.h1>
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-foreground/70 text-lg md:text-xl font-light"
+                        className="text-foreground/82 text-base md:text-lg font-light max-w-2xl mx-auto lg:mx-0"
                     >
                         {hero.description}
                     </motion.p>
@@ -93,35 +126,52 @@ const HomeContent = ({ hero, categories, heritageFeatures, featuredProducts = []
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.45 }}
-                        className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] uppercase tracking-widest font-bold max-w-3xl mx-auto"
+                        className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-[10px] uppercase tracking-[0.2em] font-bold max-w-3xl mx-auto lg:mx-0"
                     >
-                        <span className="border border-primary/30 bg-background/45 px-3 py-2 inline-flex items-center justify-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> BIS Hallmarked</span>
-                        <span className="border border-primary/30 bg-background/45 px-3 py-2 inline-flex items-center justify-center gap-1.5"><Gem className="h-3.5 w-3.5 text-primary" /> Certified Jewellery</span>
-                        <span className="border border-primary/30 bg-background/45 px-3 py-2 inline-flex items-center justify-center gap-1.5"><Truck className="h-3.5 w-3.5 text-primary" /> Insured Shipping</span>
-                        <span className="border border-primary/30 bg-background/45 px-3 py-2 inline-flex items-center justify-center gap-1.5"><Star className="h-3.5 w-3.5 text-primary" /> 10k+ Happy Clients</span>
+                        <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Gem className="h-3.5 w-3.5 text-primary" /> Certified Diamonds</span>
+                        <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> Conflict-Free</span>
+                        <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Truck className="h-3.5 w-3.5 text-primary" /> Secure Shipping</span>
+                        <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Star className="h-3.5 w-3.5 text-primary" /> Custom Designs</span>
                     </motion.div>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.8, delay: 0.6 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-6 pt-6"
+                        className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 pt-2"
                     >
-                        <Link href={hero.ctaLink || "/shop"} className="px-10 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all">
-                            {hero.ctaText || "Explore Collection"}
+                        <Link href={hero.ctaLink || "/shop"} className="px-14 py-[1.15rem] bg-primary text-foreground uppercase tracking-widest text-sm font-extrabold hover:bg-primary/90 transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50">
+                            {hero.ctaText || "Shop Lab Diamonds"}
                         </Link>
-                        <Link href="/custom" className="px-10 py-4 border border-foreground text-foreground uppercase tracking-widest text-xs font-bold hover:bg-foreground hover:text-background transition-all">
+                        <Link href="/custom" className="px-10 py-4 border border-foreground/55 text-foreground/85 uppercase tracking-widest text-xs font-bold hover:border-primary hover:text-primary transition-all">
                             Design Your Ring
                         </Link>
                     </motion.div>
+                    <motion.p
+                        initial={{ opacity: 0, y: 18 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.68 }}
+                        className="text-primary text-[11px] md:text-xs uppercase tracking-[0.16em] font-semibold"
+                    >
+                        Up to 40% more affordable than mined diamonds
+                    </motion.p>
+                    <motion.p
+                        initial={{ opacity: 0, y: 18 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.72 }}
+                        className="text-foreground/62 text-[11px] md:text-xs uppercase tracking-[0.12em]"
+                    >
+                        Identical to mined diamonds. Better for the planet.
+                    </motion.p>
                 </div>
             </section>
 
             {/* Quick Category Navigation */}
-            <section className="py-8 border-y border-primary/10 bg-background/70">
+            <section className="py-7 border-y border-primary/25 bg-[#0b1420] shadow-[inset_0_1px_0_rgba(212,175,55,0.12)]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/35 to-transparent mb-5" />
                     <div className="overflow-x-auto no-scrollbar">
                         <div className="inline-flex min-w-max items-center gap-3">
-                            {categories.slice(0, 8).map((cat, idx) => (
+                            {orderedCategories.slice(0, 8).map((cat, idx) => (
                                 <Link
                                     key={`${cat.title}-${idx}`}
                                     href={cat.link}
@@ -142,87 +192,57 @@ const HomeContent = ({ hero, categories, heritageFeatures, featuredProducts = []
             </section>
 
             {/* Featured Categories */}
-            <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="mb-16 space-y-6">
-                    <div className="text-center">
-                        <h2 className="site-subheading mb-4">Our Specialities</h2>
-                        <h3 className="site-heading">Luxury for <span className="italic">Every Occasion</span></h3>
-                    </div>
-                    <div className="flex justify-end">
-                        <Link href="/shop" className="text-sm font-bold uppercase tracking-widest flex items-center group transition-colors hover:text-primary">
-                            View All <ArrowRight className="ml-2 h-4 w-4 transition-all group-hover:translate-x-1 group-hover:text-primary" />
+            <section className="py-20 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="mb-12 space-y-4 text-center">
+                    <h2 className="site-subheading">Our Specialities</h2>
+                    <h3 className="site-heading">Luxury for <span className="italic">Every Occasion</span></h3>
+                    <p className="text-foreground/70 text-sm md:text-base font-serif italic">
+                        Browse our signature collections crafted for modern celebrations.
+                    </p>
+                    <div className="pt-2">
+                        <Link href="/shop" className="group inline-flex items-center gap-2 text-sm font-bold uppercase tracking-widest border border-primary/35 px-5 py-3 transition-all hover:border-primary hover:bg-primary/10 hover:text-primary">
+                            View All Collections <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
                         </Link>
                     </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 mb-24">
-                    {categories.map((cat, i) => (
-                        <Link href={cat.link} key={i} className="group relative h-96 overflow-hidden luxury-card border border-primary/5">
+                    {orderedCategories.map((cat, i) => (
+                        <Link href={cat.link} key={i} className="group relative h-[450px] lg:h-[480px] overflow-hidden luxury-card border border-primary/10 transition-all duration-500 hover:-translate-y-1 hover:border-primary/45 hover:shadow-[0_24px_48px_-28px_rgba(212,175,55,0.6)]">
                             <div
-                                className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110"
+                                className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-105"
                                 style={{ backgroundImage: `url(${cat.image})` }}
                             />
-                            <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 to-transparent" />
-                            <div className="absolute bottom-10 left-10">
+                            <div className="absolute inset-0 bg-gradient-to-t from-secondary/88 via-secondary/35 to-transparent group-hover:from-secondary/78 group-hover:via-secondary/25 transition-colors duration-500" />
+                            <div className="absolute bottom-10 left-10 right-8">
                                 {cat.badge && (
                                     <span className="inline-block mb-3 px-2.5 py-1 bg-background/70 border border-primary/30 text-primary text-[10px] uppercase tracking-widest font-bold">
                                         {cat.badge}
                                     </span>
                                 )}
-                                <h4 className="text-2xl font-bold text-foreground mb-2">{cat.title}</h4>
+                                <h4 className="text-[1.9rem] leading-tight font-bold text-foreground mb-3">{cat.title}</h4>
                                 {(cat.subtitle || cat.description) && (
-                                    <p className="text-xs text-foreground/80 font-serif italic mb-3 max-w-xs line-clamp-2">
+                                    <p className="text-sm text-foreground/90 font-serif italic mb-4 max-w-sm line-clamp-2">
                                         {cat.subtitle || cat.description}
                                     </p>
                                 )}
-                                <span className="text-primary text-xs uppercase tracking-widest font-bold border-b border-primary pb-1">{cat.ctaText || 'Shop Now'}</span>
+                                <span className="inline-flex items-center gap-2 text-primary text-xs uppercase tracking-widest font-bold border-b border-primary/80 pb-1 transition-all duration-300 group-hover:border-primary group-hover:tracking-[0.18em]">
+                                    {cat.ctaText || 'Shop Now'}
+                                    <ArrowRight className="h-3.5 w-3.5 transition-transform duration-300 group-hover:translate-x-1.5" />
+                                </span>
                             </div>
                         </Link>
                     ))}
                 </div>
             </section>
 
-            {/* Trending Products */}
-            {featuredProducts.length > 0 && (
-                <section className="py-20 bg-muted/5 border-y border-primary/10">
-                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                        <div className="flex items-center justify-between mb-10">
-                            <div>
-                                <p className="site-subheading mb-2">Most Loved</p>
-                                <h3 className="site-heading">Trending <span className="italic">Designs</span></h3>
-                            </div>
-                            <Link href="/shop" className="text-xs uppercase tracking-widest font-bold text-primary hover:text-primary/80 transition-colors">
-                                Explore Collection
-                            </Link>
-                        </div>
-                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                            {featuredProducts.map((item: any) => (
-                                <Link
-                                    key={item.id}
-                                    href={item.id ? `/product/${item.id}` : '/shop'}
-                                    className="border border-primary/10 bg-background hover:border-primary/40 transition-colors"
-                                >
-                                    <div className="aspect-square bg-secondary overflow-hidden">
-                                        <img src={item.image || "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800"} alt={item.title} className="w-full h-full object-cover" />
-                                    </div>
-                                    <div className="p-3 space-y-1">
-                                        <p className="text-[9px] uppercase tracking-widest text-muted-foreground">{item.category}</p>
-                                        <h4 className="text-sm font-bold leading-snug line-clamp-2 min-h-[2.5rem]">{item.title}</h4>
-                                        <p className="text-sm font-bold text-primary">₹{Number(item.price || 0).toLocaleString('en-IN')}</p>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                    </div>
-                </section>
-            )}
 
             {/* Heritage Gallery - Immersive Section */}
-            <section className="py-32 bg-secondary relative overflow-hidden">
+            <section className="py-36 bg-secondary relative overflow-hidden">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary/50 to-transparent" />
 
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-                    <div className="text-center mb-20 space-y-4 flex flex-col items-center">
+                    <div className="text-center mb-28 space-y-5 flex flex-col items-center">
                         <motion.span
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
@@ -235,74 +255,99 @@ const HomeContent = ({ hero, categories, heritageFeatures, featuredProducts = []
                             whileInView={{ opacity: 1, y: 0 }}
                             className="site-heading text-foreground"
                         >
-                            Our <span className="gold-text italic">Heritage</span>
+                            Where Tradition Meets <span className="italic bg-gradient-to-r from-[#F6E08A] via-[#D4AF37] to-[#F8E7A1] bg-clip-text text-transparent">Lab Diamonds</span>
                         </motion.h3>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-12">
-                        {displayFeatures.map((feature, i) => {
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-14">
+                        {orderedFeatures.map((feature, i) => {
                             const Icon = iconMap[feature.iconName] || Sparkles
+                            const isModernEthics = String(feature?.title || '').toLowerCase().includes('modern ethics')
+                            const isTimeless = String(feature?.title || '').toLowerCase().includes('universal timelessness')
+                            const shortDescription = String(feature?.description || '').split('.')[0]
                             return (
                                 <motion.div
                                     key={i}
                                     initial={{ opacity: 0, y: 30 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.2 }}
-                                    className="group space-y-6"
+                                    className={`group space-y-6 ${isModernEthics ? 'lg:-mt-4 lg:scale-[1.02]' : ''}`}
                                 >
-                                    <div className="aspect-[3/4] overflow-hidden relative mb-8 luxury-card">
+                                    <div className={`aspect-[3/4] overflow-hidden relative mb-8 luxury-card border transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_26px_52px_-34px_rgba(212,175,55,0.7)] ${isModernEthics ? 'border-primary/45 shadow-[0_0_0_1px_rgba(212,175,55,0.35)]' : 'border-primary/12 group-hover:border-primary/35'}`}>
                                         <img
                                             src={feature.image || "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800"}
                                             alt={feature.title}
-                                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110 grayscale hover:grayscale-0"
+                                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.04] grayscale hover:grayscale-0"
                                         />
-                                        <div className="absolute inset-0 bg-secondary/40 group-hover:bg-transparent transition-colors duration-500" />
-                                        <div className="absolute top-6 left-6 p-3 bg-background/90 backdrop-blur-md rounded-full">
-                                            <Icon className="h-5 w-5 text-primary" />
+                                        <div className={`absolute inset-0 transition-colors duration-500 ${isModernEthics ? 'bg-secondary/28 group-hover:bg-secondary/12' : 'bg-secondary/40 group-hover:bg-secondary/20'}`} />
+                                        {isModernEthics ? (
+                                            <div className="absolute inset-0 pointer-events-none opacity-55">
+                                                <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_25%,rgba(212,175,55,0.18)_0%,transparent_28%),radial-gradient(circle_at_75%_35%,rgba(255,245,200,0.12)_0%,transparent_24%),radial-gradient(circle_at_55%_75%,rgba(212,175,55,0.14)_0%,transparent_22%)] animate-pulse" />
+                                            </div>
+                                        ) : null}
+                                        {isTimeless ? (
+                                            <div className="absolute left-1/2 bottom-6 h-14 w-40 -translate-x-1/2 rounded-full bg-primary/20 blur-2xl pointer-events-none" />
+                                        ) : null}
+                                        <div className="absolute top-6 left-6 p-3 bg-background/90 backdrop-blur-md rounded-full border border-primary/20 transition-transform duration-300 group-hover:scale-110">
+                                            <Icon className="h-5 w-5 text-primary transition-transform duration-300 group-hover:rotate-6" />
                                         </div>
                                     </div>
-                                    <h4 className="text-xl font-bold text-foreground uppercase tracking-tight group-hover:gold-text transition-colors">
+                                    <h4 className="text-2xl font-bold text-foreground uppercase tracking-tight group-hover:gold-text transition-colors">
                                         {feature.title}
                                     </h4>
-                                    <p className="text-sm text-foreground/60 leading-relaxed font-serif italic">
-                                        {feature.description}
+                                    <p className="text-base text-foreground/72 leading-relaxed font-serif italic">
+                                        {shortDescription}.
                                     </p>
                                 </motion.div>
                             )
                         })}
+                    </div>
+                    <div className="pt-14 text-center">
+                        <Link href="/shop?category=lab-grown-diamonds" className="group inline-flex items-center gap-2 border border-primary/35 px-7 py-3.5 text-xs uppercase tracking-[0.18em] font-bold text-primary hover:bg-primary/10 hover:border-primary transition-all">
+                            Explore Lab Diamonds
+                            <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1.5" />
+                        </Link>
                     </div>
                 </div>
 
                 {/* Decorative Background Elements */}
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
                 <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
+                <div className="absolute bottom-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-primary/35 to-transparent" />
             </section>
 
             {/* Emotional Story Section */}
             <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
-                    <div className="space-y-5">
-                        <p className="site-subheading text-left">Our Story</p>
-                        <h3 className="site-heading text-left">Jewellery For <span className="italic">Life's Celebrations</span></h3>
+                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                    <div className="space-y-6 lg:col-span-4">
+                        <div className="space-y-3">
+                            <p className="site-subheading text-left">Our Story</p>
+                            <div className="h-px w-24 bg-gradient-to-r from-primary/80 to-transparent" />
+                        </div>
+                        <h3 className="site-heading text-left">Where Jaipur Craft Meets <span className="italic">Modern Diamonds</span></h3>
                         <p className="text-foreground/70 leading-relaxed font-serif italic">
-                            From weddings and anniversaries to festive gifting, every Radha Govind piece is crafted to carry memory, emotion, and family tradition across generations.
+                            From weddings and anniversaries to meaningful gifts, every Radha Govind creation is crafted to carry emotion, memory, and tradition across generations.
                         </p>
                         <div className="grid grid-cols-2 gap-3 text-xs uppercase tracking-widest font-bold">
-                            <span className="border border-primary/20 px-3 py-2">25+ Years Craftsmanship</span>
-                            <span className="border border-primary/20 px-3 py-2">Ethically Sourced Stones</span>
-                            <span className="border border-primary/20 px-3 py-2">Bespoke Design Studio</span>
-                            <span className="border border-primary/20 px-3 py-2">Trusted Jaipur Legacy</span>
+                            {storyHighlights.map((item) => (
+                                <span key={item.label} className="group inline-flex items-center gap-2 border border-primary/20 px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_14px_28px_-20px_rgba(212,175,55,0.8)]">
+                                    <item.icon className="h-3.5 w-3.5 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" />
+                                    {item.label}
+                                </span>
+                            ))}
                         </div>
                         <Link href="/about" className="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-primary hover:text-primary/80">
-                            Read Brand Story <ArrowRight className="h-4 w-4" />
+                            Discover Our Story <ArrowRight className="h-4 w-4" />
                         </Link>
                     </div>
-                    <div className="aspect-[4/3] overflow-hidden border border-primary/15">
+                    <div className="aspect-[5/3] lg:col-span-8 overflow-hidden border border-primary/20 group relative bg-gradient-to-br from-background via-secondary/60 to-background shadow-[0_30px_60px_-40px_rgba(212,175,55,0.55)]">
+                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(255,255,255,0.18),transparent_35%),radial-gradient(circle_at_30%_80%,rgba(212,175,55,0.18),transparent_42%)]" />
                         <img
-                            src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&q=80&w=1400"
+                            src="https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?auto=format&fit=crop&q=80&w=1400"
                             alt="Jewellery celebration"
-                            className="w-full h-full object-cover"
+                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.04]"
                         />
+                        <div className="pointer-events-none absolute bottom-6 left-1/2 h-10 w-44 -translate-x-1/2 rounded-full bg-primary/25 blur-2xl" />
                     </div>
                 </div>
             </section>
@@ -319,3 +364,4 @@ const HomeContent = ({ hero, categories, heritageFeatures, featuredProducts = []
 }
 
 export default HomeContent
+

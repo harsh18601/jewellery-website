@@ -2,13 +2,44 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { ShoppingBag, User, Search, Menu, Heart, Diamond, X } from 'lucide-react'
+import { ShoppingBag, User, Search, Menu, Diamond, X, ChevronDown } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/components/providers/CartContext'
-import { useWishlist } from '@/components/providers/WishlistContext'
 import { useSession, signOut } from 'next-auth/react'
 import SearchOverlay from './SearchOverlay'
-import CurrencyDropdown from './CurrencyDropdown'
+
+type NavChildLink = {
+    name: string
+    href: string
+}
+
+type NavLink = {
+    name: string
+    href: string
+    children?: NavChildLink[]
+}
+
+const navLinks: NavLink[] = [
+    { name: 'Lab Diamonds', href: '/shop?category=lab-grown-diamonds' },
+    {
+        name: 'Engagement Rings',
+        href: '/shop?category=engagement-rings',
+        children: [
+            { name: 'Solitaire', href: '/shop?category=engagement-rings&style=solitaire' },
+            { name: 'Halo', href: '/shop?category=engagement-rings&style=halo' },
+            { name: 'Vintage', href: '/shop?category=engagement-rings&style=vintage' },
+            { name: 'Hidden Halo', href: '/shop?category=engagement-rings&style=hidden-halo' },
+            { name: 'Three Stone', href: '/shop?category=engagement-rings&style=three-stone' },
+            { name: 'Custom Ring', href: '/custom' },
+        ],
+    },
+    { name: 'Earrings', href: '/shop?category=earrings' },
+    { name: 'Bracelets', href: '/shop?category=bracelets' },
+    { name: 'Custom', href: '/custom' },
+    { name: 'New Arrivals', href: '/shop?sort=newest' },
+]
+
+const mobileNavOrder = ['Lab Diamonds', 'Engagement Rings', 'Custom', 'Earrings', 'Bracelets', 'New Arrivals']
 
 const Navbar = () => {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
@@ -17,90 +48,96 @@ const Navbar = () => {
     const { data: session } = useSession()
 
     const { cartCount } = useCart()
-    const { wishlistCount } = useWishlist()
-
-    const navLinks = [
-        { name: 'Shop', href: '/shop' },
-        { name: 'Custom', href: '/custom' },
-    ]
 
     React.useEffect(() => {
         setIsMounted(true)
     }, [])
 
-    const safeWishlistCount = isMounted ? wishlistCount : 0
     const safeCartCount = isMounted ? cartCount : 0
+    const mobileNavLinks = mobileNavOrder
+        .map((name) => navLinks.find((link) => link.name === name))
+        .filter((link): link is NavLink => Boolean(link))
 
     return (
         <>
-            <nav className="fixed w-full z-50 bg-background/80 backdrop-blur-md border-b border-primary/20">
+            <nav className="fixed w-full z-50 bg-background/80 backdrop-blur-md border-b border-primary/20 shadow-[0_8px_24px_-22px_rgba(201,157,45,0.65)]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center h-20">
-                        <div className="flex items-center">
+                    <div className="flex items-center justify-between h-20 gap-4">
+                        <div className="flex items-center gap-2 shrink-0">
                             <button
                                 onClick={() => setIsMobileMenuOpen(true)}
-                                className="p-3 sm:hidden hover:bg-primary/10 transition-colors rounded-full cursor-pointer"
+                                className="p-3 lg:hidden hover:bg-primary/10 transition-colors rounded-full cursor-pointer"
+                                aria-label="Open menu"
                             >
                                 <Menu className="h-6 w-6 text-primary" />
                             </button>
-                            <div className="hidden sm:flex space-x-8 text-sm uppercase tracking-widest font-medium">
-                                {navLinks.slice(0, 3).map((link) => (
-                                    <Link key={link.name} href={link.href} className="luxury-link transition-colors">
-                                        {link.name}
-                                    </Link>
-                                ))}
-                            </div>
-                        </div>
-
-                        <div className="flex-shrink-0 flex items-center">
                             <Link href="/" className="flex items-center gap-2 sm:gap-3 group">
-                                <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20 group-hover:border-primary transition-all duration-300 shadow-sm shadow-primary/5">
+                                <div className="w-11 h-11 bg-primary/10 rounded-full flex items-center justify-center border border-primary/20 group-hover:border-primary transition-all duration-300 shadow-sm shadow-primary/5">
                                     <Diamond className="h-6 w-6 text-primary group-hover:scale-110 transition-transform" />
                                 </div>
-                                <div className="hidden lg:flex flex-col items-center">
-                                    <span className="text-xl font-bold tracking-tighter gold-text uppercase leading-none">Shree Radha Govind</span>
+                                <div className="hidden sm:flex flex-col items-start">
+                                    <span className="text-[1.36rem] font-bold tracking-tighter gold-text uppercase leading-none">Shree Radha Govind</span>
                                     <span className="text-[8px] tracking-[0.3em] uppercase text-muted-foreground font-bold leading-none mt-1">Jewellers</span>
                                 </div>
                             </Link>
                         </div>
 
-                        <div className="flex items-center space-x-2 sm:space-x-4 lg:space-x-6 flex-shrink-0">
-                            <div className="hidden sm:block">
-                                <CurrencyDropdown />
+                        <div className="hidden lg:flex items-center justify-center flex-1 px-6">
+                            <div className="flex items-center gap-10 text-xs uppercase tracking-widest font-semibold">
+                                {navLinks.map((link) => {
+                                    const isLabDiamonds = link.name === 'Lab Diamonds'
+
+                                    return (
+                                        <div key={link.name} className="relative group">
+                                            <Link
+                                                href={link.href}
+                                                className={`inline-flex items-center gap-1 py-2 transition-colors ${
+                                                    isLabDiamonds
+                                                        ? 'text-primary border-b border-primary/60 hover:text-primary/90'
+                                                        : 'luxury-link'
+                                                }`}
+                                            >
+                                                {isLabDiamonds ? <Diamond className="h-3.5 w-3.5" /> : null}
+                                                {link.name}
+                                                {link.children ? <ChevronDown className="h-3.5 w-3.5" /> : null}
+                                            </Link>
+                                            {link.children ? (
+                                                <div className="pointer-events-none opacity-0 translate-y-2 group-hover:pointer-events-auto group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 absolute left-0 top-full mt-2 min-w-[220px] border border-primary/30 bg-background/95 backdrop-blur-lg shadow-xl shadow-black/30 z-50">
+                                                    {link.children.map((child) => (
+                                                        <Link
+                                                            key={child.name}
+                                                            href={child.href}
+                                                            className="block px-4 py-3 text-[11px] uppercase tracking-wider text-foreground/90 hover:bg-primary/10 hover:text-primary transition-colors"
+                                                        >
+                                                            {child.name}
+                                                        </Link>
+                                                    ))}
+                                                </div>
+                                            ) : null}
+                                        </div>
+                                    )
+                                })}
                             </div>
+                        </div>
+
+                        <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
                             <button
                                 onClick={() => setIsSearchOpen(true)}
                                 className="p-3 sm:p-2 hover:text-primary transition-colors cursor-pointer"
+                                aria-label="Open search"
                             >
                                 <Search className="h-6 w-6 sm:h-5 sm:w-5" />
                             </button>
-                            <Link href="/profile/wishlist" className="p-3 sm:p-2 hover:text-primary transition-colors relative cursor-pointer">
-                                <Heart className="h-6 w-6 sm:h-5 sm:w-5" />
-                                <span
-                                    suppressHydrationWarning
-                                    className={`absolute top-0 right-0 h-4 w-4 bg-primary text-foreground text-[10px] flex items-center justify-center rounded-full ${safeWishlistCount > 0 ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
-                                >
-                                    {safeWishlistCount}
-                                </span>
+
+                            <Link
+                                href={session ? '/profile' : '/auth/signin'}
+                                className="p-2 hover:text-primary transition-colors cursor-pointer"
+                                aria-label={session ? 'Account' : 'Sign in'}
+                            >
+                                <User className="h-6 w-6 sm:h-5 sm:w-5 text-muted-foreground hover:text-primary" />
                             </Link>
 
-                            {session ? (
-                                <Link href="/profile" className="p-2 hover:text-primary transition-colors flex items-center space-x-2 group cursor-pointer">
-                                    <User className="h-6 w-6 sm:h-5 sm:w-5" />
-                                    <span className="hidden lg:inline text-[10px] uppercase tracking-widest font-bold group-hover:text-primary transition-colors">
-                                        {session.user?.name?.split(' ')[0]}
-                                    </span>
-                                </Link>
-                            ) : (
-                                <Link href="/auth/signin" className="p-2 hover:text-primary transition-colors flex items-center space-x-2 group cursor-pointer">
-                                    <User className="h-6 w-6 sm:h-5 sm:w-5 text-muted-foreground group-hover:text-primary" />
-                                    <span className="hidden lg:inline text-[10px] uppercase tracking-widest font-bold group-hover:text-primary transition-colors">
-                                        Sign In
-                                    </span>
-                                </Link>
-                            )}
-
-                            <Link href="/cart" className="p-3 sm:p-2 hover:text-primary transition-colors relative cursor-pointer">
+                            <Link href="/cart" className="p-3 sm:p-2 hover:text-primary transition-colors relative cursor-pointer" aria-label="Cart">
                                 <ShoppingBag className="h-6 w-6 sm:h-5 sm:w-5" />
                                 <span
                                     suppressHydrationWarning
@@ -114,7 +151,6 @@ const Navbar = () => {
                 </div>
             </nav>
 
-            {/* Mobile Menu Overlay */}
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
@@ -122,33 +158,48 @@ const Navbar = () => {
                         animate={{ opacity: 1, x: 0 }}
                         exit={{ opacity: 0, x: '-100%' }}
                         transition={{ type: 'spring', damping: 25, stiffness: 200 }}
-                        className="fixed inset-0 z-[60] bg-background sm:hidden"
+                        className="fixed inset-0 z-[60] bg-background lg:hidden"
                     >
-                        <div className="flex flex-col h-full p-8 pt-24 space-y-8">
+                        <div className="flex flex-col h-full p-6 pt-20 space-y-6 overflow-y-auto">
                             <button
                                 onClick={() => setIsMobileMenuOpen(false)}
                                 className="absolute top-6 left-4 p-2 hover:bg-primary/10 rounded-full transition-colors"
+                                aria-label="Close menu"
                             >
                                 <X className="h-7 w-7 text-primary" />
                             </button>
 
-                            <div className="space-y-6">
-                                {navLinks.map((link) => (
-                                    <Link
-                                        key={link.name}
-                                        href={link.href}
-                                        onClick={() => setIsMobileMenuOpen(false)}
-                                        className="block text-2xl font-bold uppercase tracking-tighter hover:text-primary transition-colors"
-                                    >
-                                        {link.name}
-                                    </Link>
+                            <div className="space-y-5">
+                                {mobileNavLinks.map((link) => (
+                                    <div key={link.name} className="space-y-2">
+                                        <Link
+                                            href={link.href}
+                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            className={`block text-xl font-bold uppercase tracking-tight transition-colors ${
+                                                link.name === 'Lab Diamonds' ? 'text-primary' : 'hover:text-primary'
+                                            }`}
+                                        >
+                                            {link.name}
+                                        </Link>
+                                        {link.children ? (
+                                            <div className="pl-4 border-l border-primary/20 space-y-2">
+                                                {link.children.map((child) => (
+                                                    <Link
+                                                        key={child.name}
+                                                        href={child.href}
+                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                        className="block text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
+                                                    >
+                                                        {child.name}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        ) : null}
+                                    </div>
                                 ))}
                             </div>
 
-                            <div className="pt-12 border-t border-primary/10">
-                                <div className="mb-6">
-                                    <CurrencyDropdown />
-                                </div>
+                            <div className="pt-8 border-t border-primary/10">
                                 {session ? (
                                     <div className="space-y-6">
                                         <Link
@@ -161,7 +212,7 @@ const Navbar = () => {
                                             </div>
                                             <div>
                                                 <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">Account</p>
-                                                <p className="text-lg font-bold uppercase tracking-tighter">{session.user?.name}</p>
+                                                <p className="text-lg font-bold uppercase tracking-tight">{session.user?.name}</p>
                                             </div>
                                         </Link>
                                         <button
@@ -184,12 +235,6 @@ const Navbar = () => {
                                     </Link>
                                 )}
                             </div>
-
-                            <div className="mt-auto pb-8">
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-[0.3em] font-bold text-center">
-                                    Shree Radha Govind Jewellers
-                                </p>
-                            </div>
                         </div>
                     </motion.div>
                 )}
@@ -201,4 +246,3 @@ const Navbar = () => {
 }
 
 export default Navbar
-
