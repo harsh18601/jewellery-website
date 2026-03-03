@@ -548,13 +548,22 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                             <p className="text-sm font-bold truncate">{product.title}</p>
                             <p className="text-xs text-primary font-semibold">{formattedPrice}</p>
                         </div>
-                        <button
-                            type="button"
-                            onClick={handleAddToCart}
-                            className="px-5 py-2.5 bg-primary text-foreground text-xs uppercase tracking-widest font-bold hover:bg-primary/90 transition-colors whitespace-nowrap"
-                        >
-                            Add to Cart
-                        </button>
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                onClick={handleAddToCart}
+                                className="px-5 py-2.5 bg-primary text-foreground text-xs uppercase tracking-widest font-bold hover:bg-primary/90 transition-colors whitespace-nowrap"
+                            >
+                                Add to Cart
+                            </button>
+                            <button
+                                type="button"
+                                onClick={handleBuyNow}
+                                className="px-5 py-2.5 border border-primary text-primary text-xs uppercase tracking-widest font-bold hover:bg-primary/10 transition-colors whitespace-nowrap"
+                            >
+                                Buy Now
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

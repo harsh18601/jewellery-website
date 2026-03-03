@@ -324,136 +324,140 @@ const CartPage = () => {
                     )}
                 </div>
 
+                {session && (
                 <aside className="w-full md:w-96 bg-muted/5 p-6 sm:p-10 border border-primary/10 space-y-8 md:sticky md:top-32">
                     <h2 className="text-xl font-bold uppercase tracking-widest mb-8 gold-text">Summary</h2>
 
-                    <div className="space-y-4 text-xs font-bold uppercase tracking-widest">
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Gold Value</span>
-                            <span>{formatPrice(goldValue)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Making Charges</span>
-                            <span>{formatPrice(makingCharges)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Subtotal</span>
-                            <span>{formatPrice(subtotal)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Tax (GST)</span>
-                            <span>{formatPrice(gstAmount)}</span>
-                        </div>
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Shipping</span>
-                            <span className="text-primary">FREE</span>
-                        </div>
-                        {savingsTotal > 0 && (
-                            <div className="flex justify-between">
-                                <span className="text-muted-foreground">You Saved</span>
-                                <span className="text-primary">{formatPrice(savingsTotal)}</span>
+                    <>
+                            <div className="space-y-4 text-xs font-bold uppercase tracking-widest">
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Gold Value</span>
+                                    <span>{formatPrice(goldValue)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Making Charges</span>
+                                    <span>{formatPrice(makingCharges)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Subtotal</span>
+                                    <span>{formatPrice(subtotal)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Tax (GST)</span>
+                                    <span>{formatPrice(gstAmount)}</span>
+                                </div>
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Shipping</span>
+                                    <span className="text-primary">FREE</span>
+                                </div>
+                                {savingsTotal > 0 && (
+                                    <div className="flex justify-between">
+                                        <span className="text-muted-foreground">You Saved</span>
+                                        <span className="text-primary">{formatPrice(savingsTotal)}</span>
+                                    </div>
+                                )}
+                                <div className="flex justify-between">
+                                    <span className="text-muted-foreground">Delivery</span>
+                                    <span>{estimatedDeliveryRange}</span>
+                                </div>
+                                <div className="border-t border-primary/20 pt-4 flex justify-between text-base">
+                                    <span>Total</span>
+                                    <span>{formatPrice(total)}</span>
+                                </div>
                             </div>
-                        )}
-                        <div className="flex justify-between">
-                            <span className="text-muted-foreground">Delivery</span>
-                            <span>{estimatedDeliveryRange}</span>
-                        </div>
-                        <div className="border-t border-primary/20 pt-4 flex justify-between text-base">
-                            <span>Total</span>
-                            <span>{formatPrice(total)}</span>
-                        </div>
-                    </div>
 
-                    <div className="space-y-2">
-                        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Deliver to</p>
-                        <div className="flex items-center gap-2">
-                            <input
-                                value={deliveryPin}
-                                onChange={(e) => setDeliveryPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
-                                placeholder="Enter PIN code"
-                                className="h-10 flex-1 px-3 text-xs bg-muted/10 border border-primary/20 focus:border-primary outline-none"
-                            />
+                            <div className="space-y-2">
+                                <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Deliver to</p>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        value={deliveryPin}
+                                        onChange={(e) => setDeliveryPin(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                        placeholder="Enter PIN code"
+                                        className="h-10 flex-1 px-3 text-xs bg-muted/10 border border-primary/20 focus:border-primary outline-none"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={handlePinDeliveryCheck}
+                                        className="h-10 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
+                                    >
+                                        Check
+                                    </button>
+                                </div>
+                                {deliveryPinMessage && <p className="text-[10px] text-muted-foreground">{deliveryPinMessage}</p>}
+                            </div>
+
+                            <div className="space-y-2">
+                                <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Apply Coupon</p>
+                                <div className="flex items-center gap-2">
+                                    <input
+                                        value={couponCode}
+                                        onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
+                                        placeholder="Enter coupon code"
+                                        className="h-10 flex-1 px-3 text-xs bg-muted/10 border border-primary/20 focus:border-primary outline-none"
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setCouponMessage(couponCode ? 'Coupon will be validated at checkout.' : 'Enter a coupon code.')}
+                                        className="h-10 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
+                                    >
+                                        Apply
+                                    </button>
+                                </div>
+                                <div className="flex flex-wrap gap-2 pt-1">
+                                    {['WELCOME10', 'SAVE5'].map((offer) => (
+                                        <button
+                                            key={offer}
+                                            type="button"
+                                            onClick={() => {
+                                                setCouponCode(offer)
+                                                setCouponMessage(`${offer} selected. Coupon will be validated at checkout.`)
+                                            }}
+                                            className="px-2.5 py-1 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60"
+                                        >
+                                            {offer}
+                                        </button>
+                                    ))}
+                                </div>
+                                {couponMessage && <p className="text-[10px] text-muted-foreground">{couponMessage}</p>}
+                            </div>
+
+                            <div className="border border-primary/15 bg-muted/5 p-3 space-y-2">
+                                <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Payment Methods</p>
+                                <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-widest font-bold">
+                                    <p className="inline-flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> UPI</p>
+                                    <p className="inline-flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5 text-primary" /> Cards</p>
+                                    <p className="inline-flex items-center gap-1.5"><Landmark className="h-3.5 w-3.5 text-primary" /> Net Banking</p>
+                                    <p className="inline-flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> Wallets</p>
+                                </div>
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest">No-Cost EMI from {formatPrice(Math.max(1, Math.round(total / 12)))}/month</p>
+                            </div>
+
+                            <div className="space-y-2 text-[10px] uppercase tracking-widest font-bold">
+                                <p className="inline-flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> Secure Payment</p>
+                                <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Hallmarked Gold</p>
+                                <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Easy Returns</p>
+                                <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Lifetime Service</p>
+                            </div>
+
                             <button
-                                type="button"
-                                onClick={handlePinDeliveryCheck}
-                                className="h-10 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
+                                onClick={handleCheckout}
+                                disabled={isCheckoutLoading || isAddressLoading || cartItems.length === 0}
+                                className="w-full py-5 bg-secondary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary hover:text-primary-foreground hover:scale-[1.02] hover:shadow-xl transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed group/checkout"
                             >
-                                Check
+                                {isCheckoutLoading ? 'Processing...' : (
+                                    <span className="flex items-center">
+                                        Proceed to Checkout
+                                        <ArrowRight className="ml-2 h-4 w-4 group-hover/checkout:translate-x-1 transition-transform duration-300" />
+                                    </span>
+                                )}
                             </button>
-                        </div>
-                        {deliveryPinMessage && <p className="text-[10px] text-muted-foreground">{deliveryPinMessage}</p>}
-                    </div>
-
-                    <div className="space-y-2">
-                        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Apply Coupon</p>
-                        <div className="flex items-center gap-2">
-                            <input
-                                value={couponCode}
-                                onChange={(e) => setCouponCode(e.target.value.toUpperCase())}
-                                placeholder="Enter coupon code"
-                                className="h-10 flex-1 px-3 text-xs bg-muted/10 border border-primary/20 focus:border-primary outline-none"
-                            />
-                            <button
-                                type="button"
-                                onClick={() => setCouponMessage(couponCode ? 'Coupon will be validated at checkout.' : 'Enter a coupon code.')}
-                                className="h-10 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60 transition-colors"
-                            >
-                                Apply
-                            </button>
-                        </div>
-                        <div className="flex flex-wrap gap-2 pt-1">
-                            {['WELCOME10', 'SAVE5'].map((offer) => (
-                                <button
-                                    key={offer}
-                                    type="button"
-                                    onClick={() => {
-                                        setCouponCode(offer)
-                                        setCouponMessage(`${offer} selected. Coupon will be validated at checkout.`)
-                                    }}
-                                    className="px-2.5 py-1 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/60"
-                                >
-                                    {offer}
-                                </button>
-                            ))}
-                        </div>
-                        {couponMessage && <p className="text-[10px] text-muted-foreground">{couponMessage}</p>}
-                    </div>
-
-                    <div className="border border-primary/15 bg-muted/5 p-3 space-y-2">
-                        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Payment Methods</p>
-                        <div className="grid grid-cols-2 gap-2 text-[10px] uppercase tracking-widest font-bold">
-                            <p className="inline-flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> UPI</p>
-                            <p className="inline-flex items-center gap-1.5"><CreditCard className="h-3.5 w-3.5 text-primary" /> Cards</p>
-                            <p className="inline-flex items-center gap-1.5"><Landmark className="h-3.5 w-3.5 text-primary" /> Net Banking</p>
-                            <p className="inline-flex items-center gap-1.5"><Wallet className="h-3.5 w-3.5 text-primary" /> Wallets</p>
-                        </div>
-                        <p className="text-[10px] text-muted-foreground uppercase tracking-widest">No-Cost EMI from {formatPrice(Math.max(1, Math.round(total / 12)))}/month</p>
-                    </div>
-
-                    <div className="space-y-2 text-[10px] uppercase tracking-widest font-bold">
-                        <p className="inline-flex items-center gap-2"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> Secure Payment</p>
-                        <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Hallmarked Gold</p>
-                        <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Easy Returns</p>
-                        <p className="inline-flex items-center gap-2"><CheckCircle2 className="h-3.5 w-3.5 text-primary" /> Lifetime Service</p>
-                    </div>
-
-                    <button
-                        onClick={handleCheckout}
-                        disabled={isCheckoutLoading || isAddressLoading || cartItems.length === 0}
-                        className="w-full py-5 bg-secondary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary hover:text-primary-foreground hover:scale-[1.02] hover:shadow-xl transition-all duration-300 flex items-center justify-center disabled:opacity-50 disabled:cursor-not-allowed group/checkout"
-                    >
-                        {isCheckoutLoading ? 'Processing...' : (
-                            <span className="flex items-center">
-                                Proceed to Checkout
-                                <ArrowRight className="ml-2 h-4 w-4 group-hover/checkout:translate-x-1 transition-transform duration-300" />
-                            </span>
-                        )}
-                    </button>
+                    </>
 
                     <div className="text-[10px] text-muted-foreground text-center font-serif italic py-4">
                         Security & Authenticity Guaranteed. Secure checkout via Razorpay/Stripe.
                     </div>
                 </aside>
+                )}
             </div>
 
             {cartItems.length > 0 && (

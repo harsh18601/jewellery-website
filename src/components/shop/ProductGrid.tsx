@@ -281,7 +281,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                         />
                                     </button>
 
-                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] hidden sm:grid grid-cols-2 gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
+                                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 w-[90%] hidden sm:grid grid-cols-1 gap-2 opacity-0 group-hover:opacity-100 translate-y-2 group-hover:translate-y-0 transition-all duration-300">
                                         <button
                                             type="button"
                                             onClick={(e) => {
@@ -299,37 +299,9 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                             onClick={(e) => {
                                                 e.preventDefault()
                                                 e.stopPropagation()
-                                                if (!session) {
-                                                    handleWishlistAuthRedirect()
-                                                    return
-                                                }
-                                                const item = {
-                                                    id: productId,
-                                                    title: product.title,
-                                                    price: product.price,
-                                                    image: imageUrl,
-                                                    category: product.category
-                                                }
-                                                if (isInWishlist(productId)) {
-                                                    removeFromWishlist(productId)
-                                                    showToast('Removed from Wishlist')
-                                                } else {
-                                                    addToWishlist(item)
-                                                    showToast('Added to Wishlist ❤️')
-                                                }
-                                            }}
-                                            className="py-2 bg-primary text-foreground text-[10px] uppercase font-bold tracking-widest border border-primary/30 hover:bg-primary/90 transition-colors"
-                                        >
-                                            {isInWishlist(productId) ? 'Wishlisted' : 'Wishlist'}
-                                        </button>
-                                        <button
-                                            type="button"
-                                            onClick={(e) => {
-                                                e.preventDefault()
-                                                e.stopPropagation()
                                                 handleCompareClick(product)
                                             }}
-                                            className="col-span-2 py-2 bg-background/80 text-foreground text-[10px] uppercase font-bold tracking-widest border border-primary/25 hover:border-primary/50 transition-colors inline-flex items-center justify-center gap-1"
+                                            className="py-2 bg-background/80 text-foreground text-[10px] uppercase font-bold tracking-widest border border-primary/25 hover:border-primary/50 transition-colors inline-flex items-center justify-center gap-1"
                                         >
                                             <Scale className="h-3.5 w-3.5" />
                                             Compare
@@ -675,5 +647,6 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
 }
 
 export default ProductGrid
+
 
 

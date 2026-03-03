@@ -3,7 +3,7 @@
 import React from 'react'
 import Link from 'next/link'
 import { motion } from 'framer-motion'
-import { ArrowRight, Sparkles, ShieldCheck, Gem, Crown, Fingerprint } from 'lucide-react'
+import { ArrowRight, Sparkles, ShieldCheck, Gem, Crown, Fingerprint, Truck, Star } from 'lucide-react'
 
 import BlogSection from './BlogSection'
 import TestimonialsSection from './TestimonialsSection'
@@ -12,11 +12,12 @@ interface HomeContentProps {
     hero: any;
     categories: any[];
     heritageFeatures?: any[];
+    featuredProducts?: any[];
     blogs: any[];
     testimonials: any[];
 }
 
-const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }: HomeContentProps) => {
+const HomeContent = ({ hero, categories, heritageFeatures, featuredProducts = [], blogs, testimonials }: HomeContentProps) => {
     const heroImage = hero.backgroundImage?.fields?.file?.url ? `https:${hero.backgroundImage.fields.file.url}` : "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=2070"
 
     const iconMap: { [key: string]: any } = {
@@ -89,6 +90,17 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                         {hero.description}
                     </motion.p>
                     <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.8, delay: 0.45 }}
+                        className="grid grid-cols-2 sm:grid-cols-4 gap-2 text-[10px] uppercase tracking-widest font-bold max-w-3xl mx-auto"
+                    >
+                        <span className="border border-primary/30 bg-background/45 px-3 py-2 inline-flex items-center justify-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> BIS Hallmarked</span>
+                        <span className="border border-primary/30 bg-background/45 px-3 py-2 inline-flex items-center justify-center gap-1.5"><Gem className="h-3.5 w-3.5 text-primary" /> Certified Jewellery</span>
+                        <span className="border border-primary/30 bg-background/45 px-3 py-2 inline-flex items-center justify-center gap-1.5"><Truck className="h-3.5 w-3.5 text-primary" /> Insured Shipping</span>
+                        <span className="border border-primary/30 bg-background/45 px-3 py-2 inline-flex items-center justify-center gap-1.5"><Star className="h-3.5 w-3.5 text-primary" /> 10k+ Happy Clients</span>
+                    </motion.div>
+                    <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.8, delay: 0.6 }}
@@ -101,6 +113,31 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                             Design Your Ring
                         </Link>
                     </motion.div>
+                </div>
+            </section>
+
+            {/* Quick Category Navigation */}
+            <section className="py-8 border-y border-primary/10 bg-background/70">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="overflow-x-auto no-scrollbar">
+                        <div className="inline-flex min-w-max items-center gap-3">
+                            {categories.slice(0, 8).map((cat, idx) => (
+                                <Link
+                                    key={`${cat.title}-${idx}`}
+                                    href={cat.link}
+                                    className="px-5 py-2.5 border border-primary/25 text-[10px] uppercase tracking-widest font-bold hover:border-primary/55 hover:bg-primary/10 transition-colors whitespace-nowrap"
+                                >
+                                    {cat.title}
+                                </Link>
+                            ))}
+                            <Link
+                                href="/shop?sort=new-arrivals"
+                                className="px-5 py-2.5 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest font-bold whitespace-nowrap"
+                            >
+                                New Arrivals
+                            </Link>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -144,6 +181,41 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                     ))}
                 </div>
             </section>
+
+            {/* Trending Products */}
+            {featuredProducts.length > 0 && (
+                <section className="py-20 bg-muted/5 border-y border-primary/10">
+                    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                        <div className="flex items-center justify-between mb-10">
+                            <div>
+                                <p className="site-subheading mb-2">Most Loved</p>
+                                <h3 className="site-heading">Trending <span className="italic">Designs</span></h3>
+                            </div>
+                            <Link href="/shop" className="text-xs uppercase tracking-widest font-bold text-primary hover:text-primary/80 transition-colors">
+                                Explore Collection
+                            </Link>
+                        </div>
+                        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                            {featuredProducts.map((item: any) => (
+                                <Link
+                                    key={item.id}
+                                    href={item.id ? `/product/${item.id}` : '/shop'}
+                                    className="border border-primary/10 bg-background hover:border-primary/40 transition-colors"
+                                >
+                                    <div className="aspect-square bg-secondary overflow-hidden">
+                                        <img src={item.image || "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=800"} alt={item.title} className="w-full h-full object-cover" />
+                                    </div>
+                                    <div className="p-3 space-y-1">
+                                        <p className="text-[9px] uppercase tracking-widest text-muted-foreground">{item.category}</p>
+                                        <h4 className="text-sm font-bold leading-snug line-clamp-2 min-h-[2.5rem]">{item.title}</h4>
+                                        <p className="text-sm font-bold text-primary">₹{Number(item.price || 0).toLocaleString('en-IN')}</p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    </div>
+                </section>
+            )}
 
             {/* Heritage Gallery - Immersive Section */}
             <section className="py-32 bg-secondary relative overflow-hidden">
@@ -204,6 +276,35 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                 {/* Decorative Background Elements */}
                 <div className="absolute -bottom-24 -right-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
                 <div className="absolute -top-24 -left-24 w-96 h-96 bg-primary/5 rounded-full blur-[100px]" />
+            </section>
+
+            {/* Emotional Story Section */}
+            <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+                    <div className="space-y-5">
+                        <p className="site-subheading text-left">Our Story</p>
+                        <h3 className="site-heading text-left">Jewellery For <span className="italic">Life's Celebrations</span></h3>
+                        <p className="text-foreground/70 leading-relaxed font-serif italic">
+                            From weddings and anniversaries to festive gifting, every Radha Govind piece is crafted to carry memory, emotion, and family tradition across generations.
+                        </p>
+                        <div className="grid grid-cols-2 gap-3 text-xs uppercase tracking-widest font-bold">
+                            <span className="border border-primary/20 px-3 py-2">25+ Years Craftsmanship</span>
+                            <span className="border border-primary/20 px-3 py-2">Ethically Sourced Stones</span>
+                            <span className="border border-primary/20 px-3 py-2">Bespoke Design Studio</span>
+                            <span className="border border-primary/20 px-3 py-2">Trusted Jaipur Legacy</span>
+                        </div>
+                        <Link href="/about" className="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-primary hover:text-primary/80">
+                            Read Brand Story <ArrowRight className="h-4 w-4" />
+                        </Link>
+                    </div>
+                    <div className="aspect-[4/3] overflow-hidden border border-primary/15">
+                        <img
+                            src="https://images.unsplash.com/photo-1611652022419-a9419f74343d?auto=format&fit=crop&q=80&w=1400"
+                            alt="Jewellery celebration"
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                </div>
             </section>
 
             {/* Testimonials Section */}

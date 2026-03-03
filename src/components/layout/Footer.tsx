@@ -40,6 +40,7 @@ const Footer = () => {
                     <ul className="space-y-4 text-sm text-foreground/60">
                         <li><Link href="/shop?cat=lab-grown" className="luxury-link">Lab-Grown Diamonds</Link></li>
                         <li><Link href="/shop?cat=silver" className="luxury-link">Silver Jewellery</Link></li>
+                        <li><Link href="/about" className="luxury-link">Our Story</Link></li>
                         <li><Link href="/blog" className="luxury-link">Our Blog</Link></li>
                         <li><Link href="/#testimonials" className="luxury-link">Testimonials</Link></li>
                     </ul>

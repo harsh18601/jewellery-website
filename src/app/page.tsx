@@ -4,12 +4,13 @@ import HomeContent from '@/components/home/HomeContent'
 
 export default async function Home() {
   // Fetch CMS data in parallel for faster first render.
-  const [heroEntries, categoryEntries, heritageEntries, blogEntries, testimonialEntries] = await Promise.all([
+  const [heroEntries, categoryEntries, heritageEntries, blogEntries, testimonialEntries, productEntries] = await Promise.all([
     fetchEntries('hero'),
     fetchEntries('category'),
     fetchEntries('heritageFeature'),
     fetchEntries('blogPost'),
     fetchEntries('testimonial'),
+    fetchEntries('product'),
   ])
 
   const hero = heroEntries?.[0]?.fields as any || {
@@ -58,11 +59,35 @@ export default async function Home() {
     rating: entry.fields.rating || 5
   })) || []
 
+  const featuredProducts = (productEntries || []).map((entry: any) => {
+    const fields = entry?.fields || {}
+    const images = Array.isArray(fields.images) ? fields.images : []
+    return {
+      id: entry?.sys?.id,
+      title: fields.title || 'Jewellery Design',
+      price: Number(fields.price || 0),
+      rating: Number(fields.ratings || 0),
+      image: images?.[0]?.fields?.file?.url ? `https:${images[0].fields.file.url}` : null,
+      category: Array.isArray(fields.category) ? (fields.category?.[0]?.fields?.name || 'Jewellery') : (fields.category?.fields?.name || fields.category || 'Jewellery'),
+      slug: fields.slug || '',
+      isFeatured: Boolean(fields.isFeatured),
+      createdAt: entry?.sys?.createdAt || '',
+    }
+  })
+    .sort((a: any, b: any) => {
+      const aScore = (a.isFeatured ? 2 : 0) + Number(a.rating || 0)
+      const bScore = (b.isFeatured ? 2 : 0) + Number(b.rating || 0)
+      if (bScore !== aScore) return bScore - aScore
+      return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+    })
+    .slice(0, 6)
+
   return (
     <HomeContent
       hero={hero}
       categories={categories}
       heritageFeatures={heritageFeatures}
+      featuredProducts={featuredProducts}
       blogs={blogs}
       testimonials={testimonials}
     />

@@ -22,9 +22,6 @@ const Navbar = () => {
     const navLinks = [
         { name: 'Shop', href: '/shop' },
         { name: 'Custom', href: '/custom' },
-        { name: 'Our Story', href: '/about' },
-        { name: 'Collections', href: '/#collections' },
-        { name: 'Blog', href: '/blog' },
     ]
 
     React.useEffect(() => {

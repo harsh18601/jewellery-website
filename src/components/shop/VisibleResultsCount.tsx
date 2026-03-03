@@ -2,8 +2,9 @@
 
 import React, { useEffect, useState } from 'react'
 
-const VisibleResultsCount = ({ total }: { total: number }) => {
+const VisibleResultsCount = ({ total, overallTotal }: { total: number, overallTotal?: number }) => {
     const [visible, setVisible] = useState(Math.min(8, total))
+    const baseTotal = typeof overallTotal === 'number' ? overallTotal : total
 
     useEffect(() => {
         setVisible(Math.min(8, total))
@@ -19,8 +20,8 @@ const VisibleResultsCount = ({ total }: { total: number }) => {
         return () => window.removeEventListener('shop-visible-count', handler as EventListener)
     }, [total])
 
-    if (total === 0) return <>0 Results Found</>
-    return <>Showing {visible} of {total} designs</>
+    if (total === 0) return <>Showing 0 of {baseTotal} designs</>
+    return <>Showing {visible} of {baseTotal} designs</>
 }
 
 export default VisibleResultsCount

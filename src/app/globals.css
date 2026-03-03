@@ -203,6 +203,53 @@
   display: none;
 }
 
+.price-range-input {
+  pointer-events: none;
+}
+
+.price-range-input-min {
+  z-index: 20;
+}
+
+.price-range-input-max {
+  z-index: 30;
+}
+
+.price-range-input::-webkit-slider-runnable-track {
+  height: 6px;
+  background: transparent;
+}
+
+.price-range-input::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  pointer-events: auto;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  border: 2px solid #0f172a;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+  margin-top: -6px;
+}
+
+.price-range-input::-moz-range-track {
+  height: 6px;
+  background: transparent;
+}
+
+.price-range-input::-moz-range-thumb {
+  pointer-events: auto;
+  cursor: pointer;
+  width: 18px;
+  height: 18px;
+  border-radius: 999px;
+  background: var(--color-primary);
+  border: 2px solid #0f172a;
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.35);
+}
+
 @keyframes trust-marquee {
   0% {
     transform: translateX(0);
