@@ -73,6 +73,8 @@ const CartPage = () => {
                 userId: (session.user as any).id || session.user?.email,
                 products: cartItems.map(item => ({
                     productId: item.id,
+                    productName: item.title,
+                    productImage: item.image,
                     quantity: item.quantity,
                     price: item.price
                 })),
@@ -85,7 +87,12 @@ const CartPage = () => {
             const result = await createOrder(orderData)
             if (result.success) {
                 clearCart()
-                router.push('/profile/orders')
+                setCheckoutModal({
+                    open: true,
+                    title: 'Order placed successfully',
+                    message: 'Your order has been placed. You can track it from My Orders.',
+                    isSuccess: true,
+                })
             } else {
                 setCheckoutModal({
                     open: true,
@@ -291,10 +298,17 @@ const CartPage = () => {
                             </p>
                             <button
                                 type="button"
-                                onClick={() => setCheckoutModal((prev) => ({ ...prev, open: false }))}
+                                onClick={() => {
+                                    if (checkoutModal.isSuccess) {
+                                        setCheckoutModal((prev) => ({ ...prev, open: false }))
+                                        router.push('/profile/orders')
+                                        return
+                                    }
+                                    setCheckoutModal((prev) => ({ ...prev, open: false }))
+                                }}
                                 className="px-8 py-3 bg-primary text-foreground text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all"
                             >
-                                OK
+                                {checkoutModal.isSuccess ? 'Go to Orders' : 'OK'}
                             </button>
                         </motion.div>
                     </motion.div>

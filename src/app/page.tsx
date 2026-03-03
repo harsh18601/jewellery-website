@@ -25,6 +25,10 @@ export default async function Home() {
 
   const categories = categoryEntries?.map((cat: any) => ({
     title: cat.fields.name,
+    subtitle: cat.fields.subtitle || '',
+    description: cat.fields.description || '',
+    badge: cat.fields.badge || '',
+    ctaText: cat.fields.ctaText || 'Shop Now',
     image: cat.fields.image?.fields?.file?.url ? `https:${cat.fields.image.fields.file.url}` : 'https://images.unsplash.com/photo-1601121141461-9d6647bca1ed?auto=format&fit=crop&q=80&w=1000',
     link: cat.fields.slug ? `/shop?cat=${cat.fields.slug}` : '#'
   })) || []

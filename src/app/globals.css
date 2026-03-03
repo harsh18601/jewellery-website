@@ -171,3 +171,35 @@
   color: #ffffff !important;
   background-color: #1d4e89 !important;
 }
+
+.trust-marquee {
+  position: relative;
+  display: flex;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+.trust-marquee-track {
+  display: inline-flex;
+  align-items: center;
+  gap: 2rem;
+  min-width: max-content;
+  padding-right: 2rem;
+  animation: trust-marquee 18s linear infinite;
+}
+
+.trust-marquee-track-alt {
+  position: absolute;
+  left: 100%;
+  top: 0;
+}
+
+@keyframes trust-marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-100%);
+  }
+}

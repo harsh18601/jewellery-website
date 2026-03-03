@@ -132,8 +132,18 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, collections, t
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 to-transparent" />
                             <div className="absolute bottom-10 left-10">
+                                {cat.badge && (
+                                    <span className="inline-block mb-3 px-2.5 py-1 bg-background/70 border border-primary/30 text-primary text-[10px] uppercase tracking-widest font-bold">
+                                        {cat.badge}
+                                    </span>
+                                )}
                                 <h4 className="text-2xl font-bold text-foreground mb-2">{cat.title}</h4>
-                                <span className="text-primary text-xs uppercase tracking-widest font-bold border-b border-primary pb-1">Shop Now</span>
+                                {(cat.subtitle || cat.description) && (
+                                    <p className="text-xs text-foreground/80 font-serif italic mb-3 max-w-xs line-clamp-2">
+                                        {cat.subtitle || cat.description}
+                                    </p>
+                                )}
+                                <span className="text-primary text-xs uppercase tracking-widest font-bold border-b border-primary pb-1">{cat.ctaText || 'Shop Now'}</span>
                             </div>
                         </Link>
                     ))}

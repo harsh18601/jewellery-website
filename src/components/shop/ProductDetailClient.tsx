@@ -67,6 +67,11 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
 
     const images = product.images?.length > 0 ? product.images : ['https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=1000']
     const formattedPrice = formatPrice(Number(product.price || 0))
+    const compareAtPrice = Number(product.compareAtPrice || product.originalPrice || product.mrp || 0)
+    const hasDiscount = compareAtPrice > Number(product.price || 0)
+    const deliveryWindow = product.deliveryDays || '3-5'
+    const certificationLabel = product.certification || 'BIS Hallmarked'
+    const emiMonthly = Number(product.emiMonthly || (Number(product.price || 0) > 0 ? Math.round(Number(product.price || 0) / 24) : 0))
     useEffect(() => {
         const onScroll = () => {
             setShowStickyCartBar(window.scrollY > 600)
@@ -169,7 +174,7 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
             setShippingMessage('Enter a valid 6-digit pincode.')
             return
         }
-        setShippingMessage(`Delivery estimate for ${pincode}: 3-5 business days.`)
+        setShippingMessage(`Delivery estimate for ${pincode}: ${deliveryWindow} business days.`)
     }
 
     return (
@@ -257,12 +262,20 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                             <p className="text-[10px] uppercase tracking-widest text-primary font-bold">{shareFeedback}</p>
                         )}
 
-                        <p className="text-4xl font-bold text-primary tracking-tight">{formattedPrice}</p>
+                        {product.tagline && (
+                            <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold">{product.tagline}</p>
+                        )}
+                        <div className="flex items-end gap-3">
+                            <p className="text-4xl font-bold text-primary tracking-tight">{formattedPrice}</p>
+                            {hasDiscount && (
+                                <p className="text-sm text-muted-foreground line-through pb-1">{formatPrice(compareAtPrice)}</p>
+                            )}
+                        </div>
                     </div>
 
                     <div className="border border-primary/15 bg-muted/5 p-4 space-y-3">
                         <p className="text-xs uppercase tracking-widest font-bold flex items-center gap-2">
-                            <Truck className="h-4 w-4 text-primary" /> Delivery in 3-5 days
+                            <Truck className="h-4 w-4 text-primary" /> Delivery in {deliveryWindow} days
                         </p>
                         <div className="flex flex-col sm:flex-row gap-2">
                             <input
@@ -283,6 +296,10 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                             </button>
                         </div>
                         <p className="text-xs text-muted-foreground">{shippingMessage}</p>
+                        <p className="text-xs text-primary font-bold uppercase tracking-widest">{certificationLabel}</p>
+                        {emiMonthly > 0 && (
+                            <p className="text-xs text-muted-foreground uppercase tracking-widest">EMI starting at {formatPrice(emiMonthly)}/month</p>
+                        )}
                         <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
                             <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> 7-Day Easy Return</p>
                             <p className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Lifetime Polishing</p>

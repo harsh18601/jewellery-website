@@ -4,6 +4,8 @@ export interface IOrder extends Document {
     userId: mongoose.Types.ObjectId;
     products: {
         productId: string;
+        productName?: string;
+        productImage?: string;
         quantity: number;
         price: number;
     }[];
@@ -28,6 +30,8 @@ const OrderSchema: Schema = new Schema({
     userId: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     products: [{
         productId: { type: String, required: true },
+        productName: { type: String },
+        productImage: { type: String },
         quantity: { type: Number, required: true },
         price: { type: Number, required: true },
     }],
@@ -48,7 +52,12 @@ const OrderSchema: Schema = new Schema({
     createdAt: { type: Date, default: Date.now },
 });
 
-export const Order = mongoose.models.Order || mongoose.model<IOrder>('Order', OrderSchema);
+const existingOrderModel = mongoose.models.Order as mongoose.Model<IOrder> | undefined;
+if (existingOrderModel && !existingOrderModel.schema.path('products.productName')) {
+    delete mongoose.models.Order;
+}
+
+export const Order = (mongoose.models.Order as mongoose.Model<IOrder>) || mongoose.model<IOrder>('Order', OrderSchema);
 
 export interface IReview extends Document {
     productId: mongoose.Types.ObjectId;

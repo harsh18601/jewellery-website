@@ -19,7 +19,7 @@ const ConciergeButton = () => {
                     >
                         <div className="bg-secondary p-6 text-center space-y-2">
                             <Sparkles className="h-5 w-5 text-primary mx-auto mb-2" />
-                            <h3 className="text-sm font-bold uppercase tracking-widest text-foreground">Boutique Concierge</h3>
+                            <h3 className="w-full text-center text-sm font-bold uppercase tracking-widest text-foreground">Boutique Concierge</h3>
                             <p className="text-[10px] text-foreground/60 uppercase tracking-widest">How may we assist you today?</p>
                         </div>
 

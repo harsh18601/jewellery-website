@@ -12,6 +12,10 @@ export interface ContentfulCategory {
     name: EntryFieldTypes.Text;
     image: EntryFieldTypes.AssetLink;
     slug: EntryFieldTypes.Text;
+    subtitle?: EntryFieldTypes.Text;
+    description?: EntryFieldTypes.Text;
+    ctaText?: EntryFieldTypes.Text;
+    badge?: EntryFieldTypes.Text;
 }
 
 export interface ContentfulProduct {
@@ -23,6 +27,17 @@ export interface ContentfulProduct {
     stoneType: EntryFieldTypes.Text;
     isFeatured: EntryFieldTypes.Boolean;
     ratings: EntryFieldTypes.Number;
+    compareAtPrice?: EntryFieldTypes.Number;
+    originalPrice?: EntryFieldTypes.Number;
+    metal?: EntryFieldTypes.Text;
+    certification?: EntryFieldTypes.Text;
+    deliveryDays?: EntryFieldTypes.Text;
+    isNew?: EntryFieldTypes.Boolean;
+    soldCount?: EntryFieldTypes.Number;
+    sales?: EntryFieldTypes.Number;
+    tagline?: EntryFieldTypes.Text;
+    emiMonthly?: EntryFieldTypes.Number;
+    metalType?: EntryFieldTypes.Text;
 }
 export interface ContentfulPage {
     title: string;
@@ -37,3 +52,4 @@ export interface ContentfulPage {
         }
     };
 }
+    
