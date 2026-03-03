@@ -4,9 +4,10 @@ import { getProducts } from '@/actions/productActions'
 import ProductGrid from '@/components/shop/ProductGrid'
 import VisibleResultsCount from '@/components/shop/VisibleResultsCount'
 import CurrencyPriceText from '@/components/shop/CurrencyPriceText'
+import MobileStickyActions from '@/components/shop/MobileStickyActions'
 import BackButton from '@/components/common/BackButton'
 import { fetchEntries } from '@/lib/contentful'
-import { ShieldCheck, Truck, BadgeCheck, Gem, ChevronDown, SlidersHorizontal } from 'lucide-react'
+import { ShieldCheck, Truck, BadgeCheck, Gem, ChevronDown } from 'lucide-react'
 
 type CategoryOption = {
     label: string
@@ -362,11 +363,12 @@ export default async function ShopPage({
             </div>
 
             <div className="mb-6">
-                <div className="overflow-x-auto no-scrollbar pb-2">
-                <div className="inline-flex min-w-max items-center gap-3">
+                <div className="relative">
+                <div className="overflow-x-auto no-scrollbar pb-2 -mx-1 px-1">
+                <div className="inline-flex min-w-max items-center gap-2 sm:gap-3 pr-16">
                     <Link
                         href={buildShopHref({ cat: '' })}
-                        className={`px-4 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all ${!cat ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                        className={`min-w-[9.5rem] justify-center px-4 py-2.5 sm:min-w-0 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex ${!cat ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                     >
                         All ({Object.values(categoryCounts).reduce((a, b) => a + b, 0)})
                     </Link>
@@ -374,7 +376,7 @@ export default async function ShopPage({
                         <Link
                             key={option.value}
                             href={buildShopHref({ cat: option.value })}
-                            className={`px-4 py-2.5 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 sm:gap-2.5 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                            className={`min-w-[9.5rem] justify-center px-4 py-2.5 sm:min-w-0 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 sm:gap-2.5 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                         >
                             {option.image
                                 ? <img src={option.image} alt={option.label} className="h-5 w-5 sm:h-7 sm:w-7 rounded-full object-cover border border-primary/30" />
@@ -383,6 +385,8 @@ export default async function ShopPage({
                         </Link>
                     ))}
                 </div>
+                </div>
+                <div className="sm:hidden pointer-events-none absolute right-0 top-0 h-full w-14 bg-gradient-to-l from-background via-background/90 to-transparent" />
                 </div>
             </div>
 
@@ -458,16 +462,7 @@ export default async function ShopPage({
                     </Link>
                 </div>
             </details>
-            <div className="lg:hidden fixed bottom-0 inset-x-0 z-40 grid grid-cols-2 gap-0 border-t border-primary/30 bg-background/95 backdrop-blur">
-                <a href="#shop-mobile-filters" className="h-14 bg-primary text-primary-foreground text-[10px] uppercase tracking-widest font-bold inline-flex items-center justify-center gap-2 border-r border-primary/25">
-                    <SlidersHorizontal className="h-4 w-4" />
-                    Filters
-                </a>
-                <a href="#shop-sort-controls" className="h-14 bg-background text-foreground text-[10px] uppercase tracking-widest font-bold inline-flex items-center justify-center gap-2">
-                    <ChevronDown className="h-4 w-4" />
-                    Sort
-                </a>
-            </div>
+            <MobileStickyActions />
 
             <div className="grid grid-cols-1 lg:grid-cols-[280px_1fr] gap-6">
                 <aside className="hidden lg:block lg:sticky lg:top-24 lg:h-fit bg-muted/5 border border-primary/15 p-5 space-y-6">
@@ -552,20 +547,21 @@ export default async function ShopPage({
                         <p className="text-xs uppercase tracking-widest text-muted-foreground font-bold xl:text-center">
                             <VisibleResultsCount total={totalResults} />
                         </p>
-                        <form method="get" className="sm:hidden flex items-center gap-2">
+                        <form method="get" className="sm:hidden flex items-center gap-3 mt-1 mb-1">
                             {cat ? <input type="hidden" name="cat" value={cat} /> : null}
                             {metal ? <input type="hidden" name="metal" value={metal} /> : null}
                             {stone ? <input type="hidden" name="stone" value={stone} /> : null}
                             {price ? <input type="hidden" name="price" value={price} /> : null}
                             {max ? <input type="hidden" name="max" value={max} /> : null}
                             {search ? <input type="hidden" name="search" value={search} /> : null}
-                            <div className={`relative flex-1 ${totalResults === 0 ? 'opacity-50' : ''}`}>
+                            <div className={`relative min-w-0 flex-1 ${totalResults === 0 ? 'opacity-50' : ''}`}>
                                 <select
+                                    id="shop-mobile-sort-select"
                                     name="sort"
                                     defaultValue={sort || 'new-arrivals'}
                                     disabled={totalResults === 0}
                                     style={{ colorScheme: 'dark' }}
-                                    className={`h-10 w-full appearance-none pl-3.5 pr-10 text-[10px] uppercase tracking-widest font-bold border border-primary/30 bg-background text-foreground focus:border-primary transition-colors outline-none ${totalResults === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
+                                    className={`h-9 w-full appearance-none pl-3 pr-9 text-[10px] uppercase tracking-widest font-bold border border-primary/30 bg-background text-foreground focus:border-primary transition-colors outline-none ${totalResults === 0 ? 'cursor-not-allowed' : 'cursor-pointer'}`}
                                 >
                                     {sortOptions.map((option) => (
                                         <option key={option.value} value={option.value} className="bg-secondary text-foreground">
@@ -578,7 +574,7 @@ export default async function ShopPage({
                             <button
                                 type="submit"
                                 disabled={totalResults === 0}
-                                className={`h-10 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors ${totalResults === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
+                                className={`h-9 px-3.5 text-[10px] uppercase tracking-widest font-bold border border-primary/35 hover:border-primary/60 transition-colors shrink-0 ${totalResults === 0 ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 Apply
                             </button>
