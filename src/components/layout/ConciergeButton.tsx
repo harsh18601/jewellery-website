@@ -26,14 +26,15 @@ const ConciergeButton = () => {
 
             if (mobile) {
                 setPosition((prev) => {
+                    const mobileBottomSafeSpace = 78
                     if (prev.x === 0 && prev.y === 0) {
                         return {
                             x: Math.max(12, window.innerWidth - 76),
-                            y: Math.max(12, window.innerHeight - 92),
+                            y: Math.max(12, window.innerHeight - 132),
                         }
                     }
-                    const maxX = Math.max(12, window.innerWidth - 60)
-                    const maxY = Math.max(12, window.innerHeight - 60)
+                    const maxX = Math.max(12, window.innerWidth - 64)
+                    const maxY = Math.max(12, window.innerHeight - mobileBottomSafeSpace)
                     return {
                         x: Math.min(maxX, Math.max(12, prev.x)),
                         y: Math.min(maxY, Math.max(12, prev.y)),
@@ -69,8 +70,9 @@ const ConciergeButton = () => {
             dragStateRef.current.moved = true
         }
 
-        const maxX = Math.max(12, window.innerWidth - 60)
-        const maxY = Math.max(12, window.innerHeight - 60)
+        const mobileBottomSafeSpace = 78
+        const maxX = Math.max(12, window.innerWidth - 64)
+        const maxY = Math.max(12, window.innerHeight - mobileBottomSafeSpace)
         const nextX = Math.min(maxX, Math.max(12, dragStateRef.current.originX + dx))
         const nextY = Math.min(maxY, Math.max(12, dragStateRef.current.originY + dy))
 
@@ -187,7 +189,7 @@ const ConciergeButton = () => {
                 onPointerMove={onDragMove}
                 onPointerUp={onDragEnd}
                 onPointerCancel={onDragEnd}
-                className="bg-primary text-foreground p-3 sm:p-4 rounded-full shadow-2xl flex items-center justify-center hover:bg-primary/90 transition-all group"
+                className="bg-primary text-foreground h-[52px] w-[52px] sm:h-auto sm:w-auto p-0 sm:p-4 rounded-full shadow-2xl flex items-center justify-center hover:bg-primary/90 transition-all group"
             >
                 {isOpen ? (
                     <X className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -205,4 +207,3 @@ const ConciergeButton = () => {
 }
 
 export default ConciergeButton
-

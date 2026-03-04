@@ -8,6 +8,7 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
     const displayTestimonials = Array.isArray(testimonials) ? testimonials : []
     const [activeIndex, setActiveIndex] = useState(0)
     const [slidesPerView, setSlidesPerView] = useState(3)
+    const [touchStartX, setTouchStartX] = useState<number | null>(null)
 
     useEffect(() => {
         const updateSlidesPerView = () => {
@@ -51,6 +52,26 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
         setActiveIndex((prev) => prev + 1)
     }
 
+    const handleTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+        setTouchStartX(event.changedTouches[0]?.clientX ?? null)
+    }
+
+    const handleTouchEnd = (event: React.TouchEvent<HTMLDivElement>) => {
+        if (touchStartX === null || total <= 1) return
+        const endX = event.changedTouches[0]?.clientX ?? touchStartX
+        const deltaX = endX - touchStartX
+        const swipeThreshold = 44
+
+        if (Math.abs(deltaX) >= swipeThreshold) {
+            if (deltaX < 0) {
+                handleNext()
+            } else {
+                handlePrev()
+            }
+        }
+        setTouchStartX(null)
+    }
+
     return (
         <section className="py-24 bg-background overflow-hidden">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -62,7 +83,11 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
                     </p>
                 </div>
 
-                <div className="relative">
+                <div
+                    className="relative"
+                    onTouchStart={handleTouchStart}
+                    onTouchEnd={handleTouchEnd}
+                >
                     <motion.div
                         key={`${safeActiveIndex}-${slidesPerView}`}
                         initial={{ opacity: 0, y: 12 }}

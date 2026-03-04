@@ -61,7 +61,7 @@ const ConsultationPage = () => {
                     <motion.div
                         initial={{ opacity: 0, y: 30 }}
                         animate={{ opacity: 1, y: 0 }}
-                        className="space-y-8 sm:space-y-10 lg:col-span-7 order-1"
+                        className="space-y-8 sm:space-y-10 lg:col-span-7 order-3 lg:order-1"
                     >
                         <div className="space-y-4 text-center">
                             <Link href="/profile" className="inline-flex items-center w-full justify-start text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-primary transition-colors mb-4">
@@ -252,16 +252,17 @@ const ConsultationPage = () => {
                     <motion.div
                         initial={{ opacity: 0, x: 30 }}
                         animate={{ opacity: 1, x: 0 }}
-                        className="relative h-[480px] lg:h-[600px] overflow-hidden order-2 lg:col-span-5 lg:mt-0 group"
+                        className="relative h-[260px] sm:h-[360px] lg:h-[600px] overflow-hidden order-1 lg:order-2 lg:col-span-5 lg:mt-0 group"
                     >
                         <img
                             src="/assets/consultation.png"
                             alt="Consultation"
+                            loading="lazy"
                             className="w-full h-full object-cover grayscale-[0.2] transition-all duration-1000 group-hover:scale-105"
                         />
                         <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-background/20 to-transparent" />
 
-                        <div className="absolute bottom-6 left-6 right-6 bg-background/60 backdrop-blur-xl p-6 border border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(212,175,55,0.05)] space-y-5">
+                        <div className="hidden lg:block absolute bottom-6 left-6 right-6 bg-background/60 backdrop-blur-xl p-6 border border-primary/20 shadow-[0_8px_32px_rgba(0,0,0,0.5),0_0_15px_rgba(212,175,55,0.05)] space-y-5">
                             <div className="space-y-1">
                                 <div className="flex items-center gap-3">
                                     <div className="p-2 bg-primary/10 rounded-full">
@@ -314,6 +315,35 @@ const ConsultationPage = () => {
                             </motion.div>
                         </div>
                     </motion.div>
+
+                    <div className="order-2 lg:hidden mx-auto w-full max-w-md bg-background/70 backdrop-blur-xl p-5 border border-primary/25 shadow-[0_8px_24px_rgba(0,0,0,0.42)] space-y-4">
+                        <div className="space-y-1.5">
+                            <div className="flex items-center gap-2.5">
+                                <div className="p-2 bg-primary/12 rounded-full border border-primary/20">
+                                    <Sparkles className="h-4 w-4 text-primary" />
+                                </div>
+                                <h2 className="text-lg font-bold uppercase tracking-tight text-foreground">Bespoke Experience</h2>
+                            </div>
+                            <p className="text-xs text-foreground/85 font-serif italic leading-relaxed">
+                                Every masterpiece begins with a conversation.
+                            </p>
+                        </div>
+                        <div className="space-y-2.5">
+                            {[
+                                { text: "Custom Design Guidance", icon: <Gem className="h-3.5 w-3.5" /> },
+                                { text: "Diamond Selection Help", icon: <Star className="h-3.5 w-3.5" /> },
+                                { text: "Wedding Jewellery Planning", icon: <Sparkles className="h-3.5 w-3.5" /> }
+                            ].map((feature, i) => (
+                                <div
+                                    key={i}
+                                    className="flex items-center gap-2.5 text-[11px] uppercase tracking-[0.12em] font-medium text-foreground/90"
+                                >
+                                    <span className="text-primary">{feature.icon}</span>
+                                    {feature.text}
+                                </div>
+                            ))}
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

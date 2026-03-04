@@ -52,7 +52,7 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                         initial={{ opacity: 0, y: -20, scale: 0.985 }}
                         animate={{ opacity: 1, y: 0, scale: 1 }}
                         exit={{ opacity: 0, y: -16, scale: 0.985 }}
-                        className="absolute top-20 left-0 w-full bg-background/95 border-b border-primary/20 shadow-2xl p-6 sm:p-8"
+                        className="absolute top-16 sm:top-20 left-0 w-full bg-background/95 border-b border-primary/20 shadow-2xl p-4 sm:p-8"
                     >
                         <div className="max-w-4xl mx-auto">
                             <motion.form
@@ -69,12 +69,12 @@ const SearchOverlay = ({ isOpen, onClose }: { isOpen: boolean; onClose: () => vo
                                     value={query}
                                     onChange={(e) => setQuery(e.target.value)}
                                     placeholder="Search for rings, diamonds, pendants..."
-                                    className="w-full h-14 sm:h-16 rounded-full bg-transparent border border-[rgba(212,175,55,0.35)] pl-12 pr-14 text-[1.05rem] placeholder:text-foreground/60 placeholder:text-base outline-none focus:border-[rgba(212,175,55,0.45)] focus:shadow-[0_0_0_1px_rgba(212,175,55,0.15),0_0_22px_rgba(212,175,55,0.12)] transition-all font-serif italic"
+                                    className="w-full h-12 sm:h-16 rounded-full bg-transparent border border-[rgba(212,175,55,0.35)] pl-11 sm:pl-12 pr-12 sm:pr-14 text-base sm:text-[1.05rem] placeholder:text-foreground/60 placeholder:text-sm sm:placeholder:text-base outline-none focus:border-[rgba(212,175,55,0.45)] focus:shadow-[0_0_0_1px_rgba(212,175,55,0.15),0_0_22px_rgba(212,175,55,0.12)] transition-all font-serif italic"
                                 />
                                 <button
                                     type="button"
                                     onClick={onClose}
-                                    className="absolute right-2 top-1/2 -translate-y-1/2 h-10 w-10 rounded-full border border-primary/20 bg-background/70 inline-flex items-center justify-center hover:bg-primary/10 hover:border-primary/50 transition-all"
+                                    className="absolute right-1.5 sm:right-2 top-1/2 -translate-y-1/2 h-9 w-9 sm:h-10 sm:w-10 rounded-full border border-primary/20 bg-background/70 inline-flex items-center justify-center hover:bg-primary/10 hover:border-primary/50 transition-all"
                                     aria-label="Close search"
                                 >
                                     <X className="h-4 w-4" />

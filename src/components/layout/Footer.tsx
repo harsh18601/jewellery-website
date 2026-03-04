@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { Instagram, Facebook, Twitter, Mail, Phone, MapPin, ShieldCheck, Gem, RotateCcw, Truck, CreditCard, Landmark } from 'lucide-react'
+import { Instagram, Facebook, Twitter, Mail, Phone, MapPin, ShieldCheck, Gem, RotateCcw, Truck, CreditCard, Landmark, MessageCircle } from 'lucide-react'
 
 const Footer = () => {
     const [newsletterEmail, setNewsletterEmail] = useState('')
@@ -72,12 +72,12 @@ const Footer = () => {
 
                     <div className="lg:col-span-2">
                         <h4 className="text-sm font-semibold uppercase tracking-widest mb-6 text-primary">Trust</h4>
-                        <ul className="space-y-4 text-sm text-foreground/65">
-                            <li className="inline-flex items-center gap-2"><Gem className="h-4 w-4 text-primary" /> Certified Diamonds</li>
-                            <li className="inline-flex items-center gap-2"><ShieldCheck className="h-4 w-4 text-primary" /> Secure Payments</li>
-                            <li className="inline-flex items-center gap-2"><Landmark className="h-4 w-4 text-primary" /> Hallmarked Gold</li>
-                            <li className="inline-flex items-center gap-2"><RotateCcw className="h-4 w-4 text-primary" /> Easy Returns</li>
-                            <li className="inline-flex items-center gap-2"><Truck className="h-4 w-4 text-primary" /> Free Shipping</li>
+                        <ul className="grid grid-cols-2 lg:grid-cols-1 gap-x-4 gap-y-3 text-sm text-foreground/65">
+                            <li className="inline-flex items-center gap-2"><Gem className="h-5 w-5 text-primary" /> Certified Diamonds</li>
+                            <li className="inline-flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-primary" /> Secure Payments</li>
+                            <li className="inline-flex items-center gap-2"><Landmark className="h-5 w-5 text-primary" /> Hallmarked Gold</li>
+                            <li className="inline-flex items-center gap-2"><RotateCcw className="h-5 w-5 text-primary" /> Easy Returns</li>
+                            <li className="inline-flex items-center gap-2"><Truck className="h-5 w-5 text-primary" /> Free Shipping</li>
                         </ul>
                     </div>
 
@@ -90,11 +90,15 @@ const Footer = () => {
                             </li>
                             <li className="flex items-center gap-3">
                                 <Phone className="h-4 w-4 text-primary" />
-                                <span>+91 86969 14998</span>
+                                <a href="tel:+918696914998" className="hover:text-primary transition-colors">+91 86969 14998</a>
                             </li>
                             <li className="flex items-center gap-3">
-                                <Mail className="h-4 w-4 text-primary" />
-                                <span>info@radhagovind.com</span>
+                                <Mail className="h-5 w-5 text-primary shrink-0" />
+                                <a href="mailto:info@radhagovind.com" className="hover:text-primary transition-colors">info@radhagovind.com</a>
+                            </li>
+                            <li className="flex items-center gap-3">
+                                <MessageCircle className="h-4 w-4 text-primary" />
+                                <a href="https://wa.me/918696914998" target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">WhatsApp Chat</a>
                             </li>
                         </ul>
                     </div>
@@ -103,22 +107,25 @@ const Footer = () => {
                 <div className="mt-14 pt-10 border-t border-primary/15">
                     <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
                         <div className="lg:col-span-7 space-y-4">
-                            <h4 className="text-3xl tracking-tight font-semibold">Newsletter</h4>
+                            <h4 className="text-2xl sm:text-3xl tracking-tight font-semibold">Newsletter</h4>
                             <p className="text-foreground/70 font-serif italic">Join our circle for early access to collections, private offers, and expert jewellery guides.</p>
-                            <form onSubmit={handleSubscribe} className="flex flex-col sm:flex-row gap-3 max-w-xl">
-                                <input
-                                    type="email"
-                                    value={newsletterEmail}
-                                    onChange={(e) => setNewsletterEmail(e.target.value)}
-                                    placeholder="Enter your e-mail"
-                                    className="flex-1 h-12 px-4 bg-transparent border border-foreground/20 outline-none focus:border-primary transition-colors"
-                                />
-                                <button
-                                    type="submit"
-                                    className="h-12 px-8 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-colors"
-                                >
-                                    Subscribe
-                                </button>
+                            <form onSubmit={handleSubscribe} className="max-w-xl">
+                                <div className="flex items-center h-12 rounded-[10px] border border-foreground/20 overflow-hidden bg-transparent">
+                                    <Mail className="h-4 w-4 text-primary/80 ml-3 mr-2 shrink-0" />
+                                    <input
+                                        type="email"
+                                        value={newsletterEmail}
+                                        onChange={(e) => setNewsletterEmail(e.target.value)}
+                                        placeholder="Enter your e-mail"
+                                        className="flex-1 h-full px-1.5 text-sm bg-transparent outline-none"
+                                    />
+                                    <button
+                                        type="submit"
+                                        className="h-full px-4 sm:px-5 bg-primary text-foreground uppercase tracking-widest text-[10px] font-bold hover:bg-primary/90 transition-colors"
+                                    >
+                                        Subscribe
+                                    </button>
+                                </div>
                             </form>
                             {newsletterMessage && (
                                 <p className="text-xs text-primary font-medium">{newsletterMessage}</p>

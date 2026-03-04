@@ -38,7 +38,7 @@ export default async function RootLayout({
             <WishlistProvider>
               <CurrencyProvider>
                 <Navbar navLinks={navLinks} />
-                <main className="min-h-screen pt-20">
+                <main className="min-h-screen pt-16 sm:pt-20">
                   {children}
                 </main>
                 <Footer />

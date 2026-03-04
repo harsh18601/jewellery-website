@@ -393,9 +393,9 @@ export default async function ShopPage({
     return (
         <>
             <div className="max-w-[1500px] mx-auto px-4 sm:px-6 lg:px-8 py-10 pb-28 sm:pb-10">
-                <div className="mb-6 border border-primary/20 bg-gradient-to-r from-primary/8 via-transparent to-primary/8 px-5 py-4">
+                <div className="mb-5 border border-primary/20 bg-gradient-to-r from-primary/8 via-transparent to-primary/8 px-4 py-3 sm:px-5 sm:py-4">
                     <p className="text-[11px] uppercase tracking-[0.2em] text-primary font-bold mb-1">Lab Grown Diamond Collection</p>
-                    <p className="text-sm text-foreground/75 font-serif italic">Sustainable luxury crafted in Jaipur</p>
+                    <p className="text-xs sm:text-sm text-foreground/70 font-serif italic">Sustainable luxury crafted in Jaipur</p>
                 </div>
 
                 <div className="mb-6">
@@ -448,10 +448,10 @@ export default async function ShopPage({
 
                 <div className="mb-4 bg-muted/10 border border-primary/20 px-4 py-4">
                     <div className="grid grid-cols-2 lg:grid-cols-4 items-center gap-x-5 lg:gap-x-8 gap-y-3 text-[11px] sm:text-xs uppercase tracking-[0.16em] text-foreground/78 font-bold">
-                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><BadgeCheck className="h-[18px] w-[18px] text-primary" /> BIS Hallmarked</span>
-                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><Truck className="h-[18px] w-[18px] text-primary" /> Free Shipping</span>
-                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><Gem className="h-[18px] w-[18px] text-primary" /> Certified Diamonds</span>
-                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><ShieldCheck className="h-[18px] w-[18px] text-primary" /> Secure Checkout</span>
+                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><BadgeCheck className="h-[19px] w-[19px] text-primary" /> BIS Hallmarked</span>
+                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><Truck className="h-[19px] w-[19px] text-primary" /> Free Shipping</span>
+                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><Gem className="h-[19px] w-[19px] text-primary" /> Certified Diamonds</span>
+                        <span className="inline-flex items-center gap-2.5 lg:justify-center"><ShieldCheck className="h-[19px] w-[19px] text-primary" /> Secure Checkout</span>
                     </div>
                 </div>
 
@@ -558,7 +558,7 @@ export default async function ShopPage({
                     <main className="lg:border-l lg:border-primary/15 lg:pl-6">
                         <div className="mb-3">
                             <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wide text-foreground">Lab Grown Diamond Jewellery</h1>
-                            <p className="text-[11px] uppercase tracking-widest text-muted-foreground font-bold">{products.length} Designs Available</p>
+                            <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">{products.length} Designs Available</p>
                         </div>
                         <div id="shop-sort-controls" className="relative z-30 mb-3 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 bg-background/90 backdrop-blur-sm">
                             <div className="hidden xl:flex items-center" />

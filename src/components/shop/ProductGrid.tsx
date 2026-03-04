@@ -183,7 +183,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                 initial={{ opacity: 0.5, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.28 }}
-                className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-x-5 sm:gap-x-7 lg:gap-x-10 gap-y-10 sm:gap-y-12"
+                className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-3 gap-x-3 sm:gap-x-7 lg:gap-x-10 gap-y-6 sm:gap-y-12"
             >
                 {visibleProducts.map((product, i) => {
                     const productId = product._id || product.id || (product.sys && product.sys.id)
@@ -229,22 +229,27 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                             }}
                             role="link"
                             tabIndex={0}
-                            className="group h-full cursor-pointer active:scale-[0.98] luxury-card bg-background p-3 sm:p-4 border border-primary/8 hover:border-primary/45 shadow-[0_10px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_24px_40px_rgba(0,0,0,0.24)] transition-all"
+                            className="group h-full cursor-pointer active:scale-[0.98] luxury-card bg-background p-3 sm:p-4 border border-primary/8 hover:border-primary/45 shadow-[0_6px_16px_rgba(0,0,0,0.12)] sm:shadow-[0_10px_20px_rgba(0,0,0,0.14)] hover:shadow-[0_16px_28px_rgba(0,0,0,0.2)] sm:hover:shadow-[0_24px_40px_rgba(0,0,0,0.24)] transition-all"
                         >
                             <div className="block h-full">
-                                <div className="relative aspect-[3/4] overflow-hidden mb-4 sm:mb-5 bg-secondary">
+                                <div className="relative aspect-[3/4] overflow-hidden mb-3 sm:mb-5 bg-secondary rounded-sm shadow-[0_8px_18px_rgba(0,0,0,0.15)]">
                                     <img
                                         src={imageUrl}
                                         alt={product.title || 'Jewellery product'}
+                                        loading="lazy"
                                         className="w-full h-full object-cover transition-all duration-700 opacity-100 group-hover:opacity-0 group-hover:scale-[1.05]"
                                     />
                                     <img
                                         src={lifestyleImageUrl}
                                         alt={`${product.title || 'Jewellery product'} lifestyle`}
+                                        loading="lazy"
                                         className="absolute inset-0 w-full h-full object-cover transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-[1.05]"
                                     />
                                     <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <span className="absolute top-3 left-3 z-10 px-3 py-1 rounded-full text-[9px] uppercase tracking-[0.16em] font-bold border border-primary/55 bg-primary/18 shadow-[0_0_14px_rgba(212,175,55,0.22)] backdrop-blur text-primary">
+                                    <span className="sm:hidden absolute bottom-2 left-1/2 -translate-x-1/2 text-[8px] uppercase tracking-[0.16em] font-bold text-foreground/80 bg-background/70 px-2 py-0.5 rounded">
+                                        Tap to View
+                                    </span>
+                                    <span className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[8px] sm:text-[9px] uppercase tracking-[0.14em] sm:tracking-[0.16em] font-bold border border-primary/45 bg-primary/18 shadow-[0_0_8px_rgba(212,175,55,0.14)] sm:shadow-[0_0_14px_rgba(212,175,55,0.22)] backdrop-blur text-primary">
                                         {badgeLabel}
                                     </span>
 
@@ -275,7 +280,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                                 setWishlistPulse((prev) => ({ ...prev, [String(productId)]: false }))
                                             }, 260)
                                         }}
-                                        className="absolute top-3 right-3 sm:top-4 sm:right-4 z-10 p-1.5 sm:p-2.5 rounded-full border border-primary/35 bg-background/72 backdrop-blur-md shadow-md shadow-black/25 hover:bg-background/92 hover:border-primary/70 transition-all group/heart"
+                                        className="absolute top-2 right-2 sm:top-4 sm:right-4 z-10 p-2 sm:p-2.5 rounded-full border border-primary/35 bg-background/72 backdrop-blur-md shadow-md shadow-black/25 hover:bg-background/92 hover:border-primary/70 transition-all group/heart"
                                     >
                                         <Heart
                                             className={`h-4 w-4 sm:h-[18px] sm:w-[18px] transition-all duration-200 ${wishlistPulse[String(productId)] ? 'scale-125' : 'scale-100'} ${isInWishlist(productId) ? 'fill-primary text-primary' : 'text-foreground/70 group-hover/heart:text-primary group-hover/heart:scale-110'}`}
@@ -311,7 +316,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                 </div>
 
                                 <div className="flex min-h-[13rem] sm:h-[17.4rem] flex-col gap-2.5 pt-1">
-                                    <h3 className="text-base sm:text-xl uppercase tracking-wide font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 min-h-[2.8rem]">
+                                    <h3 className="text-[15px] sm:text-xl uppercase tracking-wide font-bold text-foreground group-hover:text-primary transition-colors leading-snug line-clamp-2 min-h-[2.8rem]">
                                         {product.title || 'Untitled Product'}
                                     </h3>
                                     <p className="text-[10px] tracking-[0.1em] text-foreground/50 line-clamp-1">
@@ -326,18 +331,16 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                                 <Star key={starIndex} className={`h-[17px] w-[17px] ${starIndex < Math.round(rating) ? 'fill-current' : ''}`} />
                                             ))}
                                         </div>
-                                        <span className="text-[11px] font-bold">{rating > 0 ? rating.toFixed(1) : '4.5'} ({reviewCount > 0 ? reviewCount : 23})</span>
+                                        <span className="text-[10px] sm:text-[11px] font-bold">{rating > 0 ? rating.toFixed(1) : '4.5'} ({reviewCount > 0 ? reviewCount : 23})</span>
                                     </div>
                                     <div className="space-y-1.5 pt-0.5">
                                         <div className="flex items-center gap-2">
-                                            <p className="text-2xl sm:text-[33px] leading-none font-semibold sm:font-extrabold text-primary drop-shadow-[0_0_12px_rgba(212,175,55,0.22)]">{displayPrice || "Price on request"}</p>
+                                            <p className="text-[1.7rem] sm:text-[33px] leading-none font-semibold sm:font-extrabold text-primary drop-shadow-none sm:drop-shadow-[0_0_12px_rgba(212,175,55,0.22)]">{displayPrice || "Price on request"}</p>
                                             {hasDiscount && (
                                                 <p className="hidden sm:block text-xs text-foreground/45 line-through">{formatPrice(originalPriceRaw)}</p>
                                             )}
                                         </div>
-                                        {hasDiscount && (
-                                            <p className="hidden sm:block text-[10px] uppercase tracking-widest font-bold text-primary">Save {savePercent}%</p>
-                                        )}
+                                        {hasDiscount && <p className="text-[9px] sm:text-[10px] uppercase tracking-widest font-bold text-primary">Save {savePercent}%</p>}
                                     </div>
                                     <div className="flex flex-wrap gap-1.5 text-[8px] uppercase tracking-[0.12em] font-bold">
                                         <span className="px-2 py-0.5 border border-primary/15 text-primary inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> {certificationText}</span>
@@ -347,6 +350,18 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                     {isCustomisable && (
                                         <p className="hidden sm:block text-[10px] uppercase tracking-widest font-bold text-primary">Customisable</p>
                                     )}
+                                    <button
+                                        type="button"
+                                        onClick={(e) => {
+                                            e.preventDefault()
+                                            e.stopPropagation()
+                                            setQuickViewProduct(product)
+                                            setQuickViewImageIndex(0)
+                                        }}
+                                        className="sm:hidden mt-1 h-9 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/25 hover:border-primary/55 transition-colors inline-flex items-center justify-center gap-1.5"
+                                    >
+                                        Quick View
+                                    </button>
                                     <button
                                         type="button"
                                         onClick={(e) => {
@@ -375,7 +390,7 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                             })
                                             showToast('Added to Bag')
                                         }}
-                                        className="mt-1 h-9 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/70 hover:bg-primary hover:text-black transition-colors inline-flex items-center justify-center gap-1.5"
+                                        className="mt-1 h-10 px-3 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/70 hover:bg-primary hover:text-black transition-colors inline-flex items-center justify-center gap-1.5"
                                     >
                                         <ShoppingBag className="h-3.5 w-3.5" />
                                         Add to Bag
