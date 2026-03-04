@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
 import { ShoppingBag, User, Search, Menu, Diamond, X, ChevronDown, Heart } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -20,11 +20,11 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
     const { cartCount } = useCart()
     const { wishlistCount } = useWishlist()
 
-    React.useEffect(() => {
+    useEffect(() => {
         setIsMounted(true)
     }, [])
 
-    React.useEffect(() => {
+    useEffect(() => {
         if (!isMobileMenuOpen) setOpenMobileSection(null)
     }, [isMobileMenuOpen])
 

@@ -8,7 +8,7 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import { CartProvider } from "@/components/providers/CartContext";
 import { WishlistProvider } from "@/components/providers/WishlistContext";
 import { CurrencyProvider } from "@/components/providers/CurrencyContext";
-import { fetchNavbarLinks } from "@/lib/contentful";
+import { fetchFooterData, fetchNavbarLinks } from "@/lib/contentful";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-montserrat", weight: ["400", "500", "600", "700"] });
 const cinzel = Cinzel({ subsets: ["latin"], variable: "--font-cinzel", weight: ["400", "500", "600", "700", "800"] });
@@ -28,7 +28,10 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-  const navLinks = await fetchNavbarLinks();
+  const [navLinks, footerData] = await Promise.all([
+    fetchNavbarLinks(),
+    fetchFooterData(),
+  ]);
 
   return (
     <html lang="en">
@@ -41,7 +44,7 @@ export default async function RootLayout({
                 <main className="min-h-screen pt-16 sm:pt-20">
                   {children}
                 </main>
-                <Footer />
+                <Footer data={footerData} />
                 <ConciergeButton />
               </CurrencyProvider>
             </WishlistProvider>

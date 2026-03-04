@@ -3,6 +3,8 @@
 import React from 'react'
 import { motion } from 'framer-motion'
 import { RichTextRenderer } from '@/lib/richTextRenderer'
+import FAQAccordion from './FAQAccordion'
+
 
 interface CmsPageProps {
     data: any;
@@ -15,10 +17,22 @@ interface CmsPageProps {
 }
 
 const CmsPage = ({ data, fallback }: CmsPageProps) => {
-    const title = data?.fields?.title || fallback?.title;
-    const subtitle = data?.fields?.subtitle || fallback?.subtitle;
-    const image = data?.fields?.image?.fields?.file?.url ? `https:${data.fields.image.fields.file.url}` : fallback?.image;
-    const content = data?.fields?.content;
+    const fields = data?.fields || {}
+    const title = fields.title || fields.pageTitle || fallback?.title
+    const subtitle = fields.subtitle || fields.subTitle || fallback?.subtitle
+    const imageField = fields.image || fields.bannerImage || null
+    const image = imageField?.fields?.file?.url ? `https:${imageField.fields.file.url}` : fallback?.image
+    const content = fields.content || fields.body || fields.description
+    const faqItems = fields.faq || fields.FAQ || fields.faqs || []
+    const hasData = Boolean(title || subtitle || content || image || faqItems.length > 0)
+
+    if (!hasData) {
+        return (
+            <div className="bg-background min-h-screen flex items-center justify-center px-4">
+                <p className="text-muted-foreground font-serif italic text-center">Page content is not available yet.</p>
+            </div>
+        )
+    }
 
     return (
         <div className="bg-background min-h-screen">
@@ -62,6 +76,13 @@ const CmsPage = ({ data, fallback }: CmsPageProps) => {
                         <p className="whitespace-pre-line leading-relaxed">{fallback.content}</p>
                     )}
                 </div>
+
+                {/* FAQ Section */}
+                {faqItems.length > 0 && (
+                    <div className="mt-20">
+                        <FAQAccordion items={faqItems} />
+                    </div>
+                )}
             </section>
         </div>
     )

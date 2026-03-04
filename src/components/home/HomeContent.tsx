@@ -15,13 +15,11 @@ interface HomeContentProps {
     featuredProducts?: any[];
     blogs: any[];
     testimonials: any[];
+    homeStory?: any;
 }
 
-const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }: HomeContentProps) => {
-    const rawHeroImage = hero.backgroundImage?.fields?.file?.url ? `https:${hero.backgroundImage.fields.file.url}` : "https://images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=2070"
-    const heroImage = rawHeroImage.includes("1515562141207-7a88fb7ce338")
-        ? "https://images.unsplash.com/photo-1615655096345-61a54750068d?auto=format&fit=crop&q=80&w=2070"
-        : rawHeroImage
+const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials, homeStory }: HomeContentProps) => {
+    const heroImage = hero?.backgroundImage?.fields?.file?.url ? `https:${hero.backgroundImage.fields.file.url}` : ''
 
     const iconMap: { [key: string]: any } = {
         Sparkles,
@@ -29,6 +27,15 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
         Gem,
         Crown,
         Fingerprint
+    }
+    const heroTrustBadges: string[] = Array.isArray(hero?.trustBadges) ? hero.trustBadges : []
+    const getBadgeIcon = (label: string) => {
+        const value = String(label || '').toLowerCase()
+        if (value.includes('diamond')) return Gem
+        if (value.includes('conflict') || value.includes('secure') || value.includes('certified')) return ShieldCheck
+        if (value.includes('shipping') || value.includes('delivery')) return Truck
+        if (value.includes('custom') || value.includes('design')) return Star
+        return Sparkles
     }
 
     const defaultFeatures = [
@@ -74,94 +81,116 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
         if (aRank !== bRank) return aRank - bRank
         return String(a?.title || '').localeCompare(String(b?.title || ''))
     })
-    const storyHighlights = [
-        { label: '25+ Years Craftsmanship', icon: Crown },
-        { label: 'Ethical Lab Diamonds', icon: ShieldCheck },
-        { label: 'Bespoke Design Studio', icon: Fingerprint },
-        { label: 'Trusted Jaipur Legacy', icon: Gem },
-    ]
+    const displayHomeStory = homeStory || null
+    const storyHighlightIcons = [Crown, ShieldCheck, Fingerprint, Gem, Sparkles]
+    const displayStoryHighlights = Array.isArray(displayHomeStory?.highlights) ? displayHomeStory.highlights : []
 
     return (
         <div className="overflow-x-hidden">
             {/* Hero Section */}
             <section className="relative h-[90vh] flex items-center justify-center bg-secondary">
-                <div className="absolute inset-0 z-0 opacity-38 grayscale hover:grayscale-0 transition-all duration-700">
-                    <img
-                        src={heroImage}
-                        alt="Radha Govind Hero"
-                        className="w-full h-full object-cover"
-                    />
-                </div>
+                {heroImage && (
+                    <div className="absolute inset-0 z-0 opacity-38 grayscale hover:grayscale-0 transition-all duration-700">
+                        <img
+                            src={heroImage}
+                            alt={hero?.title || 'Hero image'}
+                            className="w-full h-full object-cover"
+                        />
+                    </div>
+                )}
                 <div className="absolute inset-0 z-0 bg-background/68 backdrop-blur-[2px]" />
                 <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.14),rgba(5,10,22,0.86)_60%)]" />
                 <div className="absolute z-0 left-1/2 top-[48%] h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/12 blur-[95px]" />
 
                 <div className="relative z-10 text-center space-y-10 px-4 max-w-4xl">
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8 }}
-                        className="site-subheading"
-                    >
-                        {hero.subtitleLabel || "Modern Diamonds. Traditional Craftsmanship."}
-                    </motion.p>
-                    <motion.h1
-                        initial={{ opacity: 0, y: 30 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.2 }}
-                        className="site-heading text-foreground leading-[1.14]"
-                    >
-                        {(hero.title || "Real Diamonds").replace(/\.$/, "")} <br />
-                        <span className="gold-text italic inline-block">{(hero.subtitle || "Ethically Created").replace(/\.$/, "")}</span>
-                    </motion.h1>
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-foreground/82 text-base md:text-lg font-light max-w-2xl mx-auto"
-                    >
-                        {hero.description}
-                    </motion.p>
-                    <motion.div
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.45 }}
-                        className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-[10px] uppercase tracking-[0.2em] font-bold max-w-3xl mx-auto"
-                    >
-                        <span className="h-[64px] sm:h-auto border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Gem className="h-3.5 w-3.5 text-primary" /> Certified Diamonds</span>
-                        <span className="h-[64px] sm:h-auto border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> Conflict-Free</span>
-                        <span className="h-[64px] sm:h-auto border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Truck className="h-3.5 w-3.5 text-primary" /> Secure Shipping</span>
-                        <span className="h-[64px] sm:h-auto border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Star className="h-3.5 w-3.5 text-primary" /> Custom Designs</span>
-                    </motion.div>
-                    <motion.div
-                        initial={{ opacity: 0, scale: 0.9 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        transition={{ duration: 0.8, delay: 0.6 }}
-                        className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-2"
-                    >
-                        <Link href={hero.ctaLink || "/shop"} className="px-14 py-[1.15rem] bg-primary text-foreground uppercase tracking-widest text-sm font-extrabold hover:bg-primary/90 transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50">
-                            {hero.ctaText || "Shop Lab Diamonds"}
-                        </Link>
-                        <Link href="/custom" className="px-10 py-4 border border-foreground/55 text-foreground/85 uppercase tracking-widest text-xs font-bold hover:border-primary hover:text-primary transition-all">
-                            Design Your Ring
-                        </Link>
-                    </motion.div>
-                    <motion.p
-                        initial={{ opacity: 0, y: 18 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.68 }}
-                        className="text-primary text-[11px] md:text-xs uppercase tracking-[0.16em] font-semibold"
-                    >
-                        Up to 40% more affordable than mined diamonds
-                    </motion.p>
-                    <motion.p
-                        initial={{ opacity: 0, y: 18 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ duration: 0.8, delay: 0.72 }}
-                        className="text-foreground/62 text-[11px] md:text-xs uppercase tracking-[0.12em]"
-                    >
-                        Identical to mined diamonds. Better for the planet.
-                    </motion.p>
+                    {hero?.subtitleLabel && (
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8 }}
+                            className="site-subheading"
+                        >
+                            {hero.subtitleLabel}
+                        </motion.p>
+                    )}
+                    {(hero?.title || hero?.subtitle) && (
+                        <motion.h1
+                            initial={{ opacity: 0, y: 30 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.2 }}
+                            className="site-heading text-foreground leading-[1.14]"
+                        >
+                            {hero?.title ? String(hero.title).replace(/\.$/, "") : ''} {hero?.title && hero?.subtitle ? <br /> : null}
+                            {hero?.subtitle && <span className="gold-text italic inline-block">{String(hero.subtitle).replace(/\.$/, "")}</span>}
+                        </motion.h1>
+                    )}
+                    {hero?.description && (
+                        <motion.p
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.4 }}
+                            className="text-foreground/82 text-base md:text-lg font-light max-w-2xl mx-auto"
+                        >
+                            {hero.description}
+                        </motion.p>
+                    )}
+                    {heroTrustBadges.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.45 }}
+                            className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-[10px] uppercase tracking-[0.2em] font-bold max-w-3xl mx-auto"
+                        >
+                            {heroTrustBadges.map((badge, index) => {
+                                const BadgeIcon = getBadgeIcon(badge)
+                                return (
+                                    <span key={`${badge}-${index}`} className="h-[64px] sm:h-auto border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5">
+                                        <BadgeIcon className="h-3.5 w-3.5 text-primary" />
+                                        {badge}
+                                    </span>
+                                )
+                            })}
+                        </motion.div>
+                    )}
+                    {(hero?.ctaText && hero?.ctaLink) || (hero?.secondaryCtaText && hero?.secondaryCtaLink) ? (
+                        <motion.div
+                            initial={{ opacity: 0, scale: 0.9 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            transition={{ duration: 0.8, delay: 0.6 }}
+                            className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-2"
+                        >
+                            {hero?.ctaText && hero?.ctaLink && (
+                                <Link href={hero.ctaLink} className="px-14 py-[1.15rem] bg-primary text-foreground uppercase tracking-widest text-sm font-extrabold hover:bg-primary/90 transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50">
+                                    {hero.ctaText}
+                                </Link>
+                            )}
+                            {hero?.secondaryCtaText && hero?.secondaryCtaLink && (
+                                <Link href={hero.secondaryCtaLink} className="px-10 py-4 border border-foreground/55 text-foreground/85 uppercase tracking-widest text-xs font-bold hover:border-primary hover:text-primary transition-all">
+                                    {hero.secondaryCtaText}
+                                </Link>
+                            )}
+                        </motion.div>
+                    ) : null}
+                    {hero?.valueProposition && (
+                        <motion.p
+                            initial={{ opacity: 0, y: 18 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.68 }}
+                            className="text-primary text-[11px] md:text-xs uppercase tracking-[0.16em] font-semibold"
+                        >
+                            {hero.valueProposition}
+                        </motion.p>
+                    )}
+                    {hero?.valueFootnote && (
+                        <motion.p
+                            initial={{ opacity: 0, y: 18 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.8, delay: 0.72 }}
+                            className="text-foreground/62 text-[11px] md:text-xs uppercase tracking-[0.12em]"
+                        >
+                            {hero.valueFootnote}
+                        </motion.p>
+                    )}
                 </div>
             </section>
 
@@ -317,40 +346,55 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
             </section>
 
             {/* Emotional Story Section */}
-            <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
-                    <div className="space-y-6 lg:col-span-4">
-                        <div className="space-y-3">
-                            <p className="site-subheading text-left">Our Story</p>
-                            <div className="h-px w-24 bg-gradient-to-r from-primary/80 to-transparent" />
+            {displayHomeStory && (
+                <section className="py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center">
+                        <div className="space-y-6 lg:col-span-4">
+                            <div className="space-y-3">
+                                {displayHomeStory.sectionLabel && <p className="site-subheading text-left">{displayHomeStory.sectionLabel}</p>}
+                                <div className="h-px w-24 bg-gradient-to-r from-primary/80 to-transparent" />
+                            </div>
+                            <h3 className="site-heading text-left">
+                                {displayHomeStory.titlePrefix} {displayHomeStory.titleHighlight && <span className="italic">{displayHomeStory.titleHighlight}</span>}
+                            </h3>
+                            {displayHomeStory.description && (
+                                <p className="text-foreground/70 leading-relaxed font-serif italic">
+                                    {displayHomeStory.description}
+                                </p>
+                            )}
+                            {displayStoryHighlights.length > 0 && (
+                                <div className="grid grid-cols-2 gap-3 text-xs uppercase tracking-widest font-bold">
+                                    {displayStoryHighlights.map((label: string, index: number) => {
+                                        const Icon = storyHighlightIcons[index % storyHighlightIcons.length]
+                                        return (
+                                        <span key={`${label}-${index}`} className="group inline-flex items-center gap-2 border border-primary/20 px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_14px_28px_-20px_rgba(212,175,55,0.8)]">
+                                            <Icon className="h-3.5 w-3.5 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" />
+                                            {label}
+                                        </span>
+                                        )
+                                    })}
+                                </div>
+                            )}
+                            {displayHomeStory.ctaText && displayHomeStory.ctaLink && (
+                                <Link href={displayHomeStory.ctaLink} className="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-primary hover:text-primary/80">
+                                    {displayHomeStory.ctaText} <ArrowRight className="h-4 w-4" />
+                                </Link>
+                            )}
                         </div>
-                        <h3 className="site-heading text-left">Where Jaipur Craft Meets <span className="italic">Modern Diamonds</span></h3>
-                        <p className="text-foreground/70 leading-relaxed font-serif italic">
-                            From weddings and anniversaries to meaningful gifts, every Radha Govind creation is crafted to carry emotion, memory, and tradition across generations.
-                        </p>
-                        <div className="grid grid-cols-2 gap-3 text-xs uppercase tracking-widest font-bold">
-                            {storyHighlights.map((item) => (
-                                <span key={item.label} className="group inline-flex items-center gap-2 border border-primary/20 px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_14px_28px_-20px_rgba(212,175,55,0.8)]">
-                                    <item.icon className="h-3.5 w-3.5 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" />
-                                    {item.label}
-                                </span>
-                            ))}
-                        </div>
-                        <Link href="/about" className="inline-flex items-center gap-2 text-xs uppercase tracking-widest font-bold text-primary hover:text-primary/80">
-                            Discover Our Story <ArrowRight className="h-4 w-4" />
-                        </Link>
+                        {displayHomeStory.image && (
+                            <div className="aspect-[5/3] lg:col-span-8 overflow-hidden border border-primary/20 group relative bg-gradient-to-br from-background via-secondary/60 to-background shadow-[0_30px_60px_-40px_rgba(212,175,55,0.55)]">
+                                <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(255,255,255,0.18),transparent_35%),radial-gradient(circle_at_30%_80%,rgba(212,175,55,0.18),transparent_42%)]" />
+                                <img
+                                    src={displayHomeStory.image}
+                                    alt={displayHomeStory.imageAlt || 'Story image'}
+                                    className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.04]"
+                                />
+                                <div className="pointer-events-none absolute bottom-6 left-1/2 h-10 w-44 -translate-x-1/2 rounded-full bg-primary/25 blur-2xl" />
+                            </div>
+                        )}
                     </div>
-                    <div className="aspect-[5/3] lg:col-span-8 overflow-hidden border border-primary/20 group relative bg-gradient-to-br from-background via-secondary/60 to-background shadow-[0_30px_60px_-40px_rgba(212,175,55,0.55)]">
-                        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_70%_20%,rgba(255,255,255,0.18),transparent_35%),radial-gradient(circle_at_30%_80%,rgba(212,175,55,0.18),transparent_42%)]" />
-                        <img
-                            src="https://images.unsplash.com/photo-1543294001-f7cd5d7fb516?auto=format&fit=crop&q=80&w=1400"
-                            alt="Jewellery celebration"
-                            className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-[1.04]"
-                        />
-                        <div className="pointer-events-none absolute bottom-6 left-1/2 h-10 w-44 -translate-x-1/2 rounded-full bg-primary/25 blur-2xl" />
-                    </div>
-                </div>
-            </section>
+                </section>
+            )}
 
             {/* Testimonials Section */}
             <div id="testimonials">

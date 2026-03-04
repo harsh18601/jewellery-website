@@ -4,33 +4,33 @@ import HomeContent from '@/components/home/HomeContent'
 
 export default async function Home() {
   // Fetch CMS data in parallel for faster first render.
-  const [heroEntries, categoryEntries, heritageEntries, blogEntries, testimonialEntries, productEntries] = await Promise.all([
+  const [heroEntries, categoryEntries, heritageEntries, blogEntries, testimonialEntries, productEntries, homeStoryEntries] = await Promise.all([
     fetchEntries('hero'),
     fetchEntries('category'),
     fetchEntries('heritageFeature'),
     fetchEntries('blogPost'),
     fetchEntries('testimonial'),
     fetchEntries('product'),
+    fetchEntries('homeStory'),
   ])
 
   const rawHero = heroEntries?.[0]?.fields as any
-  const hero = rawHero || {
-    title: "Real Diamonds",
-    subtitle: "Ethically Created",
-    subtitleLabel: "Lab-Grown Diamond Specialists",
-    description: "Modern diamonds with traditional craftsmanship from Jaipur.",
-    backgroundImage: { fields: { file: { url: "//images.unsplash.com/photo-1617038220319-276d3cfab638?auto=format&fit=crop&q=80&w=2070" } } },
-    ctaText: "Shop Lab Diamonds",
-    ctaLink: "/shop"
-  }
-
-  if (hero.title === "Pure Brilliance,") hero.title = "Real Diamonds."
-  if (hero.subtitle === "Ethically Crafted") hero.subtitle = "Ethically Created."
-  if (hero.subtitleLabel === "Jaipur's Heritage & Innovation") hero.subtitleLabel = "Lab-Grown Diamond Specialists"
-  if (hero.description?.includes("Discover our exclusive collection")) {
-    hero.description = "Modern diamonds with traditional craftsmanship from Jaipur."
-  }
-  if (hero.ctaText === "Explore Collection") hero.ctaText = "Shop Lab Diamonds"
+  const hero = rawHero ? {
+    title: rawHero.title || '',
+    subtitle: rawHero.subtitle || '',
+    subtitleLabel: rawHero.subtitleLabel || '',
+    description: rawHero.description || '',
+    backgroundImage: rawHero.backgroundImage || null,
+    ctaText: rawHero.ctaText || '',
+    ctaLink: rawHero.ctaLink || '',
+    secondaryCtaText: rawHero.secondaryCtaText || rawHero.secondaryButtonText || '',
+    secondaryCtaLink: rawHero.secondaryCtaLink || rawHero.secondaryButtonLink || '',
+    valueProposition: rawHero.valueProposition || rawHero.highlightLine || '',
+    valueFootnote: rawHero.valueFootnote || rawHero.supportingLine || '',
+    trustBadges: Array.isArray(rawHero.trustBadges)
+      ? rawHero.trustBadges
+      : (Array.isArray(rawHero.trustHighlights) ? rawHero.trustHighlights : []),
+  } : null
 
   const categories = categoryEntries?.map((cat: any) => ({
     title: cat.fields.name,
@@ -71,6 +71,23 @@ export default async function Home() {
       : null
   })) || []
 
+  const rawHomeStory = homeStoryEntries?.[0]?.fields as any
+  const homeStory = rawHomeStory ? {
+    sectionLabel: rawHomeStory.sectionLabel || rawHomeStory.label || '',
+    titlePrefix: rawHomeStory.titlePrefix || rawHomeStory.heading || '',
+    titleHighlight: rawHomeStory.titleHighlight || rawHomeStory.emphasis || '',
+    description: rawHomeStory.description || '',
+    highlights: Array.isArray(rawHomeStory.highlights)
+      ? rawHomeStory.highlights.map((item: any) => String(item)).filter(Boolean)
+      : (Array.isArray(rawHomeStory.storyHighlights) ? rawHomeStory.storyHighlights.map((item: any) => String(item)).filter(Boolean) : []),
+    image: rawHomeStory.storyImage?.fields?.file?.url
+      ? `https:${rawHomeStory.storyImage.fields.file.url}`
+      : (rawHomeStory.image?.fields?.file?.url ? `https:${rawHomeStory.image.fields.file.url}` : ''),
+    imageAlt: rawHomeStory.imageAlt || '',
+    ctaText: rawHomeStory.ctaText || '',
+    ctaLink: rawHomeStory.ctaLink || '',
+  } : null
+
   const featuredProducts = (productEntries || []).map((entry: any) => {
     const fields = entry?.fields || {}
     const images = Array.isArray(fields.images) ? fields.images : []
@@ -102,6 +119,7 @@ export default async function Home() {
       featuredProducts={featuredProducts}
       blogs={blogs}
       testimonials={testimonials}
+      homeStory={homeStory}
     />
   )
 }
