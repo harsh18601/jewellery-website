@@ -128,10 +128,10 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                         transition={{ duration: 0.8, delay: 0.45 }}
                         className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-[10px] uppercase tracking-[0.2em] font-bold max-w-3xl mx-auto"
                     >
-                        <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Gem className="h-3.5 w-3.5 text-primary" /> Certified Diamonds</span>
-                        <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> Conflict-Free</span>
-                        <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Truck className="h-3.5 w-3.5 text-primary" /> Secure Shipping</span>
-                        <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Star className="h-3.5 w-3.5 text-primary" /> Custom Designs</span>
+                        <span className="h-[64px] sm:h-auto border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Gem className="h-3.5 w-3.5 text-primary" /> Certified Diamonds</span>
+                        <span className="h-[64px] sm:h-auto border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> Conflict-Free</span>
+                        <span className="h-[64px] sm:h-auto border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Truck className="h-3.5 w-3.5 text-primary" /> Secure Shipping</span>
+                        <span className="h-[64px] sm:h-auto border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Star className="h-3.5 w-3.5 text-primary" /> Custom Designs</span>
                     </motion.div>
                     <motion.div
                         initial={{ opacity: 0, scale: 0.9 }}
