@@ -93,10 +93,10 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
                                 <button
                                     type="button"
                                     onClick={() => fileRef.current?.click()}
-                                    className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-primary text-black flex items-center justify-center hover:bg-primary/90 transition-colors"
+                                    className="absolute -bottom-1 -right-1 h-6 w-6 rounded-full bg-primary text-black flex items-center justify-center hover:bg-primary/90 hover:scale-110 transition-all"
                                     title="Upload profile photo"
                                 >
-                                    <Camera className="h-3.5 w-3.5" />
+                                    <Camera className="h-4 w-4" />
                                 </button>
                                 <input
                                     ref={fileRef}

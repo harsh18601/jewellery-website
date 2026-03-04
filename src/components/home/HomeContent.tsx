@@ -96,7 +96,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                 <div className="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(212,175,55,0.14),rgba(5,10,22,0.86)_60%)]" />
                 <div className="absolute z-0 left-1/2 top-[48%] h-72 w-72 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/12 blur-[95px]" />
 
-                <div className="relative z-10 text-center lg:text-left space-y-10 px-4 max-w-4xl">
+                <div className="relative z-10 text-center space-y-10 px-4 max-w-4xl">
                     <motion.p
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
@@ -118,7 +118,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.4 }}
-                        className="text-foreground/82 text-base md:text-lg font-light max-w-2xl mx-auto lg:mx-0"
+                        className="text-foreground/82 text-base md:text-lg font-light max-w-2xl mx-auto"
                     >
                         {hero.description}
                     </motion.p>
@@ -126,7 +126,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.8, delay: 0.45 }}
-                        className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-[10px] uppercase tracking-[0.2em] font-bold max-w-3xl mx-auto lg:mx-0"
+                        className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-[10px] uppercase tracking-[0.2em] font-bold max-w-3xl mx-auto"
                     >
                         <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><Gem className="h-3.5 w-3.5 text-primary" /> Certified Diamonds</span>
                         <span className="border border-primary/20 bg-background/45 px-4 py-2.5 inline-flex items-center justify-center gap-1.5"><ShieldCheck className="h-3.5 w-3.5 text-primary" /> Conflict-Free</span>
@@ -137,7 +137,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                         initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ duration: 0.8, delay: 0.6 }}
-                        className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-5 pt-2"
+                        className="flex flex-col sm:flex-row items-center justify-center gap-5 pt-2"
                     >
                         <Link href={hero.ctaLink || "/shop"} className="px-14 py-[1.15rem] bg-primary text-foreground uppercase tracking-widest text-sm font-extrabold hover:bg-primary/90 transition-all shadow-lg shadow-primary/30 hover:shadow-primary/50">
                             {hero.ctaText || "Shop Lab Diamonds"}

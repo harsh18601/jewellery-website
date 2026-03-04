@@ -4,33 +4,9 @@ import React, { useEffect, useState } from 'react'
 import { motion } from 'framer-motion'
 import { ChevronLeft, ChevronRight, Quote, Star } from 'lucide-react'
 
-const defaultTestimonials = [
-    {
-        name: "Ananya Sharma",
-        role: "Verified Buyer",
-        content: "The custom ring they designed for my anniversary is absolutely stunning. The craftsmanship is world-class, and the lab-grown diamonds are exceptionally brilliant.",
-        rating: 5,
-        image: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&q=80&w=220"
-    },
-    {
-        name: "Vikram Mehta",
-        role: "Verified Buyer",
-        content: "Found the perfect pair of emerald earrings here. Their attention to detail and traditional Jaipur heritage really shows in every piece.",
-        rating: 5,
-        image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=220"
-    },
-    {
-        name: "Priya Patel",
-        role: "Bespoke Client",
-        content: "Exceptional service from the concierge team. They helped me through the entire design process for my bridal set. Highly recommended!",
-        rating: 5,
-        image: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=220"
-    }
-]
-
 const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
-    const displayTestimonials = testimonials && testimonials.length > 0 ? testimonials : defaultTestimonials
-    const [currentPage, setCurrentPage] = useState(0)
+    const displayTestimonials = Array.isArray(testimonials) ? testimonials : []
+    const [activeIndex, setActiveIndex] = useState(0)
     const [slidesPerView, setSlidesPerView] = useState(3)
 
     useEffect(() => {
@@ -52,18 +28,27 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
     }, [])
 
     const total = displayTestimonials.length
-    const pageCount = total > 0 ? Math.ceil(total / slidesPerView) : 0
-    const safePage = pageCount > 0 ? ((currentPage % pageCount) + pageCount) % pageCount : 0
-    const startIndex = safePage * slidesPerView
-    const visibleTestimonials = displayTestimonials.slice(startIndex, startIndex + slidesPerView)
-    const visibleCount = visibleTestimonials.length
+    if (total === 0) return null
+    const visibleCount = Math.min(slidesPerView, total)
+    const safeActiveIndex = ((activeIndex % total) + total) % total
+    const windowStart =
+        slidesPerView >= 3
+            ? safeActiveIndex - 1
+            : safeActiveIndex
+    const visibleTestimonials = Array.from({ length: visibleCount }).map((_, offset) => {
+        const absoluteIndex = ((windowStart + offset) % total + total) % total
+        return {
+            testimonial: displayTestimonials[absoluteIndex],
+            absoluteIndex,
+        }
+    })
 
     const handlePrev = () => {
-        setCurrentPage((prev) => prev - 1)
+        setActiveIndex((prev) => prev - 1)
     }
 
     const handleNext = () => {
-        setCurrentPage((prev) => prev + 1)
+        setActiveIndex((prev) => prev + 1)
     }
 
     return (
@@ -79,14 +64,14 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
 
                 <div className="relative">
                     <motion.div
-                        key={`${safePage}-${slidesPerView}`}
+                        key={`${safeActiveIndex}-${slidesPerView}`}
                         initial={{ opacity: 0, y: 12 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ duration: 0.25 }}
                         className={`grid gap-8 lg:gap-12 ${visibleCount === 1 ? 'grid-cols-1' : visibleCount === 2 ? 'grid-cols-1 md:grid-cols-2' : 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3'}`}
                     >
-                        {visibleTestimonials.map((testimonial: any, i: number) => {
-                            const isCenterFeatured = slidesPerView >= 3 && visibleCount >= 3 && i === 1
+                        {visibleTestimonials.map(({ testimonial, absoluteIndex }: any) => {
+                            const isCenterFeatured = absoluteIndex === safeActiveIndex
                             const testimonialImage =
                                 testimonial?.image ||
                                 testimonial?.photo ||
@@ -101,7 +86,7 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
 
                             return (
                             <motion.div
-                                key={`${testimonial.name}-${safePage}-${i}`}
+                                key={`${testimonial.name}-${absoluteIndex}-${safeActiveIndex}`}
                                 className={`bg-muted/5 p-10 border border-primary/10 relative group hover:border-primary/35 transition-all duration-500 h-full min-h-[380px] flex flex-col ${isCenterFeatured ? 'lg:scale-[1.04] border-primary/35 shadow-[0_24px_52px_-34px_rgba(212,175,55,0.65)]' : ''}`}
                             >
                                 <Quote className="h-8 w-8 text-primary/20 absolute top-8 right-8 group-hover:text-primary/40 transition-colors" />
@@ -138,7 +123,7 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
                     </motion.div>
                 </div>
 
-                {pageCount > 1 && (
+                {total > 1 && (
                     <div className="mt-10 flex items-center justify-center gap-3">
                         <button
                             onClick={handlePrev}
@@ -148,12 +133,12 @@ const TestimonialsSection = ({ testimonials }: { testimonials: any[] }) => {
                         >
                             <ChevronLeft className="h-4 w-4" />
                         </button>
-                        {Array.from({ length: pageCount }).map((_, i: number) => (
+                        {Array.from({ length: total }).map((_, i: number) => (
                             <button
                                 key={`dot-${i}`}
-                                onClick={() => setCurrentPage(i)}
-                                aria-label={`Go to testimonial page ${i + 1}`}
-                                className={`h-2.5 w-2.5 rounded-full transition-all ${safePage === i ? 'bg-primary scale-110' : 'bg-primary/35 hover:bg-primary/60'}`}
+                                onClick={() => setActiveIndex(i)}
+                                aria-label={`Go to testimonial ${i + 1}`}
+                                className={`h-2.5 w-2.5 rounded-full transition-all ${safeActiveIndex === i ? 'bg-primary scale-110' : 'bg-primary/35 hover:bg-primary/60'}`}
                             />
                         ))}
                         <button

@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ShoppingBag, Trash2, ArrowRight, X, ArrowLeft, CheckCircle2, CreditCard, Wallet, Landmark, ShieldCheck } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -9,13 +9,12 @@ import { useSession } from 'next-auth/react'
 import { createOrder } from '@/actions/orderActions'
 import { useCurrency } from '@/components/providers/CurrencyContext'
 import { AnimatePresence, motion } from 'framer-motion'
-import { useEffect } from 'react'
 
 const CartPage = () => {
     const { data: session } = useSession()
     const router = useRouter()
     const [isCheckoutLoading, setIsCheckoutLoading] = useState(false)
-    const { cartItems, removeFromCart, updateQuantity, clearCart } = useCart()
+    const { cartItems, addToCart, removeFromCart, updateQuantity, clearCart } = useCart()
     const { formatPrice } = useCurrency()
     const [addresses, setAddresses] = useState<any[]>([])
     const [addressModalOpen, setAddressModalOpen] = useState(false)
@@ -31,6 +30,19 @@ const CartPage = () => {
         message: '',
         isSuccess: true,
     })
+    const [removeModal, setRemoveModal] = useState<{ open: boolean; id: string; title: string }>({
+        open: false,
+        id: '',
+        title: '',
+    })
+    const [removeToast, setRemoveToast] = useState<{
+        open: boolean
+        item: any | null
+    }>({
+        open: false,
+        item: null,
+    })
+    const undoTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
     const subtotal = cartItems.reduce((acc, item) => acc + (item.price * item.quantity), 0)
     const savingsTotal = cartItems.reduce((acc, item: any) => {
@@ -219,10 +231,42 @@ const CartPage = () => {
         await placeOrder(latestAddresses[0])
     }
 
+    const queueRemovedToast = (itemId: string) => {
+        const index = cartItems.findIndex((entry) => String(entry.id) === String(itemId))
+        if (index < 0) return
+        const removedItem = cartItems[index]
+        removeFromCart(itemId)
+        if (undoTimerRef.current) clearTimeout(undoTimerRef.current)
+        setRemoveToast({
+            open: true,
+            item: removedItem,
+        })
+        undoTimerRef.current = setTimeout(() => {
+            setRemoveToast({ open: false, item: null })
+            undoTimerRef.current = null
+        }, 5500)
+    }
+
+    const handleUndoRemove = () => {
+        if (!removeToast.item) return
+        if (undoTimerRef.current) {
+            clearTimeout(undoTimerRef.current)
+            undoTimerRef.current = null
+        }
+        addToCart({ ...removeToast.item })
+        setRemoveToast({ open: false, item: null })
+    }
+
+    useEffect(() => {
+        return () => {
+            if (undoTimerRef.current) clearTimeout(undoTimerRef.current)
+        }
+    }, [])
+
     return (
         <div className="max-w-7xl mx-auto px-4 py-16 pb-28 sm:py-24 min-h-screen">
-            <div className="flex flex-col md:flex-row justify-between items-start gap-10 md:gap-16">
-                <div className="flex-grow space-y-10 sm:space-y-12 w-full">
+            <div className={`flex flex-col ${cartItems.length > 0 ? 'md:flex-row justify-between items-start gap-10 md:gap-16' : ''}`}>
+                <div className={`flex-grow space-y-10 sm:space-y-12 w-full ${cartItems.length === 0 ? 'max-w-4xl mx-auto' : ''}`}>
                     <div className="space-y-4 text-center flex flex-col items-center">
                         <Link
                             href="/shop"
@@ -273,11 +317,11 @@ const CartPage = () => {
                                         </div>
 
                                         <div className="flex justify-between items-center pt-2 sm:pt-4">
-                                            <div className="flex items-center space-x-5 border border-primary/20 px-5 py-2.5">
+                                            <div className="flex items-center gap-3 sm:gap-4 border border-primary/20 px-4 sm:px-5 py-2.5">
                                                 <button
                                                     onClick={() => {
                                                         if (item.quantity <= 1) {
-                                                            removeFromCart(item.id)
+                                                            setRemoveModal({ open: true, id: String(item.id), title: item.title })
                                                             return
                                                         }
                                                         updateQuantity(item.id, -1)
@@ -293,38 +337,74 @@ const CartPage = () => {
                                                 >
                                                     +
                                                 </button>
+                                                <span className="h-4 w-px bg-primary/20" />
+                                                <button
+                                                    type="button"
+                                                    onClick={() => setRemoveModal({ open: true, id: String(item.id), title: item.title })}
+                                                    className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest font-bold text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
+                                                >
+                                                    <Trash2 className="h-3.5 w-3.5" />
+                                                    Remove
+                                                </button>
                                             </div>
-
-                                            <button
-                                                onClick={() => {
-                                                    if (window.confirm('Remove this item from your bag?')) {
-                                                        removeFromCart(item.id)
-                                                    }
-                                                }}
-                                                className="text-muted-foreground hover:text-destructive transition-colors cursor-pointer"
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </button>
                                         </div>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     ) : (
-                        <div className="text-center py-24 bg-muted/5 border border-dashed border-primary/20">
-                            <ShoppingBag className="h-12 w-12 text-primary/20 mx-auto mb-4" />
-                            <p className="font-serif italic text-muted-foreground mb-8">Your shopping bag is as empty as a clear gemstone.</p>
+                        <div className="text-center py-20 sm:py-28 px-6 bg-gradient-to-b from-muted/10 to-background border border-dashed border-primary/25 flex flex-col items-center">
+                            <div className="relative mx-auto mb-8 w-fit">
+                                <div className="absolute -inset-5 rounded-full bg-primary/10 blur-2xl" />
+                                <div className="relative h-20 w-20 rounded-full border border-primary/30 bg-background/80 flex items-center justify-center">
+                                    <ShoppingBag className="h-10 w-10 text-primary/60" />
+                                </div>
+                            </div>
+                            <h2 className="w-full text-center text-2xl sm:text-3xl font-bold uppercase tracking-wide mb-3">Your Bag Is Empty</h2>
+                            <p className="max-w-2xl mx-auto text-sm text-muted-foreground font-serif italic mb-10">
+                                Browse our latest jewellery collection and find something beautiful.
+                            </p>
                             <Link
                                 href="/shop"
-                                className="inline-block px-10 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 hover:scale-105 hover:shadow-xl hover:shadow-primary/20 transition-all duration-300 transform"
+                                className="inline-block px-12 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-extrabold hover:bg-primary/90 hover:scale-[1.04] hover:shadow-2xl hover:shadow-primary/30 transition-all duration-300 transform"
                             >
                                 Shop Our Collection
                             </Link>
+
+                            <div className="mt-10 space-y-4">
+                                <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">Popular Categories</p>
+                                <div className="flex flex-wrap justify-center gap-2">
+                                    {[
+                                        ['Rings', '/shop?cat=rings'],
+                                        ['Earrings', '/shop?cat=earrings'],
+                                        ['Necklaces', '/shop?cat=necklaces'],
+                                        ['Bracelets', '/shop?cat=bracelets'],
+                                    ].map(([label, href]) => (
+                                        <Link
+                                            key={label}
+                                            href={href}
+                                            className="px-4 py-2 text-[10px] uppercase tracking-widest font-bold border border-primary/30 hover:border-primary/70 hover:bg-primary/10 transition-all"
+                                        >
+                                            {label}
+                                        </Link>
+                                    ))}
+                                </div>
+                            </div>
+
+                            <div className="mt-12 border border-primary/15 bg-muted/5 p-5 sm:p-6 text-left">
+                                <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground mb-4 text-center">You May Like</p>
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[10px] uppercase tracking-widest font-bold">
+                                    <Link href="/shop?cat=necklaces" className="border border-primary/20 px-4 py-3 hover:border-primary/55 hover:bg-primary/5 transition-all">Trending Pendants</Link>
+                                    <Link href="/shop?cat=rings" className="border border-primary/20 px-4 py-3 hover:border-primary/55 hover:bg-primary/5 transition-all">Best Seller Rings</Link>
+                                    <Link href="/shop?cat=bracelets" className="border border-primary/20 px-4 py-3 hover:border-primary/55 hover:bg-primary/5 transition-all">Signature Bracelets</Link>
+                                    <Link href="/shop?cat=earrings" className="border border-primary/20 px-4 py-3 hover:border-primary/55 hover:bg-primary/5 transition-all">Daily Wear Earrings</Link>
+                                </div>
+                            </div>
                         </div>
                     )}
                 </div>
 
-                {session && (
+                {session && cartItems.length > 0 && (
                 <aside className="w-full md:w-96 bg-muted/5 p-6 sm:p-10 border border-primary/10 space-y-8 md:sticky md:top-32">
                     <h2 className="text-xl font-bold uppercase tracking-widest mb-8 gold-text">Summary</h2>
 
@@ -490,6 +570,71 @@ const CartPage = () => {
                     </div>
                 </div>
             )}
+
+            <AnimatePresence>
+                {removeToast.open && removeToast.item && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 12 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: 12 }}
+                        className="fixed bottom-5 right-5 z-[130] px-4 py-3 border border-primary/30 bg-background/95 backdrop-blur-md shadow-2xl flex items-center gap-4"
+                    >
+                        <p className="text-[10px] uppercase tracking-widest font-bold text-muted-foreground">
+                            Item removed from bag
+                        </p>
+                        <button
+                            type="button"
+                            onClick={handleUndoRemove}
+                            className="text-[10px] uppercase tracking-widest font-bold text-primary hover:text-primary/80 transition-colors"
+                        >
+                            Undo
+                        </button>
+                    </motion.div>
+                )}
+            </AnimatePresence>
+
+            <AnimatePresence>
+                {removeModal.open && (
+                    <motion.div
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        exit={{ opacity: 0 }}
+                        className="fixed inset-0 z-[125] bg-black/55 backdrop-blur-sm flex items-center justify-center px-4"
+                    >
+                        <motion.div
+                            initial={{ scale: 0.95, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0.95, opacity: 0 }}
+                            className="w-full max-w-lg bg-background border border-primary/20 p-8 space-y-5"
+                        >
+                            <h3 className="text-2xl font-bold text-center">Remove Item</h3>
+                            <p className="text-sm text-muted-foreground text-center">
+                                Are you sure you want to remove
+                                <span className="text-foreground font-semibold"> {removeModal.title}</span> from your bag?
+                            </p>
+                            <div className="flex items-center justify-center gap-3 pt-1">
+                                <button
+                                    type="button"
+                                    onClick={() => setRemoveModal({ open: false, id: '', title: '' })}
+                                    className="px-6 py-3 border border-primary/30 text-primary text-xs font-bold uppercase tracking-widest hover:bg-primary/10 transition-all"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        queueRemovedToast(removeModal.id)
+                                        setRemoveModal({ open: false, id: '', title: '' })
+                                    }}
+                                    className="px-6 py-3 border border-destructive/60 text-destructive text-xs font-bold uppercase tracking-widest hover:bg-destructive/10 transition-all"
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        </motion.div>
+                    </motion.div>
+                )}
+            </AnimatePresence>
 
             <AnimatePresence>
                 {checkoutModal.open && (

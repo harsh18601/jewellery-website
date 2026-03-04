@@ -8,41 +8,9 @@ import { useCart } from '@/components/providers/CartContext'
 import { useWishlist } from '@/components/providers/WishlistContext'
 import { useSession, signOut } from 'next-auth/react'
 import SearchOverlay from './SearchOverlay'
+import type { NavbarLink } from '@/lib/contentful'
 
-type NavChildLink = {
-    name: string
-    href: string
-}
-
-type NavLink = {
-    name: string
-    href: string
-    children?: NavChildLink[]
-}
-
-const navLinks: NavLink[] = [
-    { name: 'Lab Diamonds', href: '/shop?category=lab-grown-diamonds' },
-    {
-        name: 'Engagement Rings',
-        href: '/shop?category=engagement-rings',
-        children: [
-            { name: 'Solitaire', href: '/shop?category=engagement-rings&style=solitaire' },
-            { name: 'Halo', href: '/shop?category=engagement-rings&style=halo' },
-            { name: 'Vintage', href: '/shop?category=engagement-rings&style=vintage' },
-            { name: 'Hidden Halo', href: '/shop?category=engagement-rings&style=hidden-halo' },
-            { name: 'Three Stone', href: '/shop?category=engagement-rings&style=three-stone' },
-            { name: 'Custom Ring', href: '/custom' },
-        ],
-    },
-    { name: 'Earrings', href: '/shop?category=earrings' },
-    { name: 'Bracelets', href: '/shop?category=bracelets' },
-    { name: 'Custom', href: '/custom' },
-    { name: 'New Arrivals', href: '/shop?sort=newest' },
-]
-
-const mobileNavOrder = ['Lab Diamonds', 'Engagement Rings', 'Custom', 'Earrings', 'Bracelets', 'New Arrivals']
-
-const Navbar = () => {
+const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [isMounted, setIsMounted] = useState(false)
@@ -57,9 +25,6 @@ const Navbar = () => {
 
     const safeCartCount = isMounted ? cartCount : 0
     const safeWishlistCount = isMounted ? wishlistCount : 0
-    const mobileNavLinks = mobileNavOrder
-        .map((name) => navLinks.find((link) => link.name === name))
-        .filter((link): link is NavLink => Boolean(link))
 
     return (
         <>
@@ -87,39 +52,31 @@ const Navbar = () => {
 
                         <div className="hidden lg:flex items-center justify-center flex-1 px-6">
                             <div className="flex items-center gap-10 text-xs uppercase tracking-widest font-semibold">
-                                {navLinks.map((link) => {
-                                    const isLabDiamonds = link.name === 'Lab Diamonds'
-
-                                    return (
-                                        <div key={link.name} className="relative group">
-                                            <Link
-                                                href={link.href}
-                                                className={`inline-flex items-center gap-1 py-2 transition-colors ${
-                                                    isLabDiamonds
-                                                        ? 'text-primary border-b border-primary/60 hover:text-primary/90'
-                                                        : 'luxury-link'
-                                                }`}
-                                            >
-                                                {isLabDiamonds ? <Diamond className="h-3.5 w-3.5" /> : null}
-                                                {link.name}
-                                                {link.children ? <ChevronDown className="h-3.5 w-3.5" /> : null}
-                                            </Link>
-                                            {link.children ? (
-                                                <div className="pointer-events-none opacity-0 translate-y-2 group-hover:pointer-events-auto group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 absolute left-0 top-full mt-2 min-w-[220px] border border-primary/30 bg-background/95 backdrop-blur-lg shadow-xl shadow-black/30 z-50">
-                                                    {link.children.map((child) => (
-                                                        <Link
-                                                            key={child.name}
-                                                            href={child.href}
-                                                            className="block px-4 py-3 text-[11px] uppercase tracking-wider text-foreground/90 hover:bg-primary/10 hover:text-primary transition-colors"
-                                                        >
-                                                            {child.name}
-                                                        </Link>
-                                                    ))}
-                                                </div>
-                                            ) : null}
-                                        </div>
-                                    )
-                                })}
+                                {navLinks.map((link) => (
+                                    <div key={link.name} className="relative group">
+                                        <Link
+                                            href={link.href}
+                                            className="inline-flex items-center gap-1 py-2 transition-colors luxury-link"
+                                        >
+                                            {link.hasIcon ? <Diamond className="h-3.5 w-3.5" /> : null}
+                                            {link.name}
+                                            {link.children && link.children.length > 0 ? <ChevronDown className="h-3.5 w-3.5" /> : null}
+                                        </Link>
+                                        {link.children && link.children.length > 0 ? (
+                                            <div className="pointer-events-none opacity-0 translate-y-2 group-hover:pointer-events-auto group-hover:opacity-100 group-hover:translate-y-0 transition-all duration-200 absolute left-0 top-full min-w-[220px] border border-primary/30 bg-background/95 backdrop-blur-lg shadow-xl shadow-black/30 z-50">
+                                                {link.children.map((child) => (
+                                                    <Link
+                                                        key={child.name}
+                                                        href={child.href}
+                                                        className="block px-4 py-3 text-[11px] uppercase tracking-wider text-foreground/90 hover:bg-primary/10 hover:text-primary transition-colors"
+                                                    >
+                                                        {child.name}
+                                                    </Link>
+                                                ))}
+                                            </div>
+                                        ) : null}
+                                    </div>
+                                ))}
                             </div>
                         </div>
 
@@ -183,18 +140,16 @@ const Navbar = () => {
                             </button>
 
                             <div className="space-y-5">
-                                {mobileNavLinks.map((link) => (
+                                {navLinks.map((link) => (
                                     <div key={link.name} className="space-y-2">
                                         <Link
                                             href={link.href}
                                             onClick={() => setIsMobileMenuOpen(false)}
-                                            className={`block text-xl font-bold uppercase tracking-tight transition-colors ${
-                                                link.name === 'Lab Diamonds' ? 'text-primary' : 'hover:text-primary'
-                                            }`}
+                                            className="block text-xl font-bold uppercase tracking-tight transition-colors hover:text-primary"
                                         >
                                             {link.name}
                                         </Link>
-                                        {link.children ? (
+                                        {link.children && link.children.length > 0 ? (
                                             <div className="pl-4 border-l border-primary/20 space-y-2">
                                                 {link.children.map((child) => (
                                                     <Link

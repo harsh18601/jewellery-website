@@ -8,6 +8,7 @@ import AuthProvider from "@/components/providers/AuthProvider";
 import { CartProvider } from "@/components/providers/CartContext";
 import { WishlistProvider } from "@/components/providers/WishlistContext";
 import { CurrencyProvider } from "@/components/providers/CurrencyContext";
+import { fetchNavbarLinks } from "@/lib/contentful";
 
 const montserrat = Montserrat({ subsets: ["latin"], variable: "--font-montserrat", weight: ["400", "500", "600", "700"] });
 const cinzel = Cinzel({ subsets: ["latin"], variable: "--font-cinzel", weight: ["400", "500", "600", "700", "800"] });
@@ -22,11 +23,13 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const navLinks = await fetchNavbarLinks();
+
   return (
     <html lang="en">
       <body className={`${montserrat.variable} ${cinzel.variable} font-sans bg-background text-foreground antialiased`}>
@@ -34,7 +37,7 @@ export default function RootLayout({
           <CartProvider>
             <WishlistProvider>
               <CurrencyProvider>
-                <Navbar />
+                <Navbar navLinks={navLinks} />
                 <main className="min-h-screen pt-20">
                   {children}
                 </main>

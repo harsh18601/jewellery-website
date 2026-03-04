@@ -65,7 +65,10 @@ export default async function Home() {
     name: entry.fields.name,
     role: entry.fields.role,
     content: entry.fields.content,
-    rating: entry.fields.rating || 5
+    rating: entry.fields.rating || 5,
+    image: entry.fields.image?.fields?.file?.url
+      ? `https:${entry.fields.image.fields.file.url}`
+      : null
   })) || []
 
   const featuredProducts = (productEntries || []).map((entry: any) => {

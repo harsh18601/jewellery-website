@@ -20,11 +20,16 @@ export interface IUser extends Document {
     cart: any[];
     addresses: {
         id?: number;
+        label?: 'Home' | 'Work' | 'Other';
         name?: string;
-        street: string;
+        house?: string;
+        area?: string;
+        landmark?: string;
+        street?: string;
         city: string;
         state: string;
-        zip: string;
+        zip?: string;
+        pincode?: string;
         phone?: string;
         isDefault?: boolean;
         country: string;
@@ -52,11 +57,16 @@ const UserSchema: Schema = new Schema({
     cart: { type: [Object], default: [] },
     addresses: [{
         id: Number,
+        label: { type: String, enum: ['Home', 'Work', 'Other'], default: 'Home' },
         name: String,
+        house: String,
+        area: String,
+        landmark: String,
         street: String,
         city: String,
         state: String,
         zip: String,
+        pincode: String,
         phone: String,
         isDefault: Boolean,
         country: String,

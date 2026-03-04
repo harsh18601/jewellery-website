@@ -102,49 +102,77 @@ const ConciergeButton = () => {
                         initial={{ opacity: 0, scale: 0.9, y: 20 }}
                         animate={{ opacity: 1, scale: 1, y: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 20 }}
-                        className="absolute bottom-16 sm:bottom-20 right-0 w-[min(18rem,calc(100vw-2rem))] sm:w-72 bg-background border border-primary/20 shadow-2xl overflow-hidden"
+                        className="absolute bottom-16 sm:bottom-20 right-0 w-[min(19rem,calc(100vw-2rem))] sm:w-80 bg-background/80 backdrop-blur-xl border border-primary/20 shadow-[0_20px_60px_rgba(0,0,0,0.6)] overflow-hidden rounded-sm"
+
                     >
-                        <div className="bg-secondary p-6 text-center space-y-2">
-                            <Sparkles className="h-5 w-5 text-primary mx-auto mb-2" />
-                            <h3 className="w-full text-center text-sm font-bold uppercase tracking-widest text-foreground">Boutique Concierge</h3>
-                            <p className="text-[10px] text-foreground/60 uppercase tracking-widest">How may we assist you today?</p>
+                        <div className="relative bg-gradient-to-b from-[#1b1f26] to-[#0f141a] p-5 border-b border-primary/10">
+                            <button
+                                onClick={() => setIsOpen(false)}
+                                className="absolute top-4 right-4 text-foreground/40 hover:text-primary transition-all hover:scale-110"
+                            >
+                                <X className="h-4 w-4" />
+                            </button>
+                            <div className="flex items-center gap-3">
+                                <div className="p-2 bg-primary/10 rounded-full border border-primary/20">
+                                    <Sparkles className="h-4 w-4 text-primary" />
+                                </div>
+                                <div>
+                                    <h3 className="text-xs font-bold uppercase tracking-[0.2em] text-foreground">Concierge</h3>
+                                    <p className="text-[9px] text-foreground/40 uppercase tracking-widest mt-0.5">Bespoke assistance</p>
+                                </div>
+                            </div>
                         </div>
 
-                        <div className="p-4 space-y-2">
-                            <a
-                                href="tell:+918696914998"
-                                className="flex items-center space-x-4 p-4 hover:bg-muted/10 transition-colors group"
-                            >
-                                <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
-                                    <Phone className="h-4 w-4 text-primary" />
-                                </div>
-                                <span className="text-xs font-bold uppercase tracking-widest">Call Concierge</span>
-                            </a>
-                            <a
-                                href="mailto:info@radhagovind.com"
-                                className="flex items-center space-x-4 p-4 hover:bg-muted/10 transition-colors group"
-                            >
-                                <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
-                                    <Mail className="h-4 w-4 text-primary" />
-                                </div>
-                                <span className="text-xs font-bold uppercase tracking-widest">Email Inquiry</span>
-                            </a>
-                            <a
-                                href="https://instagram.com"
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="flex items-center space-x-4 p-4 hover:bg-muted/10 transition-colors group"
-                            >
-                                <div className="p-2 bg-primary/10 rounded-full group-hover:bg-primary/20 transition-colors">
-                                    <Instagram className="h-4 w-4 text-primary" />
-                                </div>
-                                <span className="text-xs font-bold uppercase tracking-widest">DM on Instagram</span>
-                            </a>
+                        <div className="p-3 space-y-1">
+                            {[
+                                {
+                                    href: "tel:+918696914998",
+                                    icon: <Phone className="h-4 w-4" />,
+                                    label: "Call Concierge",
+                                    sub: "Speak with a jewellery expert",
+                                    hoverIcon: "rotate-12"
+                                },
+                                {
+                                    href: "mailto:info@radhagovind.com",
+                                    icon: <Mail className="h-4 w-4" />,
+                                    label: "Email Inquiry",
+                                    sub: "Detailed design requests",
+                                    hoverIcon: "-translate-y-0.5"
+                                },
+                                {
+                                    href: "https://instagram.com",
+                                    icon: <Instagram className="h-4 w-4" />,
+                                    label: "DM on Instagram",
+                                    sub: "Follow our latest collections",
+                                    hoverIcon: "scale-110"
+                                }
+                            ].map((item, i) => (
+                                <a
+                                    key={i}
+                                    href={item.href}
+                                    target={item.href.startsWith('http') ? "_blank" : undefined}
+                                    rel={item.href.startsWith('http') ? "noopener noreferrer" : undefined}
+                                    className="flex items-center gap-4 p-4 hover:bg-primary/[0.03] transition-all group border-l-2 border-transparent hover:border-primary/40 rounded-r-sm"
+                                >
+                                    <div className={`p-2.5 bg-primary/10 rounded-full border border-primary/20 group-hover:bg-primary/20 transition-all group-hover:${item.hoverIcon}`}>
+                                        <span className="text-primary">{item.icon}</span>
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-[11px] font-bold uppercase tracking-[0.1em] text-foreground/90">{item.label}</span>
+                                        <span className="text-[9px] text-muted-foreground/60 uppercase tracking-wider mt-0.5">{item.sub}</span>
+                                    </div>
+                                </a>
+                            ))}
                         </div>
 
-                        <div className="bg-muted/5 p-4 text-center border-t border-primary/5">
-                            <p className="text-[9px] text-muted-foreground uppercase tracking-widest font-serif italic">
-                                Monday - Saturday | 10:00 - 19:00 IST
+                        <div className="px-6 py-4 bg-primary/[0.02] border-t border-primary/10">
+                            <div className="flex items-center justify-center gap-2 mb-1">
+                                <div className="h-[1px] w-4 bg-primary/20" />
+                                <span className="text-[8px] text-primary uppercase tracking-[0.3em] font-bold">Status: Available</span>
+                                <div className="h-[1px] w-4 bg-primary/20" />
+                            </div>
+                            <p className="text-[9px] text-center text-muted-foreground/80 uppercase tracking-[0.1em] font-medium">
+                                Mon – Sat | 10:00 – 19:00 IST
                             </p>
                         </div>
                     </motion.div>
