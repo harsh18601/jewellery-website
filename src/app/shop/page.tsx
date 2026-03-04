@@ -234,6 +234,7 @@ export default async function ShopPage({
                 stoneShape: resolveText(getFieldValue(fields, ['stoneShape'])),
                 isFeatured: Boolean(getFieldValue(fields, ['isFeatured'])),
                 ratings: Number(getFieldValue(fields, ['ratings', 'rating']) || 0),
+                reviewCount: Number(getFieldValue(fields, ['reviewCount', 'reviewsCount', 'ratingsCount']) || 0),
                 slug: resolveText(getFieldValue(fields, ['slug'])),
                 sku: resolveText(getFieldValue(fields, ['sku'])),
                 category: categoryList[0] || '',

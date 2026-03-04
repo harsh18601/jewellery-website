@@ -323,12 +323,14 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                         {diamondPreview}
                                     </p>
                                     <div className="flex items-center gap-1.5 text-primary -mt-0.5">
-                                        <div className="flex items-center">
-                                            {[...Array(5)].map((_, starIndex) => (
-                                                <Star key={starIndex} className={`h-[17px] w-[17px] ${starIndex < Math.round(rating) ? 'fill-current' : ''}`} />
-                                            ))}
-                                        </div>
-                                        <span className="text-[10px] sm:text-[11px] font-bold">{rating > 0 ? rating.toFixed(1) : '4.5'} ({reviewCount > 0 ? reviewCount : 23})</span>
+                                        <span className="text-[15px] sm:text-sm font-bold tabular-nums">
+                                            {rating > 0 ? rating.toFixed(1) : '4.5'}
+                                        </span>
+                                        <Star className="h-3.5 w-3.5 fill-current" />
+                                        <span className="text-primary/45 font-bold">|</span>
+                                        <span className="text-[10px] sm:text-[11px] font-bold text-primary/90">
+                                            {reviewCount > 0 ? reviewCount : 0}
+                                        </span>
                                     </div>
                                     <div className="space-y-1.5 pt-0.5">
                                         <div className="flex items-center gap-2">
@@ -341,7 +343,6 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                     </div>
                                     <div className="flex flex-wrap gap-1.5 text-[8px] uppercase tracking-[0.12em] font-bold">
                                         <span className="px-2 py-0.5 border border-primary/15 text-primary inline-flex items-center gap-1"><CheckCircle2 className="h-3 w-3" /> {certificationText}</span>
-                                        <span className="hidden sm:inline-flex px-2 py-0.5 border border-primary/15 text-primary">100% Authentic</span>
                                     </div>
                                     <p className="hidden sm:block mt-auto text-[10px] uppercase tracking-[0.16em] text-foreground/55">Ships in {deliveryPromise}</p>
                                     {isCustomisable && (

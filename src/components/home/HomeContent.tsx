@@ -271,7 +271,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials }
                                     initial={{ opacity: 0, y: 30 }}
                                     whileInView={{ opacity: 1, y: 0 }}
                                     transition={{ delay: i * 0.2 }}
-                                    className={`group space-y-6 ${isModernEthics ? 'lg:-mt-4 lg:scale-[1.02]' : ''}`}
+                                    className="group space-y-6"
                                 >
                                     <div className={`aspect-[3/4] overflow-hidden relative mb-8 luxury-card border transition-all duration-500 group-hover:-translate-y-1 group-hover:shadow-[0_26px_52px_-34px_rgba(212,175,55,0.7)] ${isModernEthics ? 'border-primary/45 shadow-[0_0_0_1px_rgba(212,175,55,0.35)]' : 'border-primary/12 group-hover:border-primary/35'}`}>
                                         <img
