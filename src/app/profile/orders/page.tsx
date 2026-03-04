@@ -7,6 +7,7 @@ import { useCurrency } from '@/components/providers/CurrencyContext'
 import { useRouter } from 'next/navigation'
 import { useCart } from '@/components/providers/CartContext'
 import { ChevronDown } from 'lucide-react'
+import Link from 'next/link'
 
 const OrdersPage = () => {
     const router = useRouter()
@@ -256,7 +257,7 @@ const OrdersPage = () => {
                                 </button>
                             </div>
                             <p className="text-[11px] text-muted-foreground">
-                                Need help with this order? <a href="/consultation" className="text-primary hover:underline">Contact Support</a>
+                                Need help with this order? <Link href="/consultation" className="text-primary hover:underline">Contact Support</Link>
                             </p>
 
                             {expandedTrackingIds[String(order._id)] && (

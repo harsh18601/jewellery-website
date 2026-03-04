@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import Link from 'next/link'
 import { ShoppingBag, User, Search, Menu, Diamond, X, ChevronDown, Heart } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
@@ -14,22 +14,13 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
     const [isSearchOpen, setIsSearchOpen] = useState(false)
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
     const [openMobileSection, setOpenMobileSection] = useState<string | null>(null)
-    const [isMounted, setIsMounted] = useState(false)
     const { data: session } = useSession()
 
     const { cartCount } = useCart()
     const { wishlistCount } = useWishlist()
 
-    useEffect(() => {
-        setIsMounted(true)
-    }, [])
-
-    useEffect(() => {
-        if (!isMobileMenuOpen) setOpenMobileSection(null)
-    }, [isMobileMenuOpen])
-
-    const safeCartCount = isMounted ? cartCount : 0
-    const safeWishlistCount = isMounted ? wishlistCount : 0
+    const safeCartCount = cartCount
+    const safeWishlistCount = wishlistCount
 
     return (
         <>
@@ -38,7 +29,10 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                     <div className="flex items-center justify-between h-16 sm:h-20 gap-3 sm:gap-4">
                         <div className="flex items-center gap-2 shrink-0">
                             <button
-                                onClick={() => setIsMobileMenuOpen(true)}
+                                onClick={() => {
+                                    setOpenMobileSection(null)
+                                    setIsMobileMenuOpen(true)
+                                }}
                                 className="p-2.5 lg:hidden hover:bg-primary/10 transition-colors rounded-full cursor-pointer"
                                 aria-label="Open menu"
                             >
@@ -137,7 +131,10 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                     >
                         <div className="flex flex-col h-full p-6 pt-20 space-y-6 overflow-y-auto">
                             <button
-                                onClick={() => setIsMobileMenuOpen(false)}
+                                onClick={() => {
+                                    setOpenMobileSection(null)
+                                    setIsMobileMenuOpen(false)
+                                }}
                                 className="absolute top-6 left-4 p-2 hover:bg-primary/10 rounded-full transition-colors"
                                 aria-label="Close menu"
                             >
@@ -171,7 +168,10 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                                                             <div className="pl-3 border-l border-primary/20 space-y-2 pb-2">
                                                                 <Link
                                                                     href={link.href}
-                                                                    onClick={() => setIsMobileMenuOpen(false)}
+                                                                    onClick={() => {
+                                                                        setOpenMobileSection(null)
+                                                                        setIsMobileMenuOpen(false)
+                                                                    }}
                                                                     className="block text-[11px] uppercase tracking-widest text-primary/90 hover:text-primary transition-colors"
                                                                 >
                                                                     View All
@@ -180,7 +180,10 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                                                                     <Link
                                                                         key={child.name}
                                                                         href={child.href}
-                                                                        onClick={() => setIsMobileMenuOpen(false)}
+                                                                        onClick={() => {
+                                                                            setOpenMobileSection(null)
+                                                                            setIsMobileMenuOpen(false)
+                                                                        }}
                                                                         className="block text-sm uppercase tracking-wider text-muted-foreground hover:text-primary transition-colors"
                                                                     >
                                                                         {child.name}
@@ -194,7 +197,10 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                                         ) : (
                                             <Link
                                                 href={link.href}
-                                                onClick={() => setIsMobileMenuOpen(false)}
+                                                onClick={() => {
+                                                    setOpenMobileSection(null)
+                                                    setIsMobileMenuOpen(false)
+                                                }}
                                                 className="block py-3 text-lg font-bold uppercase tracking-tight transition-colors hover:text-primary"
                                             >
                                                 {link.name}
@@ -209,7 +215,10 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                                     <div className="space-y-6">
                                         <Link
                                             href="/profile"
-                                            onClick={() => setIsMobileMenuOpen(false)}
+                                            onClick={() => {
+                                                setOpenMobileSection(null)
+                                                setIsMobileMenuOpen(false)
+                                            }}
                                             className="flex items-center space-x-4 group"
                                         >
                                             <div className="w-10 h-10 bg-primary/10 rounded-full flex items-center justify-center">
@@ -223,6 +232,7 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                                         <button
                                             onClick={() => {
                                                 signOut()
+                                                setOpenMobileSection(null)
                                                 setIsMobileMenuOpen(false)
                                             }}
                                             className="w-full py-4 border border-primary/20 text-xs font-bold uppercase tracking-widest hover:bg-primary/10 transition-all"
@@ -233,7 +243,10 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                                 ) : (
                                     <Link
                                         href="/auth/signin"
-                                        onClick={() => setIsMobileMenuOpen(false)}
+                                        onClick={() => {
+                                            setOpenMobileSection(null)
+                                            setIsMobileMenuOpen(false)
+                                        }}
                                         className="block w-full py-4 bg-primary text-foreground text-center text-xs font-bold uppercase tracking-widest hover:bg-primary/90 transition-all shadow-lg shadow-primary/20"
                                     >
                                         Sign In
