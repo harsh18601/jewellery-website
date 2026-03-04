@@ -28,6 +28,7 @@ export default async function ShopPage({
 }: {
     searchParams: {
         cat?: string | string[]
+        category?: string | string[]
         search?: string | string[]
         sort?: string | string[]
         metal?: string | string[]
@@ -39,7 +40,7 @@ export default async function ShopPage({
 }) {
     const rawParams = await searchParams
     const normalizeParam = (value?: string | string[]) => Array.isArray(value) ? value[value.length - 1] : value
-    const cat = normalizeParam(rawParams.cat)
+    const cat = normalizeParam(rawParams.cat) || normalizeParam(rawParams.category)
     const search = normalizeParam(rawParams.search)
     const sort = normalizeParam(rawParams.sort)
     const metal = normalizeParam(rawParams.metal)
@@ -405,7 +406,7 @@ export default async function ShopPage({
                             <div className="inline-flex min-w-max items-center gap-2 sm:gap-3 pr-16">
                                 <Link
                                     href={buildShopHref({ cat: '' })}
-                                    className={`min-w-[9.5rem] justify-center px-4 py-2.5 sm:min-w-0 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex ${!cat ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                                    className={`min-w-[9.5rem] justify-center px-4 py-2.5 sm:min-w-0 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex ${!cat ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'shop-category-chip-inactive border-primary/35 hover:text-primary hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                                 >
                                     All ({Object.values(categoryCounts).reduce((a, b) => a + b, 0)})
                                 </Link>
@@ -413,7 +414,7 @@ export default async function ShopPage({
                                     <Link
                                         key={option.value}
                                         href={buildShopHref({ cat: option.value })}
-                                        className={`min-w-[9.5rem] justify-center px-4 py-2.5 sm:min-w-0 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 sm:gap-2.5 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                                        className={`min-w-[9.5rem] justify-center px-4 py-2.5 sm:min-w-0 sm:px-6 sm:py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2 sm:gap-2.5 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'shop-category-chip-inactive border-primary/35 hover:text-primary hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                                     >
                                         {option.image
                                             ? <img src={option.image} alt={option.label} className="h-5 w-5 sm:h-7 sm:w-7 rounded-full object-cover border border-primary/30" />
@@ -427,7 +428,7 @@ export default async function ShopPage({
                         <div className="hidden sm:flex flex-wrap items-center gap-3">
                             <Link
                                 href={buildShopHref({ cat: '' })}
-                                className={`px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex ${!cat ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                                className={`px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex ${!cat ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'shop-category-chip-inactive border-primary/35 hover:text-primary hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                             >
                                 All ({Object.values(categoryCounts).reduce((a, b) => a + b, 0)})
                             </Link>
@@ -435,7 +436,7 @@ export default async function ShopPage({
                                 <Link
                                     key={`desktop-${option.value}`}
                                     href={buildShopHref({ cat: option.value })}
-                                    className={`px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2.5 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'border-primary/35 hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
+                                    className={`px-6 py-3 rounded-full text-xs uppercase tracking-widest font-bold border transition-all inline-flex items-center gap-2.5 ${cat === option.value ? 'bg-gradient-to-r from-primary to-primary/90 text-black border-primary shadow-[0_0_24px_rgba(201,162,39,0.45)]' : 'shop-category-chip-inactive border-primary/35 hover:text-primary hover:border-primary/70 hover:shadow-[0_0_10px_rgba(201,162,39,0.12)]'}`}
                                 >
                                     {option.image
                                         ? <img src={option.image} alt={option.label} className="h-7 w-7 rounded-full object-cover border border-primary/30" />

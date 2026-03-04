@@ -53,10 +53,10 @@ const defaultCollections = [
 const CollectionsSection = ({ collections }: { collections: any[] }) => {
     const displayCollections = collections && collections.length > 0 ? collections : defaultCollections
     return (
-        <section className="py-24 bg-secondary text-white overflow-hidden border-t border-white/5">
+        <section className="py-24 bg-secondary text-foreground overflow-hidden border-t border-white/5">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="mb-16 space-y-4 text-center flex flex-col items-center">
-                    <h2 className="site-heading text-white">Shop By Collections</h2>
+                    <h2 className="site-heading text-foreground">Shop By Collections</h2>
                     <div className="flex items-center justify-center gap-4">
                         <div className="h-[1px] w-20 bg-primary/50" />
                         <div className="text-primary">

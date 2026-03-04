@@ -34,7 +34,24 @@ export default async function RootLayout({
   ]);
 
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function () {
+                try {
+                  var saved = localStorage.getItem('theme');
+                  var theme = saved === 'light' || saved === 'dark' ? saved : 'dark';
+                  document.documentElement.setAttribute('data-theme', theme);
+                } catch (e) {
+                  document.documentElement.setAttribute('data-theme', 'dark');
+                }
+              })();
+            `,
+          }}
+        />
+      </head>
       <body className={`${montserrat.variable} ${cinzel.variable} font-sans bg-background text-foreground antialiased`}>
         <AuthProvider>
           <CartProvider>

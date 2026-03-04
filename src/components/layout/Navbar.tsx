@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { ShoppingBag, User, Search, Menu, Diamond, X, ChevronDown, Heart } from 'lucide-react'
+import { ShoppingBag, User, Search, Menu, Diamond, X, ChevronDown, Heart, Sun, Moon } from 'lucide-react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useCart } from '@/components/providers/CartContext'
 import { useWishlist } from '@/components/providers/WishlistContext'
@@ -21,6 +21,19 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
 
     const safeCartCount = cartCount
     const safeWishlistCount = wishlistCount
+
+    const toggleTheme = () => {
+        if (typeof window === 'undefined') return
+        const root = document.documentElement
+        const current = root.getAttribute('data-theme') === 'light' ? 'light' : 'dark'
+        const next = current === 'dark' ? 'light' : 'dark'
+        root.setAttribute('data-theme', next)
+        try {
+            localStorage.setItem('theme', next)
+        } catch (error) {
+            console.error('Failed to save theme preference:', error)
+        }
+    }
 
     return (
         <>
@@ -57,7 +70,6 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                                             href={link.href}
                                             className="inline-flex items-center gap-1 py-2 transition-colors luxury-link"
                                         >
-                                            {link.hasIcon ? <Diamond className="h-3.5 w-3.5" /> : null}
                                             {link.name}
                                             {link.children && link.children.length > 0 ? <ChevronDown className="h-3.5 w-3.5" /> : null}
                                         </Link>
@@ -80,6 +92,16 @@ const Navbar = ({ navLinks = [] }: { navLinks?: NavbarLink[] }) => {
                         </div>
 
                         <div className="flex items-center space-x-2 sm:space-x-3 shrink-0">
+                            <button
+                                onClick={toggleTheme}
+                                className="p-2.5 sm:p-2 hover:text-primary transition-colors cursor-pointer"
+                                aria-label="Toggle theme"
+                                title="Toggle theme"
+                            >
+                                <Moon className="theme-dark-only h-6 w-6 sm:h-5 sm:w-5" />
+                                <Sun className="theme-light-only h-6 w-6 sm:h-5 sm:w-5" />
+                            </button>
+
                             <button
                                 onClick={() => setIsSearchOpen(true)}
                                 className="p-2.5 sm:p-2 hover:text-primary transition-colors cursor-pointer"

@@ -37,10 +37,10 @@ const BlogSection = ({ blogs }: { blogs: any[] }) => {
     })
 
     return (
-        <section className="py-28 bg-secondary text-white overflow-hidden border-y border-primary/10">
+        <section className="py-28 bg-secondary text-foreground overflow-hidden border-y border-primary/10">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="text-center mb-18 space-y-4 flex flex-col items-center">
-                    <h2 className="site-heading text-white">The Radha Govind Journal</h2>
+                    <h2 className="site-heading journal-heading text-foreground">The Radha Govind Journal</h2>
                     <p className="text-foreground/75 text-sm md:text-base font-serif italic max-w-3xl">
                         Learn how to choose the perfect diamond, care for your jewellery, and make confident purchases.
                     </p>
@@ -79,7 +79,7 @@ const BlogSection = ({ blogs }: { blogs: any[] }) => {
                                         <span className="text-white/75">{getMeta(featuredPost, 0).readingTime}</span>
                                     </div>
                                 </div>
-                                <h3 className="text-2xl md:text-[1.75rem] font-bold leading-snug tracking-tight group-hover:gold-text transition-colors duration-300">
+                                <h3 className="blog-post-title text-2xl md:text-[1.75rem] font-bold leading-snug tracking-tight group-hover:gold-text transition-colors duration-300">
                                     {featuredPost.title}
                                 </h3>
                             </Link>
@@ -110,7 +110,7 @@ const BlogSection = ({ blogs }: { blogs: any[] }) => {
                                             <span className="text-white/70">{getMeta(post, i + 1).readingTime}</span>
                                         </div>
                                     </div>
-                                    <h3 className="text-lg font-bold leading-snug tracking-tight group-hover:gold-text transition-colors duration-300">
+                                    <h3 className="blog-post-title text-lg font-bold leading-snug tracking-tight group-hover:gold-text transition-colors duration-300">
                                         {post.title}
                                     </h3>
                                 </Link>

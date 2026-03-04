@@ -195,7 +195,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials, 
             </section>
 
             {/* Quick Category Navigation */}
-            <section className="py-7 border-y border-primary/25 bg-[#0b1420] shadow-[inset_0_1px_0_rgba(212,175,55,0.12)]">
+            <section className="py-7 border-y border-primary/25 bg-secondary/80 backdrop-blur-md shadow-[inset_0_1px_0_rgba(212,175,55,0.12)]">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="h-px w-full bg-gradient-to-r from-transparent via-primary/35 to-transparent mb-5" />
                     <div className="overflow-x-auto no-scrollbar">
@@ -204,7 +204,7 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials, 
                                 <Link
                                     key={`${cat.title}-${idx}`}
                                     href={cat.link}
-                                    className="px-5 py-2.5 border border-primary/25 text-[10px] uppercase tracking-widest font-bold hover:border-primary/55 hover:bg-primary/10 transition-colors whitespace-nowrap"
+                                    className="px-5 py-2.5 border border-primary/25 text-[10px] uppercase tracking-widest font-bold text-foreground hover:border-primary/55 hover:bg-primary/10 transition-colors whitespace-nowrap"
                                 >
                                     {cat.title}
                                 </Link>
@@ -367,10 +367,10 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials, 
                                     {displayStoryHighlights.map((label: string, index: number) => {
                                         const Icon = storyHighlightIcons[index % storyHighlightIcons.length]
                                         return (
-                                        <span key={`${label}-${index}`} className="group inline-flex items-center gap-2 border border-primary/20 px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_14px_28px_-20px_rgba(212,175,55,0.8)]">
-                                            <Icon className="h-3.5 w-3.5 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" />
-                                            {label}
-                                        </span>
+                                            <span key={`${label}-${index}`} className="group inline-flex items-center gap-2 border border-primary/20 px-4 py-3 transition-all duration-300 hover:-translate-y-0.5 hover:border-primary/60 hover:bg-primary/10 hover:shadow-[0_14px_28px_-20px_rgba(212,175,55,0.8)]">
+                                                <Icon className="h-3.5 w-3.5 text-primary transition-transform duration-300 group-hover:scale-110 group-hover:-rotate-3" />
+                                                {label}
+                                            </span>
                                         )
                                     })}
                                 </div>
@@ -408,4 +408,3 @@ const HomeContent = ({ hero, categories, heritageFeatures, blogs, testimonials, 
 }
 
 export default HomeContent
-
