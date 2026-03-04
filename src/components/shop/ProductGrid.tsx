@@ -246,9 +246,6 @@ const ProductGrid = ({ products, emptyMessage }: { products: any[], emptyMessage
                                         className="absolute inset-0 w-full h-full object-cover transition-all duration-700 opacity-0 group-hover:opacity-100 group-hover:scale-[1.05]"
                                     />
                                     <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity" />
-                                    <span className="sm:hidden absolute bottom-2 left-1/2 -translate-x-1/2 text-[8px] uppercase tracking-[0.16em] font-bold text-foreground/80 bg-background/70 px-2 py-0.5 rounded">
-                                        Tap to View
-                                    </span>
                                     <span className="absolute top-2 left-2 sm:top-3 sm:left-3 z-10 px-2 py-0.5 sm:px-3 sm:py-1 rounded-full text-[8px] sm:text-[9px] uppercase tracking-[0.14em] sm:tracking-[0.16em] font-bold border border-primary/45 bg-primary/18 shadow-[0_0_8px_rgba(212,175,55,0.14)] sm:shadow-[0_0_14px_rgba(212,175,55,0.22)] backdrop-blur text-primary">
                                         {badgeLabel}
                                     </span>

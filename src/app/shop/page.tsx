@@ -558,7 +558,7 @@ export default async function ShopPage({
                     <main className="lg:border-l lg:border-primary/15 lg:pl-6">
                         <div className="mb-3">
                             <h1 className="text-lg sm:text-xl font-bold uppercase tracking-wide text-foreground">Lab Grown Diamond Jewellery</h1>
-                            <p className="text-[11px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">{products.length} Designs Available</p>
+                            <p className="hidden sm:block text-[11px] uppercase tracking-[0.14em] text-muted-foreground/80 font-medium">{products.length} Designs Available</p>
                         </div>
                         <div id="shop-sort-controls" className="relative z-30 mb-3 flex flex-col xl:flex-row xl:items-center xl:justify-between gap-3 bg-background/90 backdrop-blur-sm">
                             <div className="hidden xl:flex items-center" />
