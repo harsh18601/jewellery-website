@@ -81,7 +81,7 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
             <div className="grid grid-cols-1 md:grid-cols-4 gap-12">
                 <aside className={`space-y-8 ${hideSidebarOnMobile ? 'hidden md:block' : ''}`}>
                     <div className="pb-8 border-b border-primary/10">
-                        <div className="flex items-center space-x-4">
+                        <div className="flex items-start md:items-center space-x-4">
                             <div className="relative">
                                 <div className="w-16 h-16 rounded-full border border-primary/30 bg-primary/10 overflow-hidden flex items-center justify-center group">
                                     {avatar ? (
@@ -106,11 +106,11 @@ const ProfileLayout = ({ children }: { children: React.ReactNode }) => {
                                     onChange={handleAvatarChange}
                                 />
                             </div>
-                            <div>
-                                <h1 className="font-bold uppercase tracking-tight">
+                            <div className="text-left">
+                                <h1 className="font-bold uppercase tracking-tight text-left">
                                     {session?.user?.name || "Boutique Member"}
                                 </h1>
-                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold">
+                                <p className="text-[10px] text-muted-foreground uppercase tracking-widest font-bold text-left">
                                     {session?.user?.email}
                                 </p>
                                 <button

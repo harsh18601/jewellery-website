@@ -7,16 +7,37 @@ const MobileStickyActions = () => {
     const openFilters = () => {
         const filterPanel = document.getElementById("shop-mobile-filters") as HTMLDetailsElement | null
         if (!filterPanel) return
-        filterPanel.open = true
-        filterPanel.scrollIntoView({ behavior: "smooth", block: "start" })
+        filterPanel.open = !filterPanel.open
+        if (filterPanel.open) {
+            filterPanel.scrollIntoView({ behavior: "smooth", block: "start" })
+        }
     }
 
     const openSort = () => {
+        const filterPanel = document.getElementById("shop-mobile-filters") as HTMLDetailsElement | null
+        if (filterPanel?.open) {
+            filterPanel.open = false
+        }
+
         const sortPanel = document.getElementById("shop-sort-controls")
         sortPanel?.scrollIntoView({ behavior: "smooth", block: "start" })
-        const sortSelect = document.querySelector<HTMLSelectElement>("#shop-mobile-sort-select")
-        sortSelect?.focus()
-        sortSelect?.click()
+
+        window.setTimeout(() => {
+            const sortSelect = document.querySelector<HTMLSelectElement>("#shop-mobile-sort-select")
+            if (!sortSelect) return
+            sortSelect.focus()
+
+            // Prefer native picker where available (mobile-friendly).
+            const pickerCapable = sortSelect as HTMLSelectElement & { showPicker?: () => void }
+            if (typeof pickerCapable.showPicker === "function") {
+                pickerCapable.showPicker()
+                return
+            }
+
+            // Fallback for browsers without showPicker support.
+            sortSelect.dispatchEvent(new MouseEvent("mousedown", { bubbles: true }))
+            sortSelect.click()
+        }, 120)
     }
 
     return (
