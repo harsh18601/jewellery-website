@@ -16,7 +16,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
     if (!post) {
         return (
-            <div className="min-h-screen bg-black flex flex-col items-center justify-center text-white space-y-6">
+            <div className="min-h-screen bg-background flex flex-col items-center justify-center text-foreground space-y-6">
                 <h1 className="text-4xl font-serif gold-text uppercase tracking-widest">Article Not Found</h1>
                 <Link href="/blog" className="text-primary border-b border-primary/30 pb-1 hover:border-primary transition-all uppercase tracking-widest text-xs font-bold">
                     Return to Journal
@@ -33,7 +33,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
     const image = featuredImage?.fields?.file?.url ? `https:${featuredImage.fields.file.url}` : null
 
     return (
-        <article className="min-h-screen bg-black text-white pt-36 sm:pt-32 pb-24">
+        <article className="min-h-screen bg-background text-foreground pt-36 sm:pt-32 pb-24">
             <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
                 {/* Header Section */}
                 <div className="mb-12 space-y-6">
@@ -50,7 +50,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
                         </h1>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-6 pt-2 text-white/40 text-[10px] uppercase tracking-[0.2em] font-bold">
+                    <div className="flex flex-wrap items-center gap-6 pt-2 text-foreground/55 text-[10px] uppercase tracking-[0.2em] font-bold">
                         {date && (
                             <div className="flex items-center gap-2">
                                 <Calendar className="h-3 w-3 text-primary" />
@@ -66,7 +66,7 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
                 {/* Featured Image */}
                 {image && (
-                    <div className="aspect-video w-full overflow-hidden mb-16 border border-white/5 rounded-sm">
+                    <div className="aspect-video w-full overflow-hidden mb-16 border border-border/50 rounded-sm">
                         <img
                             src={image}
                             alt={title}
@@ -77,14 +77,14 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
 
                 {/* Content */}
                 <div className="prose max-w-none font-serif">
-                    <RichTextRenderer content={content} isDark={true} />
+                    <RichTextRenderer content={content} />
                 </div>
 
                 {/* Footer Section */}
-                <div className="mt-24 pt-12 border-t border-white/10 flex flex-col items-center space-y-8">
+                <div className="mt-24 pt-12 border-t border-border/70 flex flex-col items-center space-y-8">
                     <div className="text-center">
                         <p className="text-primary uppercase tracking-[0.3em] text-[10px] font-bold mb-4">Interested in bespoke pieces?</p>
-                        <Link href="/custom" className="px-10 py-4 bg-primary text-foreground uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all inline-block">
+                        <Link href="/custom" className="px-10 py-4 bg-primary text-white uppercase tracking-widest text-xs font-bold hover:bg-primary/90 transition-all inline-block">
                             Consult with Our Artisans
                         </Link>
                     </div>

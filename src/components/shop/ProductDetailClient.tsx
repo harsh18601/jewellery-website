@@ -239,6 +239,14 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
         setShippingMessage(`Delivery estimate for ${pincode}: ${deliveryWindow} business days.`)
     }
 
+    const handlePincodeChange = (value: string) => {
+        const next = value.replace(/\D/g, '').slice(0, 6)
+        setPincode(next)
+        if (next.length === 6 && shippingMessage.startsWith('Enter a valid')) {
+            setShippingMessage('')
+        }
+    }
+
     return (
         <div className="space-y-6">
             <button
@@ -366,7 +374,7 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                                 inputMode="numeric"
                                 maxLength={6}
                                 value={pincode}
-                                onChange={(e) => setPincode(e.target.value.replace(/\D/g, '').slice(0, 6))}
+                                onChange={(e) => handlePincodeChange(e.target.value)}
                                 placeholder="Enter pincode to check delivery"
                                 className="flex-1 p-3 text-sm bg-muted/20 border border-primary/20 focus:border-primary outline-none"
                             />
@@ -378,7 +386,9 @@ const ProductDetailClient = ({ product, relatedProducts = [] }: ProductDetailCli
                                 Check
                             </button>
                         </div>
-                        <p className="text-xs text-muted-foreground">{shippingMessage}</p>
+                        <p className={`text-xs ${shippingMessage.startsWith('Enter a valid') ? 'text-destructive' : 'text-muted-foreground'}`}>
+                            {shippingMessage}
+                        </p>
                         <p className="text-xs text-primary font-bold uppercase tracking-widest">{certificationLabel}</p>
                         {emiMonthly > 0 && (
                             <p className="text-xs text-primary/95 uppercase tracking-widest font-bold">EMI starting at {formatPrice(emiMonthly)}/month</p>

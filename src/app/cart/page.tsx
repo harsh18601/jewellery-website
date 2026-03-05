@@ -463,7 +463,11 @@ const CartPage = () => {
                                         Check
                                     </button>
                                 </div>
-                                {deliveryPinMessage && <p className="text-[10px] text-muted-foreground">{deliveryPinMessage}</p>}
+                                {deliveryPinMessage && (
+                                    <p className={`text-[10px] ${deliveryPinMessage.startsWith('Enter a valid') ? 'text-destructive' : 'text-muted-foreground'}`}>
+                                        {deliveryPinMessage}
+                                    </p>
+                                )}
                             </div>
 
                             <div className="space-y-2">

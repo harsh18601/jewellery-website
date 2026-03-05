@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Link from 'next/link'
-import { Instagram, Facebook, Twitter, Mail, Phone, MapPin, ShieldCheck, Gem, RotateCcw, Truck, CreditCard, Landmark, MessageCircle } from 'lucide-react'
+import { Instagram, Facebook, Twitter, Mail, Phone, MapPin, ShieldCheck, Gem, RotateCcw, Truck, CreditCard, Landmark } from 'lucide-react'
 import type { FooterData, FooterTrustBadge } from '@/lib/contentful'
 
 const defaultExploreLinks = [
@@ -59,11 +59,9 @@ const Footer = ({ data }: { data?: FooterData | null }) => {
         : trustItems.map((title) => ({ title }))) as FooterTrustBadge[]
     const showNewsletter = data?.showNewsletter ?? false
     const contactTitle = data?.contactTitle || 'Contact'
-    const locationText = data?.locationText || 'Jaipur, Rajasthan, India'
+    const locationText = data?.locationText || 'Jaipur, Rajasthan'
     const phone = data?.phone || '+91 86969 14998'
     const email = data?.email || 'info@radhagovind.com'
-    const whatsappLabel = data?.whatsappLabel || 'WhatsApp Chat'
-    const whatsappUrl = data?.whatsappUrl || 'https://wa.me/918696914998'
     const newsletterTitle = data?.newsletterTitle || 'Newsletter'
     const newsletterDescription = data?.newsletterDescription || 'Join our circle for early access to collections, private offers, and expert jewellery guides.'
     const newsletterPlaceholder = data?.newsletterPlaceholder || 'Enter your e-mail'
@@ -172,10 +170,6 @@ const Footer = ({ data }: { data?: FooterData | null }) => {
                                 <Mail className="h-5 w-5 text-primary shrink-0" />
                                 <a href={`mailto:${email}`} className="hover:text-primary transition-colors">{email}</a>
                             </li>
-                            <li className="flex items-center gap-3">
-                                <MessageCircle className="h-4 w-4 text-primary" />
-                                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="hover:text-primary transition-colors">{whatsappLabel}</a>
-                            </li>
                         </ul>
                     </div>
                 </div>
@@ -236,5 +230,4 @@ const Footer = ({ data }: { data?: FooterData | null }) => {
 }
 
 export default Footer
-
 

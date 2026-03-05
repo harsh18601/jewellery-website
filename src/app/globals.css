@@ -146,6 +146,14 @@ html[data-theme='light'] .blog-post-title {
   color: #111111 !important;
 }
 
+html[data-theme='light'] :is(button, a, [role="button"])[class~='bg-primary'] {
+  color: #111111 !important;
+}
+
+html[data-theme='light'] :is(button, a, [role="button"])[class~='bg-primary'] * {
+  color: inherit !important;
+}
+
 .shop-category-chip-inactive {
   color: #f3f4f6 !important;
 }

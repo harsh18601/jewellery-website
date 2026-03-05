@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ConciergeButton from "@/components/layout/ConciergeButton";
+import WhatsAppFloatingButton from "@/components/layout/WhatsAppFloatingButton";
 import AuthProvider from "@/components/providers/AuthProvider";
 import { CartProvider } from "@/components/providers/CartContext";
 import { WishlistProvider } from "@/components/providers/WishlistContext";
@@ -62,6 +63,7 @@ export default async function RootLayout({
                   {children}
                 </main>
                 <Footer data={footerData} />
+                <WhatsAppFloatingButton whatsappUrl={footerData?.whatsappUrl} />
                 <ConciergeButton />
               </CurrencyProvider>
             </WishlistProvider>

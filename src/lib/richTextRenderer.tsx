@@ -7,7 +7,7 @@ import { BLOCKS, MARKS } from '@contentful/rich-text-types'
 const getOptions = (isDark: boolean) => ({
     renderMark: {
         [MARKS.BOLD]: (text: React.ReactNode) => (
-            <strong className={`font-bold ${isDark ? 'text-primary' : 'text-secondary'}`}>
+            <strong className={`font-bold ${isDark ? 'text-primary' : 'text-foreground'}`}>
                 {text}
             </strong>
         ),
@@ -32,6 +32,21 @@ const getOptions = (isDark: boolean) => ({
             <h3 className={`text-[11px] md:text-[12px] font-bold uppercase tracking-[0.2em] mb-3 mt-12 ${isDark ? 'text-primary/90' : 'text-primary'}`}>
                 {children}
             </h3>
+        ),
+        [BLOCKS.HEADING_4]: (_: any, children: React.ReactNode) => (
+            <h4 className="text-[11px] md:text-[12px] font-bold uppercase tracking-[0.2em] mb-3 mt-10 text-primary">
+                {children}
+            </h4>
+        ),
+        [BLOCKS.HEADING_5]: (_: any, children: React.ReactNode) => (
+            <h5 className="text-[10px] md:text-[11px] font-bold uppercase tracking-[0.2em] mb-3 mt-8 text-primary">
+                {children}
+            </h5>
+        ),
+        [BLOCKS.HEADING_6]: (_: any, children: React.ReactNode) => (
+            <h6 className="text-[10px] font-bold uppercase tracking-[0.18em] mb-2 mt-6 text-primary">
+                {children}
+            </h6>
         ),
         [BLOCKS.UL_LIST]: (_: any, children: React.ReactNode) => <ul className="list-disc space-y-4 mb-10 pl-6">{children}</ul>,
         [BLOCKS.LIST_ITEM]: (_: any, children: React.ReactNode) => (
