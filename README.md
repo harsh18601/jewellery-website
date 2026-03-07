@@ -1,75 +1,91 @@
-# ✨ Shree Radha Govind Jewellers
+# Shree Radha Govind Jewellers
 
-A premium, high-end e-commerce experience for Jaipur's finest jewellery, specializing in **Lab-Grown Diamonds**, **Custom Designs**, and **Traditional Heritage**.
+Luxury jewellery e-commerce platform built with Next.js App Router, Contentful-powered storefront content, and MongoDB-backed user/order flows.
 
-![Premium Jewellery Showcase](https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?auto=format&fit=crop&q=80&w=2070)
+## Stack
+- Next.js 16 (App Router) + React 19 + TypeScript
+- Tailwind CSS v4
+- Framer Motion
+- Contentful (CMS for homepage, navbar, footer, blogs, products, dynamic pages)
+- MongoDB + Mongoose
+- NextAuth (Credentials + Google + GitHub)
+- Cloudinary (custom order image uploads)
 
-## 💎 Features
+## Core Features
+- CMS-driven homepage sections, navigation, and footer with graceful fallbacks when CMS data is missing
+- Product listing and product detail pages
+- Cart and wishlist state with shared providers
+- Authentication (sign in, sign up, OAuth, profile area)
+- Profile pages for orders, wishlist, addresses, and settings
+- Blog listing and slug-based blog pages
+- Consultation and custom jewellery request flows
+- Floating WhatsApp and concierge support entry points
 
-### 🌟 Boutique Experience
-- **Dynamic Heritage Gallery**: Immersive storytelling section powered by Contentful CMS.
-- **Personal Stylist Consultation**: High-end booking flow for private sessions.
-- **Luxury Interactivity**: Custom animated underlines, card-lift effects, and premium transitions.
-- **Boutique Concierge**: A floating support hub for instant access via Phone, Email, or Socials.
+## Main Routes
+- `/`
+- `/shop`
+- `/product/[id]`
+- `/cart`
+- `/custom`
+- `/consultation`
+- `/blog`
+- `/blog/[slug]`
+- `/auth/signin`
+- `/auth/signup`
+- `/profile`
+- `/profile/orders`
+- `/profile/wishlist`
+- `/profile/addresses`
+- `/profile/settings`
+- `/[slug]` (dynamic CMS pages)
 
-### 💍 Advanced Shop Logic
-- **Wishlist System**: Persistently save your favorite pieces with real-time Navbar updates.
-- **Interactive Ring Builder**: Choose your stone, shape, carat weight, and metal with live pricing.
-- **Bespoke Requests**: Upload reference images for custom-made masterpieces.
+## Requirements
+- Node.js `>=20 <21`
+- npm
+- MongoDB (local or Atlas)
 
-### ⚙️ Technical Brilliance
-- **Framework**: [Next.js 15+](https://nextjs.org/) with App Router.
-- **Styling**: [Tailwind CSS v4](https://tailwindcss.com/) with a curated luxury color palette.
-- **CMS**: [Contentful](https://www.contentful.com/) integrated for all dynamic content and products.
-- **Animations**: [Framer Motion](https://www.framer.com/motion/) for silky-smooth luxury transitions.
-- **Database**: [MongoDB](https://www.mongodb.com/) via Mongoose for persistent user data.
-
----
-
-## 🚀 Getting Started
-
-### 1. Prerequisites
-- Node.js 18+
-- A Contentful Space
-- MongoDB instance (local or Atlas)
-
-### 2. Environment Setup
-Create a `.env.local` file in the root:
-```env
-# Contentful
-CONTENTFUL_SPACE_ID=your_id_here
-CONTENTFUL_ACCESS_TOKEN=your_token_here
-
-# Auth & DB
-MONGODB_URI=your_mongo_uri
-NEXTAUTH_SECRET=your_secret
-NEXTAUTH_URL=http://localhost:3000
-```
-
-### 3. Installation
+## Setup
+1. Install dependencies:
 ```bash
 npm install
+```
+
+2. Create `.env.local` (or copy from `.env.example`) and set required variables:
+```env
+# Database/Auth
+MONGODB_URI=
+NEXTAUTH_SECRET=
+NEXTAUTH_URL=http://localhost:3000
+
+# OAuth (optional but needed for social login)
+GOOGLE_ID=
+GOOGLE_SECRET=
+GITHUB_ID=
+GITHUB_SECRET=
+
+# CMS (optional; app falls back to defaults when absent)
+CONTENTFUL_SPACE_ID=
+CONTENTFUL_ACCESS_TOKEN=
+
+# Media uploads for custom orders
+CLOUDINARY_CLOUD_NAME=
+CLOUDINARY_API_KEY=
+CLOUDINARY_API_SECRET=
+```
+
+3. Run locally:
+```bash
 npm run dev
 ```
 
----
+Open `http://localhost:3000`.
 
-## 🎨 Design Philosophy
-The website is designed with a **"Digital Gold"** aesthetic.
-- **Typography**: `Playfair Display` for high-end headings and `Inter` for clarity.
-- **Colors**: A palette of `#D4AF37` (Gold), `#F9E272` (Shimmering Light), and `hsl(40 30% 98%)` (Creamy Paper).
-- **Interactions**: Subtle, intentional micro-animations that respond to the user's touch.
+## Available Scripts
+- `npm run dev` - start development server
+- `npm run build` - create production build
+- `npm run start` - run production server
+- `npm run lint` - run ESLint
 
----
-
-## 🏛️ Heritage Gallery Integration
-The gallery is dynamic! Define a `heritageFeature` content model in Contentful with:
-- `title` (Short Text)
-- `description` (Long Text)
-- `iconName` (Options: `Sparkles`, `ShieldCheck`, `Gem`, `Crown`, `Fingerprint`)
-- `featureImage` (Asset)
-- `order` (Integer)
-
----
-
-Developed with ❤️ for **Shree Radha Govind Jewellers, Jaipur**.
+## Notes
+- Contentful is optional in local development. If `CONTENTFUL_SPACE_ID` or `CONTENTFUL_ACCESS_TOKEN` is missing, CMS fetches resolve to empty data and UI fallbacks are used.
+- Custom order image uploads require valid Cloudinary credentials.
